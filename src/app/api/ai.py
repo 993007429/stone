@@ -1,7 +1,7 @@
 import asyncio
-from flask import Blueprint
+from apiflask import APIBlueprint
 
-ai_blueprint = Blueprint('ai', __name__, url_prefix='/ai')
+ai_blueprint = APIBlueprint('ai', __name__, url_prefix='/ai')
 
 
 @ai_blueprint.get('/qwer')
