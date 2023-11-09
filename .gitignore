@@ -125,6 +125,9 @@ dmypy.json
 logs/
 .log
 
+# doc file
+openapi.json
+
 # conf file
 envs.conf
 local_settings
