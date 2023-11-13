@@ -11,11 +11,8 @@ class UserDomainService(object):
         # super(UserDomainService, self).__init__()
         self.repository = repository
 
-    def create_user(self, username: str, password: str) -> Optional[UserEntity]:
-        new_user = UserEntity(
-            username=username,
-            password=password
-        )
+    def create_user(self, **kwargs) -> Optional[UserEntity]:
+        new_user = UserEntity(**kwargs)
 
         flag = self.repository.save(new_user)
         if flag:

@@ -12,7 +12,7 @@ class SQLAlchemyUserRepository(UserRepository):
         self.session = get_session()
 
     def save(self, entity: UserEntity) -> bool:
-        model = User(**entity.dict())
+        model = User(**entity.dict)
 
         self.session.begin()
         self.session.add(model)
