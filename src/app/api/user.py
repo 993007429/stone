@@ -1,11 +1,11 @@
 import asyncio
+from typing import List
+
 from apiflask import APIBlueprint
-from flask import request
 from marshmallow.fields import Integer
 
-from src.app.schema.user import PetsOut, PetQuery, UserIn, UserOut
+from src.app.schema.user import PageQuery, UserIn, UserOut, UsersOut
 from src.modules.user.application.services import UserService
-from src.modules.user.domain.repositories import UserRepository
 from src.modules.user.infrastructure.repositories import SQLAlchemyUserRepository
 from src.modules.user.domain.services import UserDomainService
 
@@ -13,7 +13,7 @@ user_blueprint = APIBlueprint('user', __name__, url_prefix='/users')
 
 
 @user_blueprint.post('/login')
-@user_blueprint.input(PetQuery, location='query')
+@user_blueprint.input(PageQuery, location='query')
 @user_blueprint.output({'answer': Integer(dump_default=42)})
 def login(query_data):
     return {'answer': 1}
@@ -31,5 +31,8 @@ def create_user(json_data):
 
 
 @user_blueprint.get('')
-def list_users(json):
-    pass
+@user_blueprint.input(PageQuery, location='query')
+@user_blueprint.output(UsersOut)
+def get_users(query_data):
+    res = UserService(UserDomainService(SQLAlchemyUserRepository())).get_users()
+    return res.dict()

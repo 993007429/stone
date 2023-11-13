@@ -10,20 +10,15 @@ class UserIn(Schema):
 
 
 class UserOut(Schema):
-    username = String(required=True, validate=[Length(0, 10)])
-
-
-class PetQuery(Schema):
-    page = Integer(load_default=1)
-    per_page = Integer(load_default=20, validate=Range(max=30))
-
-
-class PetOut(Schema):
     id = Integer()
-    name = String()
-    category = String()
+    username = String()
 
 
-class PetsOut(Schema):
-    pets = List(Nested(PetOut))
+class UsersOut(Schema):
+    users = List(Nested(UserOut, only=('id', 'username')))
     pagination = Nested(PaginationSchema)
+
+
+class PageQuery(Schema):
+    page = Integer(load_default=1)
+    per_page = Integer(load_default=10, validate=Range(max=100))

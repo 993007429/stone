@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from src.infra.session import get_session
 from src.modules.user.domain.entities import UserEntity
 from src.modules.user.domain.repositories import UserRepository
@@ -18,5 +20,11 @@ class SQLAlchemyUserRepository(UserRepository):
         self.session.commit()
 
         return True
+
+    def gets(self) -> List[Optional[UserEntity]]:
+        query = self.session.query(User)
+        models = query.all()
+        return [UserEntity(**model.dict) for model in models]
+
 
 

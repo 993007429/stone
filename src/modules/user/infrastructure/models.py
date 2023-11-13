@@ -11,3 +11,7 @@ class User(Base):
     username = Column(String)
     password = Column(String)
 
+    @property
+    def dict(self) -> dict:
+        mapper = inspect(self.__class__)
+        return {column.key: getattr(self, column.key) for column in mapper.attrs}

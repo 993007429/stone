@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 from src.modules.user.domain.entities import UserEntity
 from src.modules.user.domain.repositories import UserRepository
 from src.modules.user.infrastructure.repositories import SQLAlchemyUserRepository
@@ -9,7 +11,7 @@ class UserDomainService(object):
         # super(UserDomainService, self).__init__()
         self.repository = repository
 
-    def create_user(self, username: str, password: str):
+    def create_user(self, username: str, password: str) -> Optional[UserEntity]:
         new_user = UserEntity(
             username=username,
             password=password
@@ -17,5 +19,10 @@ class UserDomainService(object):
 
         flag = self.repository.save(new_user)
         if flag:
-            return '', new_user
-        return 'create user failed', None
+            return new_user
+        return None
+
+    def get_users(self) -> List[Optional[UserEntity]]:
+        users = self.repository.gets()
+        return [user for user in users]
+
