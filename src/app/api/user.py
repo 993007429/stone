@@ -4,6 +4,8 @@ from typing import List
 from apiflask import APIBlueprint
 from marshmallow.fields import Integer
 
+from src.app.decorators import connect_db
+from src.app.request_context import request_context
 from src.app.schema.user import PageQuery, UserIn, UserOut, UsersOut
 from src.app.service_factory import AppServiceFactory
 
@@ -26,6 +28,7 @@ def create_user(json_data):
 
 
 @user_blueprint.get('')
+@connect_db()
 @user_blueprint.input(PageQuery, location='query')
 @user_blueprint.output(UsersOut)
 def get_users(query_data):

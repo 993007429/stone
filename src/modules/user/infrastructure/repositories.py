@@ -1,6 +1,8 @@
+from contextvars import ContextVar
 from typing import List, Optional
 
-from src.infra.session import get_session
+from sqlalchemy.orm import Session
+
 from src.modules.user.domain.entities import UserEntity
 from src.modules.user.domain.repositories import UserRepository
 from src.modules.user.infrastructure.models import User
@@ -8,21 +10,27 @@ from src.modules.user.infrastructure.models import User
 
 class SQLAlchemyUserRepository(UserRepository):
 
-    def __init__(self):
-        self.session = get_session()
+    def __init__(self, session: ContextVar):
+        self._session_cv = session
+
+    @property
+    def _session(self) -> Session:
+        s = self._session_cv.get()
+        assert s is not None
+        return s
 
     def save(self, entity: UserEntity) -> bool:
         model = User(**entity.dict)
 
-        self.session.begin()
-        self.session.add(model)
-        self.session.flush([model])
-        self.session.commit()
+        self._session.begin()
+        self._session.add(model)
+        self._session.flush([model])
+        self._session.commit()
 
         return True
 
     def gets(self) -> List[Optional[UserEntity]]:
-        query = self.session.query(User)
+        query = self._session.query(User)
         models = query.all()
         return [UserEntity(**model.dict) for model in models]
 

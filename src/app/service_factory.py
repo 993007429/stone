@@ -1,3 +1,4 @@
+from src.app.request_context import RequestContext, request_context
 from src.modules.user.application.services import UserService
 from src.modules.user.domain.services import UserDomainService
 from dependency_injector import containers, providers
@@ -10,9 +11,21 @@ class AIService:
         self.user_service = user_service
 
 
+def create_request_context():
+    return request_context
+
+
+class CoreContainer(containers.DeclarativeContainer):
+
+    request_context = providers.Factory(RequestContext)
+    # request_context = providers.Factory(create_request_context)
+
+
 class UserContainer(containers.DeclarativeContainer):
 
-    repository = providers.Factory(SQLAlchemyUserRepository)
+    core_container = providers.DependenciesContainer()
+
+    repository = providers.Factory(SQLAlchemyUserRepository, session=core_container.request_context.provided.db_session)
 
     user_domain_service = providers.Factory(UserDomainService, repository=repository)
 
@@ -28,7 +41,9 @@ class AIContainer(containers.DeclarativeContainer):
 
 class AppContainer(containers.DeclarativeContainer):
 
-    user_container = providers.Container(UserContainer)
+    core_container = providers.Container(CoreContainer)
+
+    user_container = providers.Container(UserContainer, core_container=core_container)
 
     ai_container = providers.Container(AIContainer, user_container=user_container)
 
