@@ -128,3 +128,11 @@ ROCHE_IMAGE_SERVER = ROCHE_SETTINGS['image_server'] if ROCHE_SETTINGS else None
 VERSION = '1.0.0'
 
 BASE_RESPONSE_SCHEMA = BaseResponseSchema
+
+SECURITY_SCHEMES = {
+    'ApiKeyAuth': {
+      'type': 'apiKey',
+      'in': 'header',
+      'name': 'X-API-Key',
+    }
+}
