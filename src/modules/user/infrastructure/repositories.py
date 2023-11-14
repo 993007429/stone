@@ -21,12 +21,10 @@ class SQLAlchemyUserRepository(UserRepository):
 
     def save(self, entity: UserEntity) -> bool:
         model = User(**entity.dict)
-
         self._session.begin()
         self._session.add(model)
         self._session.flush([model])
         self._session.commit()
-
         return True
 
     def gets(self) -> List[Optional[UserEntity]]:

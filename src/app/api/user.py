@@ -27,8 +27,8 @@ def create_user(json_data):
     return res.dict()
 
 
-@user_blueprint.get('')
 @connect_db()
+@user_blueprint.get('')
 @user_blueprint.input(PageQuery, location='query')
 @user_blueprint.output(UsersOut)
 def get_users(query_data):

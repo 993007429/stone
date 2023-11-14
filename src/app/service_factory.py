@@ -7,18 +7,14 @@ from src.modules.user.infrastructure.repositories import SQLAlchemyUserRepositor
 
 
 class AIService:
+
     def __init__(self, user_service: UserService):
         self.user_service = user_service
-
-
-def create_request_context():
-    return request_context
 
 
 class CoreContainer(containers.DeclarativeContainer):
 
     request_context = providers.Factory(RequestContext)
-    # request_context = providers.Factory(create_request_context)
 
 
 class UserContainer(containers.DeclarativeContainer):
