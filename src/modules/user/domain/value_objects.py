@@ -11,8 +11,8 @@ class RoleType(BaseEnum):
 
 
 @dataclass(frozen=True)
-class TokenVO(BaseValueObject):
-    user_id: int
+class LoginInfo(BaseValueObject):
+    userid: int
     username: str
     role: str
     token: str

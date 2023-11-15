@@ -17,8 +17,8 @@ class UserService(object):
 
     def get_users(self) -> AppResponse[List[dict]]:
         users = self.domain_service.get_users()
-        return AppResponse(message='get users success', data={'users': [user.dict for user in users]})
+        return AppResponse(message='get users success', data=[user.dict for user in users])
 
     def login(self, **kwargs) -> AppResponse[dict]:
-        token = self.domain_service.login(**kwargs)
-        return AppResponse(message='login success', data={'login_info': token.dict})
+        login_info = self.domain_service.login(**kwargs)
+        return AppResponse(message='login success', data=login_info.dict)
