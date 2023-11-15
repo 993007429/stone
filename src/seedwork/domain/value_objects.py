@@ -1,4 +1,5 @@
 import enum
+import uuid
 from typing import Optional, Callable, TypeVar, Any
 
 
@@ -26,3 +27,9 @@ class BaseEnum(enum.Enum):
 
     def translate(self, *args, **kwargs):
         return self.value
+
+
+class GenericUUID(uuid.UUID):
+    @classmethod
+    def next_id(cls):
+        return cls(int=uuid.uuid4().int)

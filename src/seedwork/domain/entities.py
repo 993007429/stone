@@ -1,14 +1,14 @@
-from pydantic import BaseModel
+from dataclasses import dataclass
 
 
-class BaseDomainEntity(object):
+@dataclass
+class BaseEntity(object):
 
-    def __init__(self, **kwargs):
-        super(BaseDomainEntity, self).__init__()
-        for k, v in kwargs.items():
-            self.__setattr__(k, v)
+    # def __init__(self, **kwargs):
+    #     super(BaseEntity, self).__init__()
+    #     for k, v in kwargs.items():
+    #         self.__setattr__(k, v)
 
     @property
     def dict(self):
         return self.__dict__
-

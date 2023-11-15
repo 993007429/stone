@@ -1,17 +1,25 @@
+import jwt
+from sqlalchemy.exc import NoResultFound
+from functools import wraps
+from src.app.request_context import request_context
 
 
-from apiflask import HTTPTokenAuth
+def auth1(token):
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, "HS256")
+        userid = payload["userid"]
+        user = User.objects.get(pk=userid)
+        user.token = token
+        return user
+    except (jwt.ExpiredSignatureError, jwt.DecodeError, NoResultFound):
+        return None
 
-auth = HTTPTokenAuth(scheme='ApiKeyAuth')
 
-
-tokens = {
-    "secret-token-1": "john",
-    "secret-token-2": "susan"
-}
-
-
-@auth.verify_token
-def verify_token(token):
-    if token in tokens:
-        return tokens[token]
+def auth():
+    def deco(func):
+        @wraps(func)
+        def wrapped(*args, **kwargs):
+            request_context.connect_db()
+            return func(*args, **kwargs)
+        return wrapped
+    return deco

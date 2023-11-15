@@ -28,8 +28,10 @@ class SQLAlchemyUserRepository(UserRepository):
         return True
 
     def gets(self) -> List[Optional[UserEntity]]:
+        self._session.begin()
         query = self._session.query(User)
         models = query.all()
+        self._session.commit()
         return [UserEntity(**model.dict) for model in models]
 
 

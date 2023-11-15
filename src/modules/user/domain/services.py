@@ -8,14 +8,11 @@ from src.modules.user.infrastructure.repositories import SQLAlchemyUserRepositor
 class UserDomainService(object):
 
     def __init__(self, repository: SQLAlchemyUserRepository):
-        # super(UserDomainService, self).__init__()
         self.repository = repository
 
     def create_user(self, **kwargs) -> Optional[UserEntity]:
-        new_user = UserEntity(**kwargs)
-
-        flag = self.repository.save(new_user)
-        if flag:
+        new_user = UserEntity.create_user(**kwargs)
+        if self.repository.save(new_user):
             return new_user
         return None
 

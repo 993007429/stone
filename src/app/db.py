@@ -4,11 +4,10 @@ from src.app.request_context import request_context
 
 
 def connect_db():
-    def deco(f):
-        @wraps(f)
+    def deco(func):
+        @wraps(func)
         def wrapped(*args, **kwargs):
             request_context.connect_db()
-            r = f(*args, **kwargs)
-            return r
+            return func(*args, **kwargs)
         return wrapped
     return deco

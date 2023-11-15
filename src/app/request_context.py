@@ -11,8 +11,6 @@ class RequestContext:
     @property
     def db_session(self) -> ContextVar[Session]:
         """Get current db session as ContextVar"""
-        session = get_session()
-        self._db_session.set(session)
         return self._db_session
 
     def connect_db(self):
