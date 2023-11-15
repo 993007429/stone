@@ -34,5 +34,13 @@ class SQLAlchemyUserRepository(UserRepository):
         self._session.commit()
         return [UserEntity(**model.dict) for model in models]
 
+    def get(self, username: str) -> Optional[UserEntity]:
+        self._session.begin()
+        query = self._session.query(User).filter_by(username=username)
+        model = query.first()
+        self._session.commit()
+        if not model:
+            return None
+        return UserEntity(**model.dict)
 
 

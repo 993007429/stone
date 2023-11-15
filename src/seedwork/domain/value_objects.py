@@ -2,6 +2,8 @@ import enum
 import uuid
 from typing import Optional, Callable, TypeVar, Any
 
+from dataclasses import dataclass
+
 
 class BaseEnum(enum.Enum):
 
@@ -33,3 +35,10 @@ class GenericUUID(uuid.UUID):
     @classmethod
     def next_id(cls):
         return cls(int=uuid.uuid4().int)
+
+
+@dataclass(frozen=True)
+class BaseValueObject:
+    @property
+    def dict(self):
+        return self.__dict__

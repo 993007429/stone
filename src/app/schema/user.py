@@ -12,16 +12,12 @@ class UserIn(Schema):
     role = String(required=True, validate=[OneOf([RoleType.admin.value, RoleType.user.value])])
 
 
-class UserOut(Schema):
-    id = Integer()
-    username = String()
-
-
-class UsersOut(Schema):
-    users = List(Nested(UserOut, only=('id', 'username')))
-    pagination = Nested(PaginationSchema)
-
-
 class PageQuery(Schema):
     page = Integer(load_default=1)
     per_page = Integer(load_default=10, validate=Range(max=100))
+
+
+class LoginIn(Schema):
+    username = String(required=True, validate=[Length(0, 100)])
+    password = String(required=True, validate=[Length(8, 32)])
+

@@ -1,8 +1,9 @@
 from typing import Optional, List
 
 from src.modules.user.domain.entities import UserEntity
-from src.modules.user.domain.repositories import UserRepository
+from src.modules.user.domain.value_objects import TokenVO
 from src.modules.user.infrastructure.repositories import SQLAlchemyUserRepository
+from src.modules.user.utils.auth import verify_password, hash_password
 
 
 class UserDomainService(object):
@@ -11,7 +12,10 @@ class UserDomainService(object):
         self.repository = repository
 
     def create_user(self, **kwargs) -> Optional[UserEntity]:
-        new_user = UserEntity.create_user(**kwargs)
+        kwargs['password_hash'] = hash_password(kwargs['password'])
+        del kwargs['password']
+
+        new_user = UserEntity(**kwargs)
         if self.repository.save(new_user):
             return new_user
         return None
@@ -19,4 +23,34 @@ class UserDomainService(object):
     def get_users(self) -> List[Optional[UserEntity]]:
         users = self.repository.gets()
         return [user for user in users]
+
+    def login(self, **kwargs) -> Optional[TokenVO]:
+        user = self.repository.get(kwargs['username'])
+        if not user:
+            return None
+
+        if not verify_password(kwargs['password'], user.password_hash):
+            return None
+
+        token = 'token'
+        return TokenVO(user_id=user.id,
+                       username=user.username,
+                       role=user.role,
+                       token=token)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

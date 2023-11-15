@@ -1,8 +1,6 @@
 import os
 from configparser import RawConfigParser
 
-from src.infra.schema import BaseResponseSchema
-
 
 def get_local_settings(file_path: str):
     conf = RawConfigParser()
@@ -126,8 +124,6 @@ ROCHE_API_SERVER = ROCHE_SETTINGS['api_server'] if ROCHE_SETTINGS else None
 ROCHE_IMAGE_SERVER = ROCHE_SETTINGS['image_server'] if ROCHE_SETTINGS else None
 
 VERSION = '1.0.0'
-
-BASE_RESPONSE_SCHEMA = BaseResponseSchema
 
 SECURITY_SCHEMES = {
     'ApiKeyAuth': {

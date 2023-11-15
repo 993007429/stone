@@ -1,13 +1,8 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class BaseEntity(object):
-
-    # def __init__(self, **kwargs):
-    #     super(BaseEntity, self).__init__()
-    #     for k, v in kwargs.items():
-    #         self.__setattr__(k, v)
 
     @property
     def dict(self):
