@@ -34,7 +34,6 @@ class UserOut(Schema):
 
 
 class ApiUserOut(Schema):
-    http_code = Integer(required=True)
-    err_code = Integer(required=True)
+    code = Integer(required=True)
     message = String(required=True)
     data = Nested(UserOut)

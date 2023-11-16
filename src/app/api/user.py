@@ -18,7 +18,7 @@ user_blueprint = APIBlueprint('user', __name__, url_prefix='/users')
 @user_blueprint.input(LoginIn, location='json')
 def login(json_data):
     res = AppServiceFactory.user_service.login(**json_data)
-    return res
+    return res.response
 
 
 @user_blueprint.post('')
@@ -29,7 +29,7 @@ def login(json_data):
 @user_blueprint.doc(security='ApiAuth')
 def create_user(json_data):
     res = AppServiceFactory.user_service.create_user(**json_data)
-    return res.dict()
+    return res.response
 
 
 @user_blueprint.get('')
@@ -39,4 +39,4 @@ def create_user(json_data):
 @user_blueprint.doc(security='ApiAuth')
 def get_users(query_data):
     res = AppServiceFactory.user_service.get_users()
-    return res
+    return res.response
