@@ -1,14 +1,9 @@
-from dataclasses import dataclass, field
+from pydantic import BaseModel
 from datetime import datetime
 
 
-@dataclass
-class BaseEntity(object):
+class BaseEntity(BaseModel):
 
-    created_at: datetime
-    last_modified: datetime
-    id: int
-
-    @property
-    def dict(self):
-        return self.__dict__
+    id: int = None
+    created_at: datetime = None
+    last_modified: datetime = None

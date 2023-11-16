@@ -2,7 +2,7 @@ import enum
 import uuid
 from typing import Optional, Callable, TypeVar, Any
 
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 
 class BaseEnum(enum.Enum):
@@ -37,8 +37,5 @@ class GenericUUID(uuid.UUID):
         return cls(int=uuid.uuid4().int)
 
 
-@dataclass(frozen=True)
-class BaseValueObject:
-    @property
-    def dict(self):
-        return self.__dict__
+class BaseValueObject(BaseModel):
+    pass

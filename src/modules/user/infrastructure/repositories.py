@@ -1,6 +1,7 @@
 from contextvars import ContextVar
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from src.modules.user.domain.entities import UserEntity
@@ -19,13 +20,16 @@ class SQLAlchemyUserRepository(UserRepository):
         assert s is not None
         return s
 
-    def save(self, entity: UserEntity) -> bool:
-        model = User(**entity.dict)
+    def save(self, entity: UserEntity) -> Tuple[bool, str]:
+        model = User(**entity.dict())
         self._session.begin()
-        self._session.add(model)
-        self._session.flush([model])
-        self._session.commit()
-        return True
+        try:
+            self._session.add(model)
+            self._session.flush([model])
+            self._session.commit()
+        except IntegrityError as e:
+            return False, 'Duplicate username '
+        return True, 'Create user success'
 
     def gets(self) -> List[Optional[UserEntity]]:
         self._session.begin()

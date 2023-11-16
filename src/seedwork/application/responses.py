@@ -15,7 +15,7 @@ class AppResponse(BaseModel, Generic[T]):
         return f'Response(err_code={self.err_code}, message={self.message})'
 
     @property
-    def dict(self):
+    def response(self):
         return {
             'code': self.err_code,
             'message': self.message,

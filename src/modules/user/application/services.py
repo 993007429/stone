@@ -10,15 +10,17 @@ class UserService(object):
         self.domain_service = domain_service
 
     def create_user(self, **kwargs) -> AppResponse[dict]:
-        new_user = self.domain_service.create_user(**kwargs)
+        new_user, message = self.domain_service.create_user(**kwargs)
         if not new_user:
-            AppResponse(err_code=1, message='create user failed')
-        return AppResponse(message='create user success', data=new_user.dict)
+            return AppResponse(err_code=1, message=message)
+        return AppResponse(message=message, data=new_user.dict())
 
     def get_users(self) -> AppResponse[List[dict]]:
         users = self.domain_service.get_users()
-        return AppResponse(message='get users success', data=[user.dict for user in users])
+        return AppResponse(message='get users success', data=[user.dict() for user in users])
 
     def login(self, **kwargs) -> AppResponse[dict]:
-        login_info = self.domain_service.login(**kwargs)
-        return AppResponse(message='login success', data=login_info.dict)
+        login_info, message = self.domain_service.login(**kwargs)
+        if not login_info:
+            return AppResponse(message=message)
+        return AppResponse(message=message, data=login_info.dict())

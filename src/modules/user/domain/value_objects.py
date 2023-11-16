@@ -1,5 +1,4 @@
 import enum
-from dataclasses import dataclass
 
 from src.seedwork.domain.value_objects import BaseEnum, BaseValueObject
 
@@ -10,7 +9,6 @@ class RoleType(BaseEnum):
     user = "user"
 
 
-@dataclass(frozen=True)
 class LoginInfo(BaseValueObject):
     userid: int
     username: str

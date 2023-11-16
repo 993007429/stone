@@ -7,9 +7,10 @@ from src.modules.user.domain.value_objects import RoleType
 
 
 class UserIn(Schema):
-    username = String(required=True, validate=[Length(0, 100)])
+    username = String(required=True, validate=[Length(0, 255)])
     password = String(required=True, validate=[Length(8, 32)])
     role = String(required=True, validate=[OneOf([RoleType.admin.value, RoleType.user.value])])
+    creator = String(required=True, validate=[Length(0, 255)])
 
 
 class PageQuery(Schema):
