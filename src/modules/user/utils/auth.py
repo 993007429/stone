@@ -7,10 +7,10 @@ import setting
 from src.modules.user.domain.entities import UserEntity
 
 
-def hash_password(password: str) -> bytes:
+def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed_password
+    return hashed_password.decode('utf-8')
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

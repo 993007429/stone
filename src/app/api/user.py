@@ -4,7 +4,7 @@ from typing import List
 from apiflask import APIBlueprint
 from marshmallow.fields import Integer
 
-from src.app.auth import auth
+from src.app.auth import token_required
 from src.app.db import connect_db
 from src.app.request_context import request_context
 from src.app.schema.user import PageQuery, UserIn, LoginIn
@@ -23,7 +23,9 @@ def login(json_data):
 
 @user_blueprint.post('')
 @connect_db()
+@token_required()
 @user_blueprint.input(UserIn, location='json')
+@user_blueprint.doc(security='ApiAuth')
 def create_user(json_data):
     res = AppServiceFactory.user_service.create_user(**json_data)
     return res.dict
@@ -31,7 +33,9 @@ def create_user(json_data):
 
 @user_blueprint.get('')
 @connect_db()
+@token_required()
 @user_blueprint.input(PageQuery, location='query')
+@user_blueprint.doc(security='ApiAuth')
 def get_users(query_data):
     res = AppServiceFactory.user_service.get_users()
     return res.dict

@@ -6,7 +6,8 @@ from src.infra.session import get_session
 
 
 class RequestContext:
-    _db_session: ContextVar[Session] = ContextVar("_db_session", default=None)
+    _db_session: ContextVar[Session] = ContextVar('_db_session', default=None)
+    _token: ContextVar = ContextVar('_token', default='')
 
     @property
     def db_session(self) -> ContextVar[Session]:
@@ -16,6 +17,14 @@ class RequestContext:
     def connect_db(self):
         session = get_session()
         self._db_session.set(session)
+
+    @property
+    def token(self):
+        return self._token.get()
+
+    @token.setter
+    def token(self, value):
+        self._token.set(value)
 
 
 request_context = RequestContext()

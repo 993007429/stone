@@ -107,10 +107,10 @@ ROCHE_IMAGE_SERVER = ROCHE_SETTINGS['image_server'] if ROCHE_SETTINGS else None
 VERSION = '1.0.0'
 
 SECURITY_SCHEMES = {
-    'ApiKeyAuth': {
+    'ApiAuth': {
       'type': 'apiKey',
       'in': 'header',
-      'name': 'token',
+      'name': 'Authorization',
     }
 }
 

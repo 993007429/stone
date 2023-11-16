@@ -25,7 +25,7 @@ class UserDomainService(object):
         return [user for user in users]
 
     def login(self, **kwargs) -> Optional[LoginInfo]:
-        user = self.repository.get(kwargs['username'])
+        user = self.repository.get_user_by_name(kwargs['username'])
         if not user:
             return None
 
