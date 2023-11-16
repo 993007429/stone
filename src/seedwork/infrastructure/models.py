@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime
+from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime, BigInteger
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import inspect, JSON
 from sqlalchemy.orm import declarative_base
@@ -9,6 +9,7 @@ from sqlalchemy.orm import declarative_base
 class _Base:
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
+    id = Column(BigInteger, primary_key=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     last_modified = Column(DateTime, nullable=False, default=datetime.utcnow)
 

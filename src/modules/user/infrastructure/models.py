@@ -1,15 +1,14 @@
 from datetime import datetime
 
-from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime
+from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime, BigInteger
 
-from src.seedwork.infrastructure.mdoels import Base
+from src.seedwork.infrastructure.models import Base
 
 
 class User(Base):
     __tablename__ = 'user'
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)
-    role = Column(String, nullable=False)
-    creator = Column(String, nullable=False)
+    username = Column(String(255), unique=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    role = Column(String(255), nullable=False)
+    creator = Column(String(255), nullable=False, comment='创建者')
