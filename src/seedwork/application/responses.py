@@ -13,11 +13,3 @@ class AppResponse(BaseModel, Generic[T]):
 
     def __repr__(self):
         return f'Response(err_code={self.err_code}, message={self.message})'
-
-    @property
-    def response(self):
-        return {
-            'code': self.err_code,
-            'message': self.message,
-            'data': self.data
-        }
