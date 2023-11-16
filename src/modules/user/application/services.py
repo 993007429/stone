@@ -1,5 +1,6 @@
 from typing import List
 
+from src.app.request_context import request_context
 from src.modules.user.domain.services import UserDomainService
 from src.seedwork.application.responses import AppResponse
 
@@ -20,7 +21,8 @@ class UserService(object):
         return AppResponse(message='get users success', data=[user.dict() for user in users])
 
     def login(self, **kwargs) -> AppResponse[dict]:
-        login_info, message = self.domain_service.login(**kwargs)
-        if not login_info:
+        login_user, message = self.domain_service.login(**kwargs)
+        if not login_user:
             return AppResponse(message=message)
-        return AppResponse(message=message, data=login_info.dict())
+        request_context.current_user = login_user
+        return AppResponse(message=message, data=login_user.dict())

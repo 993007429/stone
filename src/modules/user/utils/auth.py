@@ -19,5 +19,10 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_token_for_user(user: UserEntity) -> str:
     expired_at = int(time.time()) + setting.JWT_EXPIRE
-    payload = {"userid": user.id, "exp": expired_at}
+    payload = {
+        "userid": user.id,
+        "username": user.username,
+        "role": user.role,
+        "exp": expired_at
+    }
     return jwt.encode(payload, setting.SECRET_KEY, "HS256").decode('utf-8')

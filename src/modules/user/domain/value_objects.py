@@ -9,7 +9,7 @@ class RoleType(BaseEnum):
     user = "user"
 
 
-class LoginInfo(BaseValueObject):
+class LoginUser(BaseValueObject):
     userid: int
     username: str
     role: str

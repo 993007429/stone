@@ -33,7 +33,26 @@ class UserOut(Schema):
     last_modified = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
 
 
-class ApiUserOut(Schema):
+class SingleUserOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Nested(UserOut)
+
+
+class ListUserOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = List(Nested(UserOut))
+
+
+class LoginOut(Schema):
+    userid = Integer(required=True)
+    username = String(required=True, validate=[Length(0, 255)])
+    role = String(required=True, validate=[OneOf([RoleType.admin.value, RoleType.user.value])])
+    token = String(required=True)
+
+
+class ApiLoginOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = Nested(LoginOut)

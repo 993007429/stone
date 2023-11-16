@@ -1,7 +1,7 @@
 from typing import Optional, List, Tuple
 
 from src.modules.user.domain.entities import UserEntity
-from src.modules.user.domain.value_objects import LoginInfo
+from src.modules.user.domain.value_objects import LoginUser
 from src.modules.user.infrastructure.repositories import SQLAlchemyUserRepository
 from src.modules.user.utils.auth import verify_password, hash_password, get_token_for_user
 
@@ -26,7 +26,7 @@ class UserDomainService(object):
         users = self.repository.gets()
         return [user for user in users]
 
-    def login(self, **kwargs) -> Tuple[Optional[LoginInfo], str]:
+    def login(self, **kwargs) -> Tuple[Optional[LoginUser], str]:
         user = self.repository.get_user_by_name(kwargs['username'])
         if not user:
             return None, 'no user'
@@ -35,7 +35,7 @@ class UserDomainService(object):
             return None, 'wrong password'
 
         token = get_token_for_user(user)
-        return LoginInfo(userid=user.id,
+        return LoginUser(userid=user.id,
                          username=user.username,
                          role=user.role,
                          token=token), 'login success'
