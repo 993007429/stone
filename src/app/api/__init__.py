@@ -8,7 +8,7 @@ from src.app.api.user import user_blueprint
 from src.app.request_context import request_context
 from src.modules.user.domain.value_objects import LoginUser
 
-api_blueprint = APIBlueprint('api', __name__, url_prefix='/api')
+api_blueprint = APIBlueprint('stone', __name__, url_prefix='/api')
 
 api_blueprint.register_blueprint(ai_blueprint)
 api_blueprint.register_blueprint(user_blueprint)

@@ -2,7 +2,6 @@ from apiflask import Schema, PaginationSchema
 from apiflask.fields import Integer, String, List, Nested, DateTime
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
-from marshmallow import post_dump
 
 from src.modules.user.domain.value_objects import RoleType
 

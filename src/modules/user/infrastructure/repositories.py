@@ -31,6 +31,22 @@ class SQLAlchemyUserRepository(UserRepository):
             return False, 'Duplicate username '
         return True, 'Create user success'
 
+    def update(self, pk: int, entity: UserEntity) -> Tuple[Optional[UserEntity], str]:
+        query = self._session.query(User).filter_by(id=pk)
+        model = query.first()
+        if not model:
+            return None, 'no user'
+
+        model = User(**entity.dict())
+        self._session.begin()
+        try:
+            self._session.add(model)
+            self._session.flush([model])
+            self._session.commit()
+        except IntegrityError as e:
+            return False, 'Duplicate username '
+        return True, 'Create user success'
+
     def gets(self) -> List[Optional[UserEntity]]:
         self._session.begin()
         query = self._session.query(User)
@@ -47,7 +63,7 @@ class SQLAlchemyUserRepository(UserRepository):
             return None
         return UserEntity(**model.dict)
 
-    def get_user_by_pk(self, pk: str) -> Optional[UserEntity]:
+    def get_user_by_pk(self, pk: int) -> Optional[UserEntity]:
         self._session.begin()
         query = self._session.query(User).filter_by(id=pk)
         model = query.first()

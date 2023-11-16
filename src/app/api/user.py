@@ -12,7 +12,7 @@ from src.app.schema.user import PageQuery, UserIn, LoginIn, SingleUserOut, ListU
 from src.app.service_factory import AppServiceFactory
 from src.modules.user.infrastructure.permissions import IsAdmin
 
-user_blueprint = APIBlueprint('user', __name__, url_prefix='/users')
+user_blueprint = APIBlueprint('用户模块', __name__, url_prefix='/users')
 
 
 @user_blueprint.post('/login')
@@ -45,4 +45,26 @@ def create_user(json_data):
 @user_blueprint.doc(security='ApiAuth')
 def get_users(query_data):
     res = AppServiceFactory.user_service.get_users()
+    return res.response
+
+
+@user_blueprint.get('/<int:userid>')
+@connect_db()
+# @auth_required()
+# @permission_required([IsAdmin])
+@user_blueprint.output(SingleUserOut)
+@user_blueprint.doc(security='ApiAuth')
+def get_user(userid):
+    res = AppServiceFactory.user_service.get_user(userid)
+    return res.response
+
+
+@user_blueprint.put('/<int:userid>')
+@connect_db()
+# @auth_required()
+# @permission_required([IsAdmin])
+@user_blueprint.output(SingleUserOut)
+@user_blueprint.doc(security='ApiAuth')
+def update_user(userid):
+    res = AppServiceFactory.user_service.update_user(userid)
     return res.response

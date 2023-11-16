@@ -1,8 +1,6 @@
 import functools
 from typing import List, Type
 
-from apiflask import abort
-
 
 class BasePermission:
     def has_permission(self, view_func):
