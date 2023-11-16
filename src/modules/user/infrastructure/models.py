@@ -1,18 +1,15 @@
-from sqlalchemy import inspect, JSON, Column, String, Integer
-from sqlalchemy.orm import declarative_base
+from datetime import datetime
 
-Base = declarative_base()
+from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime
+
+from src.seedwork.infrastructure.mdoels import Base
 
 
 class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
-    username = Column(String)
-    password_hash = Column(String)
-    role = Column(String)
-
-    @property
-    def dict(self) -> dict:
-        mapper = inspect(self.__class__)
-        return {column.key: getattr(self, column.key) for column in mapper.attrs}
+    username = Column(String, unique=True, nullable=False)
+    password_hash = Column(String, nullable=False)
+    role = Column(String, nullable=False)
+    creator = Column(String, nullable=False)
