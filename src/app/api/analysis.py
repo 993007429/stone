@@ -9,10 +9,9 @@ from src.app.db import connect_db
 from src.app.permission import permission_required
 from src.app.schema.analysis import StartIn, SingleStartOut, PollingIn, SinglePollingOut, CalculationIn, \
     ListAnalysesQuery, SingleCalculationOut, AnalysisIn, SingleAnalysisOut, AnalysesQuery
-from src.app.schema.user import PageQuery
 from src.app.service_factory import AppServiceFactory
 
-analysis_blueprint = APIBlueprint('AI处理模块', __name__, url_prefix='/analysis')
+analysis_blueprint = APIBlueprint('AI处理', __name__, url_prefix='/analyses')
 
 
 @analysis_blueprint.post('/start')

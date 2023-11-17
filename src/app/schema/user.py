@@ -3,7 +3,12 @@ from apiflask.fields import Integer, String, List, Nested, DateTime
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
+from src.app.base_schema import PageQuery
 from src.modules.user.domain.value_objects import RoleType
+
+
+class UserPageQuery(PageQuery):
+    pass
 
 
 class UserIn(Schema):
@@ -11,11 +16,6 @@ class UserIn(Schema):
     password = String(required=True, validate=[Length(8, 32)])
     role = String(required=True, validate=[OneOf([RoleType.admin.value, RoleType.user.value])])
     creator = String(required=True, validate=[Length(0, 255)])
-
-
-class PageQuery(Schema):
-    page = Integer(load_default=1)
-    per_page = Integer(load_default=10, validate=Range(max=100))
 
 
 class LoginIn(Schema):

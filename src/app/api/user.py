@@ -8,11 +8,11 @@ from src.app.auth import auth_required
 from src.app.db import connect_db
 from src.app.permission import permission_required
 from src.app.request_context import request_context
-from src.app.schema.user import PageQuery, UserIn, LoginIn, SingleUserOut, ListUserOut, ApiLoginOut
+from src.app.schema.user import UserPageQuery, UserIn, LoginIn, SingleUserOut, ListUserOut, ApiLoginOut
 from src.app.service_factory import AppServiceFactory
 from src.modules.user.infrastructure.permissions import IsAdmin
 
-user_blueprint = APIBlueprint('用户模块', __name__, url_prefix='/users')
+user_blueprint = APIBlueprint('用户', __name__, url_prefix='/users')
 
 
 @user_blueprint.post('/login')
@@ -41,7 +41,7 @@ def create_user(json_data):
 @connect_db()
 @auth_required()
 @permission_required([IsAdmin])
-@user_blueprint.input(PageQuery, location='query')
+@user_blueprint.input(UserPageQuery, location='query')
 @user_blueprint.output(ListUserOut)
 @user_blueprint.doc(summary='user列表', security='ApiAuth')
 def get_users(query_data):

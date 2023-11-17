@@ -1,9 +1,8 @@
 from apiflask import Schema
 from apiflask.fields import Integer, String, Nested, DateTime
-from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
-from src.app.custom_schema import DurationField
+from src.app.base_schema import DurationField, PageQuery
 from src.modules.slice.domain.value_objects import AiType
 
 
@@ -41,9 +40,7 @@ class SinglePollingOut(Schema):
     data = Nested(PollingOut)
 
 
-class AnalysesQuery(Schema):
-    page = Integer(load_default=1)
-    per_page = Integer(load_default=10, validate=Range(max=100))
+class AnalysesQuery(PageQuery):
     userid = Integer(required=True)
 
 
