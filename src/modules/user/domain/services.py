@@ -40,11 +40,11 @@ class UserDomainService(object):
         kwargs['password_hash'] = hash_password(kwargs['password'])
         del kwargs['password']
 
-        user.update_data(**kwargs)
+        new_user = user.copy(update=kwargs)
 
-        success, message = self.repository.save(user)
+        success, message = self.repository.update(userid, new_user)
         if success:
-            user = self.repository.get_user_by_name(kwargs['username'])
+            user = self.repository.get_user_by_pk(userid)
             return user, message
         return None, message
 

@@ -31,21 +31,18 @@ class SQLAlchemyUserRepository(UserRepository):
             return False, 'Duplicate username '
         return True, 'Create user success'
 
-    def update(self, pk: int, entity: UserEntity) -> Tuple[Optional[UserEntity], str]:
-        query = self._session.query(User).filter_by(id=pk)
-        model = query.first()
-        if not model:
-            return None, 'no user'
-
-        model = User(**entity.dict())
+    def update(self, pk: int, entity: UserEntity) -> Tuple[bool, str]:
         self._session.begin()
-        try:
-            self._session.add(model)
-            self._session.flush([model])
-            self._session.commit()
-        except IntegrityError as e:
-            return False, 'Duplicate username '
-        return True, 'Create user success'
+
+        model = self._session.get(User, entity.id)
+        if not model:
+            return False, 'No user'
+        model.set_data(**entity.dict())
+        self._session.add(model)
+        self._session.flush([model])
+
+        self._session.commit()
+        return True, 'Update user success'
 
     def gets(self) -> List[Optional[UserEntity]]:
         self._session.begin()

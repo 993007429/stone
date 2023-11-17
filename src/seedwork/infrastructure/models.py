@@ -18,5 +18,12 @@ class _Base:
         mapper = inspect(self.__class__)
         return {column.key: getattr(self, column.key) for column in mapper.attrs}
 
+    def set_data(self, data: dict):
+        mapper = inspect(self.__class__)
+        fields = [column.key for column in mapper.attrs]
+        for k, v in data.items():
+            if k in fields and v != getattr(self, k):
+                setattr(self, k, v)
+
 
 Base = declarative_base(cls=_Base, name='BaseModel')
