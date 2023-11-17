@@ -3,15 +3,13 @@ from apiflask import APIBlueprint
 from flask import request
 
 import setting
-from src.app.api.ai import ai_blueprint
-from src.app.api.slice import slice_blueprint
+from src.app.api.analysis import slice_blueprint
 from src.app.api.user import user_blueprint
 from src.app.request_context import request_context
 from src.modules.user.domain.value_objects import LoginUser
 
 api_blueprint = APIBlueprint('stone', __name__, url_prefix='/api')
 
-api_blueprint.register_blueprint(ai_blueprint)
 api_blueprint.register_blueprint(slice_blueprint)
 api_blueprint.register_blueprint(user_blueprint)
 

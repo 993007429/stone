@@ -41,11 +41,19 @@ class SinglePollingOut(Schema):
     data = Nested(PollingOut)
 
 
+class CalculationQuery(Schema):
+    page = Integer(load_default=1)
+    per_page = Integer(load_default=10, validate=Range(max=100))
+    userid = Integer(required=True)
+
+
 class CalculationIn(Schema):
     calculation_id = Integer(required=True)
 
 
 class CalculationOut(Schema):
+    userid = Integer(required=True)
+    username = String(required=True)
     calculation_id = Integer(required=True)
     slice_id = Integer(required=True)
     ai_model = String(required=True, validate=[OneOf([AiType.admin.value, AiType.user.value])])
@@ -89,5 +97,3 @@ class SingleResultOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Nested(ResultOut)
-
-

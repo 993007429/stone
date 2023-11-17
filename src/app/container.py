@@ -9,12 +9,6 @@ from dependency_injector import containers, providers
 from src.modules.user.infrastructure.repositories import SQLAlchemyUserRepository
 
 
-class AIService:
-
-    def __init__(self, user_service: UserService):
-        self.user_service = user_service
-
-
 class CoreContainer(containers.DeclarativeContainer):
 
     request_context = providers.Factory(RequestContext)
@@ -42,13 +36,6 @@ class SliceContainer(containers.DeclarativeContainer):
     slice_service = providers.Factory(SliceService, domain_service=slice_domain_service)
 
 
-class AIContainer(containers.DeclarativeContainer):
-
-    user_container = providers.DependenciesContainer()
-
-    ai_service = providers.Factory(AIService, user_service=user_container.user_service)
-
-
 class AppContainer(containers.DeclarativeContainer):
 
     core_container = providers.Container(CoreContainer)
@@ -56,5 +43,3 @@ class AppContainer(containers.DeclarativeContainer):
     user_container = providers.Container(UserContainer, core_container=core_container)
 
     slice_container = providers.Container(SliceContainer, core_container=core_container)
-
-    ai_container = providers.Container(AIContainer, user_container=user_container)

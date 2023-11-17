@@ -8,7 +8,8 @@ from src.app.auth import auth_required
 from src.app.db import connect_db
 from src.app.permission import permission_required
 from src.app.schema.slice import StartIn, SingleStartOut, PollingIn, SinglePollingOut, CalculationIn, \
-    ListCalculationOut, SingleCalculationOut, ResultIn, SingleResultOut
+    ListCalculationOut, SingleCalculationOut, ResultIn, SingleResultOut, CalculationQuery
+from src.app.schema.user import PageQuery
 from src.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('数据模块', __name__, url_prefix='/slices')
@@ -33,11 +34,11 @@ def polling(json_data):
 
 
 @slice_blueprint.get('/calculations')
-@slice_blueprint.input(CalculationIn, location='json')
+@slice_blueprint.input(CalculationQuery, location='query')
 @slice_blueprint.output(ListCalculationOut)
 @slice_blueprint.doc(summary='AI处理列表', security='ApiAuth')
-def get_calculations(json_data):
-    res = AppServiceFactory.slice_service.get_calculations(**json_data)
+def get_calculations(query_data):
+    res = AppServiceFactory.slice_service.get_calculations(**query_data)
     return res.response
 
 
