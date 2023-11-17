@@ -68,3 +68,14 @@ def get_user(userid):
 def update_user(userid):
     res = AppServiceFactory.user_service.update_user(userid)
     return res.response
+
+
+@user_blueprint.delete('/<int:userid>')
+@connect_db()
+# @auth_required()
+# @permission_required([IsAdmin])
+@user_blueprint.output(SingleUserOut)
+@user_blueprint.doc(security='ApiAuth')
+def delete_user(userid):
+    res = AppServiceFactory.user_service.delete_user(userid)
+    return res.response

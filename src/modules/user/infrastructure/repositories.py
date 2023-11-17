@@ -69,4 +69,9 @@ class SQLAlchemyUserRepository(UserRepository):
             return None
         return UserEntity(**model.dict)
 
+    def delete_user_by_pk(self, pk: int) -> Tuple[bool, str]:
+        self._session.begin()
+        self._session.query(User).filter_by(id=pk).delete()
+        self._session.commit()
+        return True, 'Delete user success'
 

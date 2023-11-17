@@ -38,3 +38,9 @@ class UserService(object):
             return AppResponse(message=message)
         request_context.current_user = login_user
         return AppResponse(message=message, data=login_user.dict())
+
+    def delete_user(self, userid: int) -> AppResponse[dict]:
+        user, message = self.domain_service.delete_user(userid)
+        if not user:
+            return AppResponse(message=message)
+        return AppResponse(message=message, data=user.dict())

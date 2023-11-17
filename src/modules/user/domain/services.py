@@ -48,6 +48,14 @@ class UserDomainService(object):
             return user, message
         return None, message
 
+    def delete_user(self, userid: int) -> Tuple[Optional[UserEntity], str]:
+        user = self.repository.get_user_by_pk(userid)
+        if not user:
+            return None, 'no user'
+
+        success, message = self.repository.delete_user_by_pk(userid)
+        return user, message
+
     def login(self, **kwargs) -> Tuple[Optional[LoginUser], str]:
         user = self.repository.get_user_by_name(kwargs['username'])
         if not user:
