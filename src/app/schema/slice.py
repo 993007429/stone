@@ -1,5 +1,5 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, DateTime
+from apiflask.fields import Integer, String, List, Nested, DateTime, URL
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
@@ -30,7 +30,7 @@ class SliceOut(Schema):
     no = Integer(required=True, description='切片号')
     label = String(required=True, description='切片标签(open slide读取label, 卡片视图切换)')
     macro = String(required=True, description='宏观图(open slide读取macro image, 卡片视图切换)')
-    thumbnail = String(required=True, description='切片缩略图')
+    thumbnail = URL(required=True, description='切片缩略图')
     anal_stat = String(required=True, description='处理状态', validate=[Length(0, 255)])
     wh_stat = String(required=True, description='入库状态', validate=[OneOf([AiType.admin.value, AiType.user.value])])
     ai_model = String(required=True, description='AI模块(最后一次处理数据所用的AI模块)')

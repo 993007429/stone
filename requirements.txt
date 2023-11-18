@@ -5,7 +5,6 @@
 #    pip-compile
 #
 --index-url https://pypi.tuna.tsinghua.edu.cn/simple
---trusted-host https
 
 addict==2.4.0
     # via
@@ -37,6 +36,8 @@ async-timeout==4.0.3
     #   redis
 attrs==23.1.0
     # via aiohttp
+bcrypt==4.0.1
+    # via -r requirements.in
 billiard==3.6.4.0
     # via celery
 blinker==1.7.0
