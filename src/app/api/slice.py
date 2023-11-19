@@ -23,11 +23,11 @@ def get_slices(query_data, json_data):
     return res.response
 
 
-@slice_blueprint.get('/{slice_id}')
+@slice_blueprint.get('/<int:slice_id>')
 @slice_blueprint.output(SingleSliceOut)
 @slice_blueprint.doc(summary='切片详情', security='ApiAuth')
-def get_slice(json_data):
-    res = AppServiceFactory.slice_service.get_slice(**json_data)
+def get_slice(slice_id):
+    res = AppServiceFactory.slice_service.get_slice(slice_id)
     return res.response
 
 

@@ -64,6 +64,7 @@ def get_user(userid):
 @connect_db()
 # @auth_required()
 # @permission_required([IsAdmin])
+@user_blueprint.input(UserIn, location='json')
 @user_blueprint.output(SingleUserOut)
 @user_blueprint.doc(summary='更新user', security='ApiAuth')
 def update_user(userid):

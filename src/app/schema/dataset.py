@@ -16,6 +16,16 @@ class DSFilter(Schema):
     filters = List(Nested(Filter))
 
 
+class DSIn(Schema):
+    name = String(required=True)
+    creator = String(required=True, description='创建人')
+    version = String(required=True, description='版本号')
+    remark = String(required=True, description='备注')
+    created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
+    last_modified = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
+    is_deleted = Integer(required=True, description='逻辑删除')
+
+
 class DSOut(Schema):
     id = Integer(required=True)
     name = String(required=True)
@@ -43,3 +53,4 @@ class ListDSOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = List(Nested(DSOut))
+
