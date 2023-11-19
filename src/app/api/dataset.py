@@ -31,7 +31,7 @@ def get_dataset(ds_id):
     return res.response
 
 
-@ds_blueprint.delete('/<int:ds_id>')
+@ds_blueprint.put('/<int:ds_id>')
 @ds_blueprint.input(DSIn)
 @ds_blueprint.output(SingleDSOut)
 @ds_blueprint.doc(summary='更新数据集', security='ApiAuth')
@@ -45,6 +45,23 @@ def delete_dataset(ds_id):
 @ds_blueprint.doc(summary='删除数据集', security='ApiAuth')
 def delete_dataset(ds_id):
     res = AppServiceFactory.dataset_service.delete_dataset(ds_id)
+    return res.response
+
+
+@ds_blueprint.post('')
+@ds_blueprint.input(DSIn)
+@ds_blueprint.output(SingleDSOut)
+@ds_blueprint.doc(summary='更新数据集', security='ApiAuth')
+def delete_dataset(ds_id):
+    res = AppServiceFactory.dataset_service.create_dataset(ds_id)
+    return res.response
+
+
+@ds_blueprint.post('/copy/<int:ds_id>')
+@ds_blueprint.output(SingleDSOut)
+@ds_blueprint.doc(summary='复制数据集', security='ApiAuth')
+def delete_dataset(ds_id):
+    res = AppServiceFactory.dataset_service.copy_dataset(ds_id)
     return res.response
 
 

@@ -18,12 +18,7 @@ class DSFilter(Schema):
 
 class DSIn(Schema):
     name = String(required=True)
-    creator = String(required=True, description='创建人')
-    version = String(required=True, description='版本号')
     remark = String(required=True, description='备注')
-    created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
-    last_modified = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
-    is_deleted = Integer(required=True, description='逻辑删除')
 
 
 class DSOut(Schema):
@@ -36,10 +31,10 @@ class DSOut(Schema):
     last_modified = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     is_deleted = Integer(required=True, description='逻辑删除')
 
-    wsi_c = Integer(required=True, description='WSI数量')
-    patch_c = Integer(required=True, description='patch数量')
-    ROI_c = Integer(required=True, description='ROI数量')
-    labels_c = List(Nested({'label': Integer(required=True)}), description='各个标签数量')
+    wsi_c = Integer(required=False, description='WSI数量')
+    patch_c = Integer(required=False, description='patch数量')
+    ROI_c = Integer(required=False, description='ROI数量')
+    labels_c = List(Nested({'label': Integer(required=True)}), required=False, description='各个标签数量')
     anno_c = Integer(required=False, description='标注数量 二期')
 
 
