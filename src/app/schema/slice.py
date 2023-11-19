@@ -3,18 +3,12 @@ from apiflask.fields import Integer, String, List, Nested, DateTime, URL
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
-from src.app.base_schema import DurationField, PageQuery
+from src.app.base_schema import DurationField, PageQuery, Filter
 from src.modules.slice.domain.value_objects import LogicType, AiType
 
 
 class SlicePageQuery(PageQuery):
     pass
-
-
-class Filter(Schema):
-    field = String(required=True)
-    condition = String(required=True)
-    value = String(required=True)
 
 
 class SliceFilter(Schema):
@@ -64,6 +58,7 @@ class SliceOut(Schema):
     f_path = String(required=True, description='存储路径')
     f_size = String(required=True, description='文件大小')
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
+    is_deleted = Integer(required=True, description='逻辑删除')
 
     anno_stat = String(required=False, description='标注状态(待标注/已标注) 二期')
     anno_count = String(required=False, description='标注数量 二期')
@@ -83,3 +78,34 @@ class ListSliceOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = List(Nested(SliceOut))
+
+
+class SliceId(Schema):
+    id: int
+
+
+class SliceIdsIn(Schema):
+    ids = List(Nested(SliceId))
+
+
+class SliceIdsOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = List(Nested(SliceId))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

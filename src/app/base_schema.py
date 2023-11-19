@@ -13,3 +13,9 @@ class DurationField(Raw):
 class PageQuery(Schema):
     page = Integer(load_default=1)
     per_page = Integer(load_default=10, validate=Range(max=100))
+
+
+class Filter(Schema):
+    field = String(required=True)
+    condition = String(required=True)
+    value = String(required=True)

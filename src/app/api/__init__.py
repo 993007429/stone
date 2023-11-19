@@ -4,6 +4,7 @@ from flask import request
 
 import setting
 from src.app.api.analysis import analysis_blueprint
+from src.app.api.dataset import ds_blueprint
 from src.app.api.slice import slice_blueprint
 from src.app.api.user import user_blueprint
 from src.app.request_context import request_context
@@ -14,6 +15,7 @@ api_blueprint = APIBlueprint('stone', __name__, url_prefix='/api')
 api_blueprint.register_blueprint(analysis_blueprint)
 api_blueprint.register_blueprint(slice_blueprint)
 api_blueprint.register_blueprint(user_blueprint)
+api_blueprint.register_blueprint(ds_blueprint)
 
 
 def api_before_request():

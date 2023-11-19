@@ -7,7 +7,7 @@ from marshmallow.fields import Integer
 from src.app.auth import auth_required
 from src.app.db import connect_db
 from src.app.permission import permission_required
-from src.app.schema.slice import ListSliceOut, SlicePageQuery, SingleSliceOut, SliceFilter
+from src.app.schema.slice import ListSliceOut, SlicePageQuery, SingleSliceOut, SliceFilter, SliceIdsOut, SliceIdsIn
 from src.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -31,12 +31,35 @@ def get_slice(json_data):
     return res.response
 
 
-@slice_blueprint.delete('/{slice_id}')
-@slice_blueprint.output(SingleSliceOut)
-@slice_blueprint.doc(summary='删除切片', security='ApiAuth')
+@slice_blueprint.delete('')
+@slice_blueprint.input(SliceIdsIn, location='json')
+@slice_blueprint.output(SliceIdsOut)
+@slice_blueprint.doc(summary='批量删除切片', security='ApiAuth')
 def delete_slice(json_data):
     res = AppServiceFactory.slice_service.delete_slice(**json_data)
     return res.response
+
+
+@slice_blueprint.put('')
+@slice_blueprint.input(SliceIdsIn, location='json')
+@slice_blueprint.output(SliceIdsOut)
+@slice_blueprint.doc(summary='批量更新切片', security='ApiAuth')
+def update_slice(json_data):
+    res = AppServiceFactory.slice_service.update_slice(**json_data)
+    return res.response
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
