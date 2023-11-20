@@ -2,7 +2,7 @@ from apiflask import Schema
 from apiflask.fields import Integer, String, Nested, DateTime
 from apiflask.validators import Length, OneOf
 
-from src.app.base_schema import DurationField, PageQuery
+from src.app.base_schema import DurationField, PageQuery, PaginationSchema
 from src.modules.slice.domain.value_objects import AiType
 
 
@@ -10,10 +10,6 @@ class StartIn(Schema):
     slice_id = Integer(required=True)
     ai_model = String(required=True, validate=[OneOf([AiType.admin.value, AiType.user.value])])
     model_version = String(required=True, validate=[Length(8, 32)])
-    a = String(required=True, validate=[Length(0, 255)])
-    b = String(required=True, validate=[Length(0, 255)])
-    c = String(required=True, validate=[Length(0, 255)])
-    d = String(required=True, validate=[Length(0, 255)])
 
 
 class StartOut(Schema):
@@ -70,6 +66,7 @@ class ListAnalysesQuery(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Nested(CalculationOut)
+    pagination = Nested(PaginationSchema)
 
 
 class AnalysisIn(Schema):
@@ -84,10 +81,6 @@ class ResultOut(Schema):
     status = String(required=True, validate=[Length(0, 255)])
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     time_consume = DurationField(required=True)
-    a = String(required=True, validate=[Length(0, 255)])
-    b = String(required=True, validate=[Length(0, 255)])
-    c = String(required=True, validate=[Length(0, 255)])
-    d = String(required=True, validate=[Length(0, 255)])
 
 
 class SingleAnalysisOut(Schema):

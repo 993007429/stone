@@ -1,9 +1,9 @@
-from apiflask import Schema, PaginationSchema
+from apiflask import Schema
 from apiflask.fields import Integer, String, List, Nested, DateTime
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
-from src.app.base_schema import PageQuery
+from src.app.base_schema import PageQuery, PaginationSchema
 from src.modules.user.domain.value_objects import RoleType
 
 
@@ -42,6 +42,7 @@ class ListUserOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = List(Nested(UserOut))
+    pagination = Nested(PaginationSchema)
 
 
 class LoginOut(Schema):

@@ -19,3 +19,10 @@ class Filter(Schema):
     field = String(required=True)
     condition = String(required=True)
     value = String(required=True)
+
+
+class PaginationSchema(Schema):
+    page = Integer()
+    per_page = Integer()
+    pages = Integer()
+    total = Integer()

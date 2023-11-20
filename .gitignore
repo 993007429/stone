@@ -130,6 +130,6 @@ openapi.json
 
 # conf file
 envs.conf
-local_settings
+#local_settings
 .landlady
 migrations/versions/*.py
