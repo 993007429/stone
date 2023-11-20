@@ -4,13 +4,10 @@ from typing import List
 from apiflask import APIBlueprint
 from marshmallow.fields import Integer
 
-from src.app.auth import auth_required
-from src.app.db import connect_db
-from src.app.permission import permission_required
 from src.app.schema.analysis import CalculationIn, ListAnalysesQuery, SingleCalculationOut, AnalysisIn, SingleAnalysisOut, AnalysesQuery
 from src.app.service_factory import AppServiceFactory
 
-analysis_blueprint = APIBlueprint('处理记录', __name__, url_prefix='/analyses')
+analysis_blueprint = APIBlueprint('ai处理记录', __name__, url_prefix='/analyses')
 
 
 @analysis_blueprint.get('')

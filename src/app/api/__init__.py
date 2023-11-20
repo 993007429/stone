@@ -3,8 +3,10 @@ from apiflask import APIBlueprint
 from flask import request
 
 import setting
+from src.app.api.ai import ai_blueprint
 from src.app.api.analysis import analysis_blueprint
 from src.app.api.dataset import ds_blueprint
+from src.app.api.ft import ft_blueprint
 from src.app.api.label import label_blueprint
 from src.app.api.slice import slice_blueprint
 from src.app.api.user import user_blueprint
@@ -13,8 +15,10 @@ from src.modules.user.domain.value_objects import LoginUser
 
 api_blueprint = APIBlueprint('stone', __name__, url_prefix='/api')
 
+api_blueprint.register_blueprint(ft_blueprint)
 api_blueprint.register_blueprint(analysis_blueprint)
 api_blueprint.register_blueprint(slice_blueprint)
+api_blueprint.register_blueprint(ai_blueprint)
 api_blueprint.register_blueprint(user_blueprint)
 api_blueprint.register_blueprint(ds_blueprint)
 api_blueprint.register_blueprint(label_blueprint)
