@@ -4,10 +4,10 @@ from typing import List, Optional, Tuple
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from src.modules.analysis.domain.repositories import AnalysisRepository
+from src.modules.ai.domain.repositories import AnalysisRepository
 
 
-class SQLAlchemyAnalysisRepository(AnalysisRepository):
+class SQLAlchemyAiRepository(AnalysisRepository):
 
     def __init__(self, session: ContextVar):
         self._session_cv = session

@@ -11,7 +11,7 @@ from src.app.schema.analysis import StartIn, SingleStartOut, PollingIn, SinglePo
     ListAnalysesQuery, SingleCalculationOut, AnalysisIn, SingleAnalysisOut, AnalysesQuery
 from src.app.service_factory import AppServiceFactory
 
-analysis_blueprint = APIBlueprint('AI处理', __name__, url_prefix='/analyses')
+analysis_blueprint = APIBlueprint('处理记录', __name__, url_prefix='/analyses')
 
 
 @analysis_blueprint.post('/start')

@@ -1,7 +1,7 @@
 from src.app.request_context import RequestContext, request_context
-from src.modules.analysis.application.services import AnalysisService
-from src.modules.analysis.domain.services import AnalysisDomainService
-from src.modules.analysis.infrastructure.repositories import SQLAlchemyAnalysisRepository
+from src.modules.ai.application.services import AiService
+from src.modules.ai.domain.services import AiDomainService
+from src.modules.ai.infrastructure.repositories import SQLAlchemyAiRepository
 from src.modules.slice.application.services import SliceService
 from src.modules.slice.domain.services import SliceDomainService
 from src.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
@@ -39,15 +39,15 @@ class SliceContainer(containers.DeclarativeContainer):
     slice_service = providers.Factory(SliceService, domain_service=slice_domain_service)
 
 
-class AnalysisContainer(containers.DeclarativeContainer):
+class AiContainer(containers.DeclarativeContainer):
 
     core_container = providers.DependenciesContainer()
 
-    repository = providers.Factory(SQLAlchemyAnalysisRepository, session=core_container.request_context.provided.db_session)
+    repository = providers.Factory(SQLAlchemyAiRepository, session=core_container.request_context.provided.db_session)
 
-    analysis_domain_service = providers.Factory(AnalysisDomainService, repository=repository)
+    ai_domain_service = providers.Factory(AiDomainService, repository=repository)
 
-    analysis_service = providers.Factory(AnalysisService, domain_service=analysis_domain_service)
+    ai_service = providers.Factory(AiService, domain_service=ai_domain_service)
 
 
 class AppContainer(containers.DeclarativeContainer):
@@ -58,4 +58,4 @@ class AppContainer(containers.DeclarativeContainer):
 
     slice_container = providers.Container(SliceContainer, core_container=core_container)
 
-    analysis_container = providers.Container(AnalysisContainer, core_container=core_container)
+    ai_container = providers.Container(AiContainer, core_container=core_container)

@@ -1,6 +1,6 @@
 from src.app.container import AppContainer
 from src.modules.slice.application.services import SliceService
-from src.modules.analysis.application.services import AnalysisService
+from src.modules.ai.application.services import AiService
 from src.modules.user.application.services import UserService
 
 
@@ -10,4 +10,4 @@ class AppServiceFactory(object):
 
     slice_service: SliceService = AppContainer.slice_container.slice_service()
 
-    analysis_service: AnalysisService = AppContainer.analysis_container.analysis_service()
+    ai_service: AiService = AppContainer.ai_container.ai_service()
