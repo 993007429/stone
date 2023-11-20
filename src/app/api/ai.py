@@ -7,8 +7,7 @@ from marshmallow.fields import Integer
 from src.app.auth import auth_required
 from src.app.db import connect_db
 from src.app.permission import permission_required
-from src.app.schema.analysis import StartIn, SingleStartOut, PollingIn, SinglePollingOut, CalculationIn, \
-    ListAnalysesQuery, SingleCalculationOut, AnalysisIn, SingleAnalysisOut, AnalysesQuery
+from src.app.schema.ai import StartIn, SingleStartOut, PollingIn, SinglePollingOut
 from src.app.service_factory import AppServiceFactory
 
 ai_blueprint = APIBlueprint('ai', __name__, url_prefix='/ai')
