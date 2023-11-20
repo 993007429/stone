@@ -15,13 +15,13 @@ from src.modules.user.domain.value_objects import LoginUser
 
 api_blueprint = APIBlueprint('stone', __name__, url_prefix='/api')
 
-api_blueprint.register_blueprint(ft_blueprint)
-api_blueprint.register_blueprint(analysis_blueprint)
+api_blueprint.register_blueprint(user_blueprint)
 api_blueprint.register_blueprint(slice_blueprint)
 api_blueprint.register_blueprint(ai_blueprint)
-api_blueprint.register_blueprint(user_blueprint)
+api_blueprint.register_blueprint(analysis_blueprint)
 api_blueprint.register_blueprint(ds_blueprint)
 api_blueprint.register_blueprint(label_blueprint)
+api_blueprint.register_blueprint(ft_blueprint)
 
 
 def api_before_request():

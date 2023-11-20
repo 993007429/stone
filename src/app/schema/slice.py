@@ -104,22 +104,22 @@ class SliceId(Schema):
 
 
 class SliceIdsIn(Schema):
-    ids = List(Nested(SliceId))
+    ids = List(Integer(required=True), description='切片ID列表')
 
 
 class SliceIdsOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = List(Nested(SliceId))
+    data = List(Integer(required=True), description='切片ID列表')
 
 
 class LabelSliceIdsIn(Schema):
-    ids = List(Nested(SliceId), description='切片ID列表')
+    ids = List(Integer(required=True), description='切片ID列表')
     label_id = Integer(required=True, description='标签ID')
 
 
 class DSSliceIdsIn(Schema):
-    ids = List(Nested(SliceId), description='切片ID列表')
+    ids = List(Integer(required=True), description='切片ID列表')
     ds_id = Integer(required=True, description='数据集ID')
 
 
