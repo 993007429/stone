@@ -1,5 +1,5 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, DateTime, URL
+from apiflask.fields import Integer, String, List, Nested, DateTime, URL, Float
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
@@ -14,6 +14,12 @@ class SlicePageQuery(PageQuery):
 class SliceFilter(Schema):
     logic = String(required=True, validate=[OneOf([LogicType.and_.value, LogicType.or_.value])])
     filters = List(Nested(Filter))
+
+
+class ComparisonSliceFilter(Schema):
+    logic = String(required=True, validate=[OneOf([LogicType.and_.value, LogicType.or_.value])])
+    filters = List(Nested(Filter))
+    models = List(Integer(required=True), description='模型ID列表')
 
 
 class SliceOut(Schema):
@@ -68,6 +74,18 @@ class SliceOut(Schema):
     rev_date = String(required=False, description='复核日期(最后一次内部医生复核诊断日期) 二期')
 
 
+class ModelResultOut(Schema):
+    id = Integer(required=True)
+    name = String(required=True, description='模型名称')
+    result = String(required=True, description='模型分析结果')
+
+
+class ComparisonSliceOut(Schema):
+    id = Integer(required=True)
+    name = String(required=True, validate=[Length(0, 255)], description='切片名')
+    models = List(Nested(ModelResultOut), description='各模型分析结果')
+
+
 class SingleSliceOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
@@ -82,7 +100,7 @@ class ListSliceOut(Schema):
 
 
 class SliceId(Schema):
-    id: int
+    id: int = Integer(required=True, description='切片ID')
 
 
 class SliceIdsIn(Schema):
@@ -95,9 +113,32 @@ class SliceIdsOut(Schema):
     data = List(Nested(SliceId))
 
 
+class LabelSliceIdsIn(Schema):
+    ids = List(Nested(SliceId), description='切片ID列表')
+    label_id = Integer(required=True, description='标签ID')
 
 
+class DSSliceIdsIn(Schema):
+    ids = List(Nested(SliceId), description='切片ID列表')
+    ds_id = Integer(required=True, description='数据集ID')
 
+
+class ComparisonListSliceOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = List(Nested(ComparisonSliceOut))
+    pagination = Nested(PaginationSchema)
+
+
+class WSIIn(Schema):
+    id: int = Integer(required=True, description='切片ID')
+    x: int = Integer(required=True)
+    y: int = Integer(required=True)
+    z: int = Integer(required=True)
+
+
+class ROIIn(Schema):
+    id: int = Integer(required=True, description='切片ID')
 
 
 
