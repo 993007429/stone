@@ -17,8 +17,8 @@ ai_blueprint = APIBlueprint('ai', __name__, url_prefix='/ai')
 @ai_blueprint.input(StartIn, location='json')
 @ai_blueprint.output(SingleStartOut)
 @ai_blueprint.doc(summary='开始AI处理', security='ApiAuth')
-def start(json_data):
-    res = AppServiceFactory.slice_service.start(**json_data)
+def start_ai_analysis(json_data):
+    res = AppServiceFactory.ai_service.start_ai_analysis(**json_data)
     return res.response
 
 

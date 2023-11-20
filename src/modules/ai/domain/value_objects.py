@@ -13,3 +13,11 @@ class LogicType(BaseEnum):
 class AiType(BaseEnum):
     admin = "admin"
     user = "user"
+
+
+class AITaskVO(BaseValueObject):
+    slice_id: int
+    slide_path: str
+    ai_model: str
+    model_version: str
+
