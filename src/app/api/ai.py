@@ -27,5 +27,5 @@ def start_ai_analysis(json_data):
 @ai_blueprint.output(SinglePollingOut)
 @ai_blueprint.doc(summary='轮询查看AI处理是否完成', security='ApiAuth')
 def polling(json_data):
-    res = AppServiceFactory.slice_service.polling(**json_data)
+    res = AppServiceFactory.ai_service.polling(**json_data)
     return res.response
