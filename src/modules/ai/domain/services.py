@@ -5,9 +5,9 @@ from celery.bin.control import inspect
 from celery.result import AsyncResult
 
 from src.libs.heimdall.dispatch import open_slide
-from src.celery import app as celery_app
+from src.celery.app import app as celery_app
 from celery.exceptions import TimeoutError as CeleryTimeoutError
-from src.modules.ai.domain.value_objects import AITaskVO, Mark, ALGResult
+from src.modules.ai.domain.value_objects import Mark, ALGResult
 from src.modules.ai.infrastructure.repositories import SQLAlchemyAiRepository
 
 logger = logging.getLogger(__name__)
@@ -23,13 +23,13 @@ class AiDomainService(object):
             result = AsyncResult(task_id, app=celery_app)
             if result.ready():
                 return 'AI处理完成', {'done': True, 'rank': -1}
-            else:
-                i = inspect(app=celery_app)
-                tasks = i.reserved()
-                pending_tasks = 0
-                if tasks:
-                    pending_tasks = len(tasks[None])
-                return 'Ai处理在排队中', {'done': False, 'rank': pending_tasks}
+            # else:
+            #     i = inspect(app=celery_app)
+            #     tasks = i.reserved()
+            #     pending_tasks = 0
+            #     if tasks:
+            #         pending_tasks = len(tasks[None])
+            #     return 'Ai处理在排队中', {'done': False, 'rank': pending_tasks}
 
         except CeleryTimeoutError:
             pass
@@ -40,7 +40,7 @@ class AiDomainService(object):
     def _select_model(self, ai_model, model_version) -> Optional[Type]:
         pass
 
-    def run_tct(self, task: AITaskVO):
+    def run_tct(self):
         slice_id = task.slice_id
         ai_model = task.ai_model
         model_version = task.model_version

@@ -66,14 +66,6 @@ class AIType(BaseEnum):
 A = TypeVar('A', bound=AIType)
 
 
-class AITaskVO(BaseValueObject):
-    id: Optional[str] = None
-    slice_id: int
-    slide_path: str
-    ai_model: str
-    model_version: str
-
-
 class Mark(BaseValueObject):
     id: Optional[int] = None
     position: Optional[dict] = None

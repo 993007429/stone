@@ -13,7 +13,7 @@ class StartIn(Schema):
 
 
 class StartOut(Schema):
-    analysis_id = Integer(required=True)
+    task_id = String(required=True)
 
 
 class SingleStartOut(Schema):
@@ -23,7 +23,7 @@ class SingleStartOut(Schema):
 
 
 class PollingIn(Schema):
-    analysis_id = Integer(required=True)
+    task_id = String(required=True)
 
 
 class PollingOut(Schema):

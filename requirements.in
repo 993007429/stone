@@ -52,6 +52,7 @@ geojson==3.0.1
 redlock==1.2.0
 Cython==3.0.4
 bcrypt==4.0.1
+gevent==23.9.1
 
 # for linux: pip install torch==1.8.1+cu111 torchvision==0.9.1+cu111 torchaudio==0.8.1 torch2trt==0.4.0 -f https://download.pytorch.org/whl/torch_stable.html
 # uWSGI==2.0.20
