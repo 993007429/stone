@@ -114,5 +114,6 @@ SECURITY_SCHEMES = {
     }
 }
 
+RANK_AI_TASK = 'stone:ai_task:rank'
 
 

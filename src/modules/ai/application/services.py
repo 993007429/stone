@@ -1,9 +1,11 @@
 import logging
 import time
 
+from setting import RANK_AI_TASK
 from src.modules.ai.application import tasks
 from src.modules.ai.domain.services import AiDomainService
 from src.seedwork.application.responses import AppResponse
+from src.infra.cache import cache
 
 logger = logging.getLogger(__name__)
 
@@ -15,15 +17,17 @@ class AiService(object):
 
     def start_ai_analysis(self, **kwargs) -> AppResponse:
         result = tasks.run_ai_task(**kwargs)
-        return AppResponse(message='ai start succeed', data={'task_id': result.task_id})
+        rank = cache.get(RANK_AI_TASK, [])
+        rank.append(task_id := result.task_id)
+        cache.set(RANK_AI_TASK, rank)
+        return AppResponse(message='ai start succeed', data={'task_id': task_id})
 
     def run_ai_task(self, **kwargs):
-
         start_time = time.time()
         logger.info(f'收到任务{kwargs["slice_id"]}')
         print(f'收到任务{kwargs["slice_id"]}')
 
-        # time.sleep(10)
+        time.sleep(10000)
 
         # result = self.domain_service.run_tct(task)
 
@@ -46,17 +50,3 @@ class AiService(object):
     def polling(self, task_id: str) -> AppResponse:
         err_msg, result = self.domain_service.get_ai_task_result(task_id)
         return AppResponse(err_code=1 if err_msg else 0, message=err_msg, data=result)
-
-
-
-
-
-
-
-
-
-
-
-
-
-

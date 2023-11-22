@@ -1,6 +1,7 @@
 from apiflask import Schema
 from apiflask.fields import Integer, String, Nested, DateTime
 from apiflask.validators import Length, OneOf
+from marshmallow.fields import Bool
 
 from src.app.base_schema import DurationField, PageQuery, PaginationSchema
 from src.modules.slice.domain.value_objects import AiType
@@ -27,7 +28,8 @@ class PollingIn(Schema):
 
 
 class PollingOut(Schema):
-    analysis_id = Integer(required=True)
+    done = Bool(required=True)
+    rank = Integer(required=True)
 
 
 class SinglePollingOut(Schema):

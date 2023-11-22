@@ -1,9 +1,10 @@
 import logging
 from typing import Optional, Type, Tuple
 
-from celery.bin.control import inspect
 from celery.result import AsyncResult
 
+from setting import RANK_AI_TASK
+from src.infra.cache import cache
 from src.libs.heimdall.dispatch import open_slide
 from src.celery.app import app as celery_app
 from celery.exceptions import TimeoutError as CeleryTimeoutError
@@ -23,13 +24,9 @@ class AiDomainService(object):
             result = AsyncResult(task_id, app=celery_app)
             if result.ready():
                 return 'AI处理完成', {'done': True, 'rank': -1}
-            # else:
-            #     i = inspect(app=celery_app)
-            #     tasks = i.reserved()
-            #     pending_tasks = 0
-            #     if tasks:
-            #         pending_tasks = len(tasks[None])
-            #     return 'Ai处理在排队中', {'done': False, 'rank': pending_tasks}
+            task_queue = cache.get(RANK_AI_TASK, [])
+            rank = task_queue.index(task_id)
+            return 'Ai处理在排队中', {'done': False, 'rank': rank}
 
         except CeleryTimeoutError:
             pass
