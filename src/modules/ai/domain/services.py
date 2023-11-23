@@ -10,12 +10,16 @@ from celery.result import AsyncResult
 import setting
 from setting import RANK_AI_TASK
 from src.app.request_context import request_context
+from src.consts.her2 import Her2Consts
 from src.infra.cache import cache
+from src.libs.algorithms.DNA1.dna_alg import DNA_1020
 from src.libs.heimdall.dispatch import open_slide
 from src.celery.app import app as celery_app
 from celery.exceptions import TimeoutError as CeleryTimeoutError
 from src.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam, AIType
 from src.modules.ai.infrastructure.repositories import SQLAlchemyAiRepository
+from src.modules.ai.utils.prob import save_prob_to_file
+from src.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
 from src.seedwork.application.responses import AppResponse
 
 from src.libs.algorithms.TCTAnalysis_v2_2.tct_alg import (
@@ -110,7 +114,7 @@ class AiDomainService(object):
             config_path = os.path.join(yams_path, 'tct2', yaml_file)
             return TCT_ALG2(config_path=config_path, threshold=threshold)
 
-    def run_tct(self, task_param: TaskParam):
+    def run_tct(self, task_param: TaskParam) -> ALGResult:
         ai_model = task_param.ai_model
         model_version = task_param.model_version
         slide_path = task_param.slide_path
@@ -171,6 +175,166 @@ class AiDomainService(object):
                 cell_num=ai_result['cell_num'],
                 prob_dict=prob_dict
             )
+
+    def run_lct(self, task_param: TaskParam) -> ALGResult:
+        return self.run_tct(task_param)
+
+    def run_tbs_dna(self, task_param: TaskParam) -> ALGResult:
+        ai_model = task_param.ai_model
+        model_version = task_param.model_version
+        slide_path = task_param.slide_path
+
+        dna_alg_model = DNA_1020()
+
+        rois = []
+        threshold = 1
+
+        alg_model = self.get_model(ai_model, model_version, threshold)
+
+        slide = open_slide(slide_path)
+
+        roi_marks = []
+        prob_dict = None
+
+        for idx, roi in enumerate(rois or [task_param.new_default_roi()]):
+            tbs_result = alg_model.cal_tct(slide)
+            dna_result = dna_alg_model.dna_test(slide)
+
+            prob_dict = save_prob_to_file(slide_path=task_param.slide_path, result=tbs_result)
+            ai_result = generate_ai_result(result=tbs_result, roiid=roi['id'])
+            ai_result.update(generate_dna_ai_result(result=dna_result, roiid=roi['id']))
+
+            roi_marks.append(Mark(
+                id=roi['id'],
+                position={'x': [], 'y': []},
+                mark_type=3,
+                method='rectangle',
+                radius=5,
+                is_export=1,
+                stroke_color='grey',
+                ai_result=ai_result,
+            ))
+
+        ai_result = roi_marks[0].ai_result
+
+        ai_suggest = f"{' '.join(ai_result['diagnosis'])} {','.join(ai_result['microbe'])};{ai_result['dna_diagnosis']}"
+        return ALGResult(
+            ai_suggest=ai_suggest,
+            roi_marks=roi_marks,
+            slide_quality=ai_result['slide_quality'],
+            cell_num=ai_result['cell_num'],
+            prob_dict=prob_dict
+        )
+
+    def run_dna_ploidy(self, task_param: TaskParam) -> ALGResult:
+
+        rois = []
+
+        from src.libs.algorithms.DNA2.dna_alg import DNA_1020
+        dna_alg_model = DNA_1020()
+
+        slide = open_slide(task_param.slide_path)
+
+        roi_marks = []
+        prob_dict = None
+
+        for idx, roi in enumerate(rois or [task_param.new_default_roi()]):
+            dna_ploidy_result = dna_alg_model.dna_test(slide)
+
+            from src.modules.ai.utils.tct import generate_dna_ploidy_aiResult
+            ai_result = generate_dna_ploidy_aiResult(result=dna_ploidy_result, roiid=roi['id'])
+
+            roi_marks.append(Mark(
+                id=roi['id'],
+                position={'x': [], 'y': []},
+                mark_type=3,
+                method='rectangle',
+                radius=5,
+                is_export=1,
+                stroke_color='grey',
+                ai_result=ai_result,
+            ))
+
+        ai_result = roi_marks[0].ai_result
+
+        return ALGResult(
+            ai_suggest=ai_result['dna_diagnosis'],
+            roi_marks=roi_marks,
+            cell_num=ai_result['cell_num'],
+            prob_dict=prob_dict
+        )
+
+    def run_her2(self, task_param: TaskParam, group_name_to_id: dict) -> ALGResult:
+        cell_marks = []
+        roi_marks = []
+        ai_result = {}
+
+        slide = open_slide(task_param.slide_path)
+        mpp = slide.mpp or 0.242042
+
+        rois = [] or [task_param.new_default_roi()]
+
+        from src.libs.algorithms.Her2New_.detect_all import run_her2_alg, roi_filter
+
+        center_coords_np_with_id, cls_labels_np_with_id, summary_dict, lvl, flg = run_her2_alg(
+            slide_path=task.slide_path, roi_list=rois)
+
+        for roi in rois:
+            roi_id, x_coords, y_coords = roi['id'], roi['x'], roi['y']
+            center_coords, cls_labels = roi_filter(
+                center_coords_np_with_id[roi_id],
+                cls_labels_np_with_id[roi_id],
+                x_coords,
+                y_coords
+            )
+
+            ai_result = Her2Consts.rois_summary_dict.copy()
+            label_to_roi_name = Her2Consts.cell_label_dict
+            for idx, coord in enumerate(center_coords):
+                roi_name = label_to_roi_name[str(cls_labels[idx])]
+                ai_result[roi_name] += 1
+
+                x = float(coord[0]) if slide.width > float(coord[0]) else float(slide.width - 1)
+                y = float(coord[1]) if slide.height > float(coord[1]) else float(slide.height - 1)
+
+                mark = Mark(
+                    position={'x': [x], 'y': [y]},
+                    fill_color=Her2Consts.type_color_dict[Her2Consts.label_to_diagnosis_type[int(cls_labels[idx])]],
+                    mark_type=2,
+                    diagnosis={'type': Her2Consts.label_to_diagnosis_type[int(cls_labels[idx])]},
+                    radius=1 / mpp,
+                    editable=0,
+                    group_id=group_name_to_id.get(Her2Consts.idx_to_label[int(cls_labels[idx])]),
+                    area_id=roi_id,
+                    method='spot'
+                )
+                cell_marks.append(mark)
+
+            whole_slide = 1 if len(x_coords) == 0 else 0
+            group_id = group_name_to_id.get('ROI') if whole_slide != 1 else None
+
+            ai_result.update({
+                'whole_slide': whole_slide,
+                '分级结果': Her2Consts.level[int(lvl)]
+            })
+
+            roi_marks.append(Mark(
+                id=roi_id,
+                position={'x': x_coords, 'y': y_coords},
+                method='rectangle',
+                mark_type=3,
+                is_export=1,
+                ai_result=ai_result,
+                editable=1,
+                stroke_color='grey',
+                group_id=group_id
+            ))
+
+        return ALGResult(
+            ai_suggest=ai_result['分级结果'],
+            cell_marks=cell_marks,
+            roi_marks=roi_marks,
+        )
 
     @connect_slice_db()
     def create_ai_marks(

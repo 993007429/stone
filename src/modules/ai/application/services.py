@@ -34,8 +34,19 @@ class AiService(object):
         start_time = time.time()
         logger.info(f'收到任务1 {task_param.slice_id}')
 
+        groups = self.domain_service.get_mark_groups(template_id=task_param.template_id)
+        group_name_to_id = {group['label']: int(group['id']) for group in groups}
+
         if task_param.ai_model == AIType.tct:
             result = self.domain_service.run_tct(task_param)
+        elif task_param.ai_model == AIType.lct:
+            result = self.domain_service.run_lct(task_param)
+        elif task_param.ai_model == AIType.dna:
+            result = self.domain_service.run_tbs_dna(task_param)
+        elif task_param.ai_model == AIType.dna_ploidy:
+            result = self.domain_service.run_dna_ploidy(task_param)
+        elif task_param.ai_model == AIType.her2:
+            result = self.domain_service.run_her2(task_param, group_name_to_id)
 
         alg_time = time.time() - start_time
         logger.info(f'任务 {task_param.slice_id} - 算法部分完成,耗时{alg_time}')
