@@ -22,10 +22,10 @@ from configparser import ConfigParser
 
 from src.infra.oss import oss
 from src.libs.heimdall.dispatch import open_slide
-from src.modules.ai.libs.algorithms.Ki67New.src.utils import delete_prev_json, split_patches, split2groups, dump_results, map_results, roi_filter, split_patches_map
-from src.modules.ai.libs.algorithms.Ki67New.src.seg_tissue_area import find_tissue_countours
-from src.modules.ai.libs.algorithms.Ki67New.src.cell_det_cls import cal_pdl1_np
-from src.modules.ai.libs.algorithms.Ki67New.models.detr import build_model
+from src.libs.algorithms.Ki67New.src.utils import delete_prev_json, split_patches, split2groups, dump_results, map_results, roi_filter, split_patches_map
+from src.libs.algorithms.Ki67New.src.seg_tissue_area import find_tissue_countours
+from src.libs.algorithms.Ki67New.src.cell_det_cls import cal_pdl1_np
+from src.libs.algorithms.Ki67New.models.detr import build_model
 
 libs_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 current_dir = os.path.dirname(os.path.abspath(__file__))

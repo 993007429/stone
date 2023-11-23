@@ -13,7 +13,7 @@ import os
 import torch
 from skimage import io
 from skimage.color import rgb2hed, hed2rgb
-from src.modules.ai.libs.algorithms.Ki67New.src.kmeans_pytorch import kmeans
+from src.libs.algorithms.Ki67New.src.kmeans_pytorch import kmeans
 from torchvision import transforms as T
 
 def sort_edge(image,thresh):

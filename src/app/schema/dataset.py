@@ -4,7 +4,7 @@ from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
 from src.app.base_schema import DurationField, PageQuery, Filter, PaginationSchema
-from src.modules.slice.domain.value_objects import LogicType, AiType
+from src.modules.slice.domain.value_objects import LogicType
 
 
 class DSPageQuery(PageQuery):

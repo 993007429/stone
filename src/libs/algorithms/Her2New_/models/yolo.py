@@ -2,14 +2,14 @@ import argparse
 import logging
 from copy import deepcopy
 
-from src.modules.ai.libs.algorithms.Her2New_.models.common import *
-from src.modules.ai.libs.algorithms.Her2New_.models.experimental import *
-from src.modules.ai.libs.algorithms.Her2New_.utils.autoanchor import check_anchor_order
-from src.modules.ai.libs.algorithms.Her2New_.utils.general import make_divisible, check_file, set_logging
-from src.modules.ai.libs.algorithms.Her2New_.utils.torch_utils import time_synchronized, fuse_conv_and_bn, \
+from src.libs.algorithms.Her2New_.models.common import *
+from src.libs.algorithms.Her2New_.models.experimental import *
+from src.libs.algorithms.Her2New_.utils.autoanchor import check_anchor_order
+from src.libs.algorithms.Her2New_.utils.general import make_divisible, check_file, set_logging
+from src.libs.algorithms.Her2New_.utils.torch_utils import time_synchronized, fuse_conv_and_bn, \
     model_info, scale_img, initialize_weights, \
     select_device, copy_attr
-from src.modules.ai.libs.algorithms.Her2New_.utils.loss import SigmoidBin
+from src.libs.algorithms.Her2New_.utils.loss import SigmoidBin
 
 logger = logging.getLogger(__name__)
 

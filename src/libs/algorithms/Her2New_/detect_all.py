@@ -21,11 +21,11 @@ import torchvision.transforms as transforms
 
 from src.infra.oss import oss
 from src.libs.heimdall.dispatch import open_slide
-from src.modules.ai.libs.algorithms.Her2New_.cell_utils import analysis_wsi
-from src.modules.ai.libs.algorithms.Her2New_.dataset import Dataset
-from src.modules.ai.libs.algorithms.Her2New_.models.experimental import attempt_load
-from src.modules.ai.libs.algorithms.Her2New_.utils.general import non_max_suppression
-from src.modules.ai.libs.algorithms.Her2New_.utils.torch_utils import select_device
+from src.libs.algorithms.Her2New_.cell_utils import analysis_wsi
+from src.libs.algorithms.Her2New_.dataset import Dataset
+from src.libs.algorithms.Her2New_.models.experimental import attempt_load
+from src.libs.algorithms.Her2New_.utils.general import non_max_suppression
+from src.libs.algorithms.Her2New_.utils.torch_utils import select_device
 from src.seedwork.domain.value_objects import BaseValueObject
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = "True"
@@ -399,6 +399,8 @@ def cal_cell(o_slide_path, roi_list, opt):
             os.path.splitext(
                 os.path.basename(o_slide_path))[0].strip().replace(
                 " ", '').replace("(", '').replace(")", '').replace("+", ''))
+        if sys.platform == 'win32':
+            bat_name.replace('/', '\\')
         with open(os.path.join(current_root, bat_name), 'w', encoding='utf-8') as f:
             f.write(command_str)
         os.chmod(os.path.join(current_root, bat_name), stat.S_IRWXU)

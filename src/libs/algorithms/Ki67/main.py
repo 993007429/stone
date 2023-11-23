@@ -12,10 +12,10 @@ from skimage.segmentation import slic
 
 from src.infra.oss import oss
 from src.libs.heimdall.dispatch import open_slide
-from src.modules.ai.libs.algorithms.Ki67.models.Network import resnet50
-from src.modules.ai.libs.algorithms.Ki67.models.detr import build_model
-from src.modules.ai.libs.algorithms.Ki67.src.multi_cls_cell_seg_manual import test_p2p_plus_ki67
-from src.modules.ai.libs.algorithms.Ki67.utils import roi_filter, count_test_summary_P2P, threading_classification
+from src.libs.algorithms.Ki67.models.Network import resnet50
+from src.libs.algorithms.Ki67.models.detr import build_model
+from src.libs.algorithms.Ki67.src.multi_cls_cell_seg_manual import test_p2p_plus_ki67
+from src.libs.algorithms.Ki67.utils import roi_filter, count_test_summary_P2P, threading_classification
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = "True"
 

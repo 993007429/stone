@@ -30,16 +30,17 @@ class AiService(object):
         cache.set(self.RANK_AI_TASK, rank)
         return AppResponse(message='ai start succeed', data={'task_id': task_id})
 
-    def run_ai_task(self, task_param: TaskParam):
+    def run_ai_task(self, task_param: TaskParam) -> AppResponse:
         start_time = time.time()
         logger.info(f'收到任务1 {task_param.slice_id}')
 
-        groups = self.domain_service.get_mark_groups(template_id=task_param.template_id)
+        # groups = self.domain_service.get_mark_groups(template_id=task_param.template_id)
+        groups = []
         group_name_to_id = {group['label']: int(group['id']) for group in groups}
 
-        if task_param.ai_model == AIType.tct:
+        if task_param.ai_model in [AIType.tct1, AIType.tct2]:
             result = self.domain_service.run_tct(task_param)
-        elif task_param.ai_model == AIType.lct:
+        elif task_param.ai_model in [AIType.lct1, AIType.lct2]:
             result = self.domain_service.run_lct(task_param)
         elif task_param.ai_model == AIType.dna:
             result = self.domain_service.run_tbs_dna(task_param)

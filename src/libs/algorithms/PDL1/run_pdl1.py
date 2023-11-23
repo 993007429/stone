@@ -15,11 +15,11 @@ from configparser import ConfigParser
 
 from src.infra.oss import oss
 from src.libs.heimdall.dispatch import open_slide
-from src.modules.ai.libs.algorithms.PDL1.src.cell_det_cls import cal_pdl1_np
-from src.modules.ai.libs.algorithms.PDL1.src.utils import delete_prev_json, split_patches, split2groups, \
+from src.libs.algorithms.PDL1.src.cell_det_cls import cal_pdl1_np
+from src.libs.algorithms.PDL1.src.utils import delete_prev_json, split_patches, split2groups, \
     dump_results, map_results, roi_filter, split_patches_map
-from src.modules.ai.libs.algorithms.PDL1.src.seg_tissue_area import find_tissue_countours
-from src.modules.ai.libs.algorithms.PDL1.models.detr import build_model
+from src.libs.algorithms.PDL1.src.seg_tissue_area import find_tissue_countours
+from src.libs.algorithms.PDL1.models.detr import build_model
 
 
 libs_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

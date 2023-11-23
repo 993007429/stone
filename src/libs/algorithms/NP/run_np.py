@@ -15,12 +15,12 @@ import cv2
 
 from src.infra.oss import oss
 from src.libs.heimdall.dispatch import open_slide
-from src.modules.ai.libs.algorithms.NP.models.waternet.detr import build_model
-from src.modules.ai.libs.algorithms.NP.src.utils import delete_prev_json, split_patches, split2groups, \
+from src.libs.algorithms.NP.models.waternet.detr import build_model
+from src.libs.algorithms.NP.src.utils import delete_prev_json, split_patches, split2groups, \
     filter_points, filter_contours
-from src.modules.ai.libs.algorithms.NP.src.seg_tissue_area import find_tissue_countours
-from src.modules.ai.libs.algorithms.NP.src.multi_cls_cell_det import cal_region_deeplab, cal_bxr_np
-from src.modules.ai.libs.algorithms.NP.models.deeplab.deeplab import DeepLab
+from src.libs.algorithms.NP.src.seg_tissue_area import find_tissue_countours
+from src.libs.algorithms.NP.src.multi_cls_cell_det import cal_region_deeplab, cal_bxr_np
+from src.libs.algorithms.NP.models.deeplab.deeplab import DeepLab
 
 libs_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 current_dir = os.path.dirname(os.path.abspath(__file__))

@@ -4,13 +4,13 @@ from apiflask.validators import Length, OneOf
 from marshmallow.fields import Bool
 
 from src.app.base_schema import DurationField, PageQuery, PaginationSchema
-from src.modules.slice.domain.value_objects import AiType
+from src.modules.ai.domain.value_objects import AIType
 
 
 class StartIn(Schema):
     slice_id = Integer(required=True)
-    ai_model = String(required=True, validate=[OneOf([AiType.admin.value, AiType.user.value])])
-    model_version = String(required=True, validate=[Length(8, 32)])
+    ai_model = String(required=True)
+    model_version = String(required=True)
 
 
 class StartOut(Schema):

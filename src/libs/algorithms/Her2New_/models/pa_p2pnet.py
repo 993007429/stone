@@ -6,7 +6,7 @@ from torch import nn
 import numpy as np
 from torch.nn import functional
 
-from src.modules.ai.libs.algorithms.Her2New_.models.backbone import build_backbone
+from src.libs.algorithms.Her2New_.models.backbone import build_backbone
 
 
 class AnchorPoints(nn.Module):

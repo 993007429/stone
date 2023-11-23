@@ -3,7 +3,7 @@ import os
 import shutil
 from functools import wraps
 from inspect import getfullargspec
-from typing import Optional, Type, Tuple, List
+from typing import Optional, Type, Tuple, List, Union, Any
 
 from celery.result import AsyncResult
 
@@ -20,11 +20,7 @@ from src.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam, AITy
 from src.modules.ai.infrastructure.repositories import SQLAlchemyAiRepository
 from src.modules.ai.utils.prob import save_prob_to_file
 from src.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
-from src.seedwork.application.responses import AppResponse
 
-from src.libs.algorithms.TCTAnalysis_v2_2.tct_alg import (
-    LCT_mobile_micro0324, LCT40k_convnext_nofz, LCT40k_convnext_HDX, LCT_mix80k0417_8, AlgBase)
-from src.libs.algorithms.TCTAnalysis_v3_1.tct_alg import TCT_ALG2
 from src.utils.load_yaml import load_yaml
 
 logger = logging.getLogger(__name__)
@@ -99,7 +95,10 @@ class AiDomainService(object):
             logger.exception(e)
             return 'AI处理发生异常', {'done': True, 'rank': -1}
 
-    def get_model(self, ai_model, model_version, threshold) -> Optional[TCT_ALG2, AlgBase]:
+    def get_model(self, ai_model, model_version, threshold) -> Any:
+        from src.libs.algorithms.TCTAnalysis_v2_2.tct_alg import AlgBase
+        from src.libs.algorithms.TCTAnalysis_v3_1.tct_alg import TCT_ALG2
+
         yams_path = os.path.join(setting.PROJECT_DIR, 'yams')
         deploy_yaml = load_yaml(os.path.join(yams_path, 'deploy.yaml'))
         try:
@@ -122,33 +121,20 @@ class AiDomainService(object):
         threshold = 1
 
         rois = []
-        # rois = task_param.rois
-        # model_info = task_param.rois
-        # threshold = model_info.get('ai_threshold')
-        # model_type = model_info.get('model_type')
-        # model_name = model_info.get('model_name')
 
-        alg_class = self.get_model(ai_model, model_version, threshold)
+        alg_model = self.get_model(ai_model, model_version, threshold)
 
         slide = open_slide(slide_path)
 
         roi_marks = []
         prob_dict = None
         for idx, roi in enumerate(rois or [task_param.new_default_roi()]):
-            if alg_class.__name__ == 'TCT_ALG2':
-                # config_path = ai_model + model_type if model_type.isdigit() else model_type
-                config_path = ''
-                threshold = 1
-                alg_obj = alg_class(config_path=config_path, threshold=threshold)
-                result = alg_obj.cal_tct(slide)
+            result = alg_model.cal_tct(slide)
 
+            if ai_model == 'tct2':
                 from src.modules.ai.utils.tct import generate_ai_result2
                 ai_result = generate_ai_result2(result=result, roiid=roi['id'])
-
             else:
-                threshold = 1
-                alg_obj = alg_class(threshold=threshold)
-                result = alg_obj.cal_tct(slide)
                 from src.modules.ai.utils.tct import generate_ai_result
                 ai_result = generate_ai_result(result=result, roiid=roi['id'])
 
@@ -277,7 +263,7 @@ class AiDomainService(object):
         from src.libs.algorithms.Her2New_.detect_all import run_her2_alg, roi_filter
 
         center_coords_np_with_id, cls_labels_np_with_id, summary_dict, lvl, flg = run_her2_alg(
-            slide_path=task.slide_path, roi_list=rois)
+            slide_path=task_param.slide_path, roi_list=rois)
 
         for roi in rois:
             roi_id, x_coords, y_coords = roi['id'], roi['x'], roi['y']

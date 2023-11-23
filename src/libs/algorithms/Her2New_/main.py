@@ -1,6 +1,6 @@
 import argparse
 
-from src.modules.ai.libs.algorithms.Her2New_.cell_detection import detect
+from src.libs.algorithms.Her2New_.cell_detection import detect
 
 
 if __name__ == '__main__':

@@ -3,7 +3,6 @@ from apiflask.fields import Integer, String, Nested, DateTime
 from apiflask.validators import Length, OneOf
 
 from src.app.base_schema import DurationField, PageQuery, PaginationSchema
-from src.modules.slice.domain.value_objects import AiType
 
 
 class AnalysesQuery(PageQuery):
@@ -19,7 +18,7 @@ class CalculationOut(Schema):
     username = String(required=True)
     analysis_id = Integer(required=True)
     slice_id = Integer(required=True)
-    ai_model = String(required=True, validate=[OneOf([AiType.admin.value, AiType.user.value])])
+    ai_model = String(required=True)
     model_version = String(required=True, validate=[Length(8, 32)])
     status = String(required=True, validate=[Length(0, 255)])
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
@@ -46,7 +45,7 @@ class AnalysisIn(Schema):
 class ResultOut(Schema):
     analysis_id = Integer(required=True)
     slice_id = Integer(required=True)
-    ai_model = String(required=True, validate=[OneOf([AiType.admin.value, AiType.user.value])])
+    ai_model = String(required=True)
     model_version = String(required=True, validate=[Length(8, 32)])
     status = String(required=True, validate=[Length(0, 255)])
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')

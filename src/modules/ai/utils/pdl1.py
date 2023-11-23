@@ -11,7 +11,7 @@ from csaps import csaps
 import heapq
 
 from src.consts.pdl1 import Pdl1Consts
-from src.modules.ai.libs.algorithms.PDL1.run_pdl1 import cal_pdl1
+from src.libs.algorithms.PDL1.run_pdl1 import cal_pdl1
 
 logger = logging.getLogger(__name__)
 

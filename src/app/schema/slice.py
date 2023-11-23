@@ -4,7 +4,7 @@ from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
 from src.app.base_schema import DurationField, PageQuery, Filter, PaginationSchema
-from src.modules.slice.domain.value_objects import LogicType, AiType
+from src.modules.slice.domain.value_objects import LogicType
 
 
 class SlicePageQuery(PageQuery):
@@ -32,7 +32,7 @@ class SliceOut(Schema):
     macro = String(required=True, description='宏观图(open slide读取macro image, 卡片视图切换)')
     thumbnail = URL(required=True, description='切片缩略图')
     anal_stat = String(required=True, description='处理状态', validate=[Length(0, 255)])
-    wh_stat = String(required=True, description='入库状态', validate=[OneOf([AiType.admin.value, AiType.user.value])])
+    wh_stat = String(required=True, description='入库状态')
     ai_model = String(required=True, description='AI模块(最后一次处理数据所用的AI模块)')
     ai_suggest = String(required=True, description='AI建议(最后一次AI分析结果)')
     last_anal = String(required=True, description='AI分析日期(最后一次AI分析时间)')
