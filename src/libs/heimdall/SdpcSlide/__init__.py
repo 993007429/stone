@@ -15,8 +15,13 @@ from ctypes import *
 from pystruct import *
 
 
-cur_encoding='utf-8'
-lib = cdll.LoadLibrary('libDecodeSdpc.so')
+if sys.platform=='win32':
+    cur_encoding='gbk'
+    os.add_dll_directory(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'win_libs'))
+    lib = windll.LoadLibrary('DecodeSdpcDll.dll')
+else:
+    cur_encoding = 'utf-8'
+    lib = cdll.LoadLibrary('libDecodeSdpc.so')
 
 
 class SdpcSlide(SlideBase):

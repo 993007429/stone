@@ -32,7 +32,10 @@ class SliceContainer(containers.DeclarativeContainer):
 
     core_container = providers.DependenciesContainer()
 
-    repository = providers.Factory(SQLAlchemySliceRepository, session=core_container.request_context.provided.db_session)
+    repository = providers.Factory(
+        SQLAlchemySliceRepository,
+        session=core_container.request_context.provided.db_session
+    )
 
     slice_domain_service = providers.Factory(SliceDomainService, repository=repository)
 
@@ -43,11 +46,21 @@ class AiContainer(containers.DeclarativeContainer):
 
     core_container = providers.DependenciesContainer()
 
-    repository = providers.Factory(SQLAlchemyAiRepository, session=core_container.request_context.provided.db_session)
+    slice_container = providers.DependenciesContainer()
+
+    repository = providers.Factory(
+        SQLAlchemyAiRepository,
+        session=core_container.request_context.provided.db_session,
+        slice_db_session=core_container.request_context.provided.slice_db_session
+    )
 
     ai_domain_service = providers.Factory(AiDomainService, repository=repository)
 
-    ai_service = providers.Factory(AiService, domain_service=ai_domain_service)
+    ai_service = providers.Factory(
+        AiService,
+        domain_service=ai_domain_service,
+        slice_service=slice_container.slice_service
+    )
 
 
 class AppContainer(containers.DeclarativeContainer):
@@ -58,4 +71,4 @@ class AppContainer(containers.DeclarativeContainer):
 
     slice_container = providers.Container(SliceContainer, core_container=core_container)
 
-    ai_container = providers.Container(AiContainer, core_container=core_container)
+    ai_container = providers.Container(AiContainer, core_container=core_container, slice_container=slice_container)
