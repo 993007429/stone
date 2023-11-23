@@ -21,7 +21,7 @@ model_dir = oss.path_join('AI', 'TCTAnalysis_v3_1', 'Model')
 class TCT_ALG2:
     def __init__(self, config_path='test', threshold=None):
         self.cfg = load_cfg(config_path)
-        self.model_name = self.cfg['model_name']
+        # self.model_name = self.cfg['model_name']
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.pos_threshold = 0.33 if threshold is None else threshold

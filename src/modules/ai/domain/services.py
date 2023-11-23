@@ -7,6 +7,7 @@ from typing import Optional, Type, Tuple, List
 
 from celery.result import AsyncResult
 
+import setting
 from setting import RANK_AI_TASK
 from src.app.request_context import request_context
 from src.infra.cache import cache
@@ -16,6 +17,11 @@ from celery.exceptions import TimeoutError as CeleryTimeoutError
 from src.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam, AIType
 from src.modules.ai.infrastructure.repositories import SQLAlchemyAiRepository
 from src.seedwork.application.responses import AppResponse
+
+from src.libs.algorithms.TCTAnalysis_v2_2.tct_alg import (
+    LCT_mobile_micro0324, LCT40k_convnext_nofz, LCT40k_convnext_HDX, LCT_mix80k0417_8, AlgBase)
+from src.libs.algorithms.TCTAnalysis_v3_1.tct_alg import TCT_ALG2
+from src.utils.load_yaml import load_yaml
 
 logger = logging.getLogger(__name__)
 
@@ -89,17 +95,27 @@ class AiDomainService(object):
             logger.exception(e)
             return 'AI处理发生异常', {'done': True, 'rank': -1}
 
-    def _select_model(self, ai_model, model_version) -> Optional[Type]:
-        from src.modules.ai.libs.algorithms.TCTAnalysis_v2_2.tct_alg import (
-            LCT_mobile_micro0324, LCT40k_convnext_nofz, LCT40k_convnext_HDX, LCT_mix80k0417_8)
-        from src.modules.ai.libs.algorithms.TCTAnalysis_v3_1.tct_alg import TCT_ALG2
+    def get_model(self, ai_model, model_version, threshold) -> Optional[TCT_ALG2, AlgBase]:
+        yams_path = os.path.join(setting.PROJECT_DIR, 'yams')
+        deploy_yaml = load_yaml(os.path.join(yams_path, 'deploy.yaml'))
+        try:
+            yaml_file = deploy_yaml[ai_model][model_version]
+        except KeyError:
+            return None
 
-        return TCT_ALG2
+        if ai_model == AIType.tct1:
+            config_path = os.path.join(yams_path, 'tct1', yaml_file)
+            return AlgBase(config_path=config_path, threshold=threshold)
+        elif ai_model == AIType.tct2:
+            config_path = os.path.join(yams_path, 'tct2', yaml_file)
+            return TCT_ALG2(config_path=config_path, threshold=threshold)
 
     def run_tct(self, task_param: TaskParam):
         ai_model = task_param.ai_model
         model_version = task_param.model_version
         slide_path = task_param.slide_path
+
+        threshold = 1
 
         rois = []
         # rois = task_param.rois
@@ -108,7 +124,7 @@ class AiDomainService(object):
         # model_type = model_info.get('model_type')
         # model_name = model_info.get('model_name')
 
-        alg_class = self._select_model(ai_model, model_version)
+        alg_class = self.get_model(ai_model, model_version, threshold)
 
         slide = open_slide(slide_path)
 

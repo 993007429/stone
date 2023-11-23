@@ -1,0 +1,12 @@
+wsi_net:
+  model_name: '海德星'
+  weights: 'wsi_weights_epoch_4.pth'
+microbe_net:
+  model_name: 'microbe_cvnxt1016'
+  weights: 'checkpoint-56.pth'
+cell_net:
+  model_name: '海德星'
+  weights: 'cell_weights_epoch_4.pth'
+qc_net1:
+  model_name: 'qc_mobilenetv3_0927'
+  weights: 'checkpoint-25.pth'

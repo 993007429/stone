@@ -12,6 +12,21 @@ class LogicType(BaseEnum):
 
 
 @enum.unique
+class AIFolder(BaseEnum):
+    tct1 = 'TCTAnalysis_v2_2'
+    tct2 = 'TCTAnalysis_v3_1'
+    bm = 'BM'
+    dna1 = 'DNA1'
+    dna2 = 'DNA2'
+    fish = 'FISH_deployment'
+    her2 = 'Her2New_'
+    ki67 = 'Ki67'
+    ki67_new = 'Ki67New'
+    np = 'np'
+    pdl1 = 'PDL1'
+
+
+@enum.unique
 class AIType(BaseEnum):
 
     @classmethod
@@ -34,7 +49,8 @@ class AIType(BaseEnum):
     er = 'er'
     pr = 'pr'
     bm = 'bm'
-    tct = 'tct'
+    tct1 = 'tct1'
+    tct2 = 'tct2'
     lct = 'lct'
     dna = 'dna'
     dna_ploidy = 'dna_ploidy'

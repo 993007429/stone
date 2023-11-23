@@ -11,28 +11,15 @@ import cv2
 import math
 import traceback
 
+import setting
+from src.utils.load_yaml import load_yaml
+
 alg_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-def load_yaml(yaml_path):
-    with open(yaml_path, 'r') as f:
-        data = yaml.safe_load(f)
-    return data
 
 def load_cfg(cfg_path):
-    cfg_path = 'tct2'
-    model_map = load_yaml(os.path.join(alg_dir, 'deploy.yaml'))
-    base_config_path = os.path.join(alg_dir, 'configs', 'base.yaml')
-    if cfg_path in model_map:
-        cfg_path = model_map[cfg_path]
-    print(cfg_path)
-    base_config_dict = load_yaml(base_config_path)
-    if not cfg_path.endswith('.yaml'): cfg_path+='.yaml'
-    if os.path.exists(os.path.join(alg_dir, 'configs', cfg_path)):
-        config_dict = load_yaml(os.path.join(alg_dir, 'configs', cfg_path))
-    elif os.path.exists(cfg_path):
-        config_dict = load_yaml(cfg_path)
-    else:
-        raise FileNotFoundError(f'Config file <<{cfg_path}>> does not exist')
+    base_config_dict = load_yaml(os.path.join(setting.PROJECT_DIR, 'yams', 'tct2', 'base.yaml'))
+    config_dict = load_yaml(cfg_path)
 
     # only support two levels of sub dict
     for k,v in config_dict.items():
@@ -43,8 +30,7 @@ def load_cfg(cfg_path):
                 if k not in base_config_dict:
                     base_config_dict[k]={}
                 base_config_dict[k].update({sub_k:sub_v})
-    base_config_dict.update({'model_name':os.path.splitext(cfg_path)[0]})
-    print(base_config_dict)
+    # base_config_dict.update({'model_name':os.path.splitext(cfg_path)[0]})
     return base_config_dict
 
 class SlideRegion:

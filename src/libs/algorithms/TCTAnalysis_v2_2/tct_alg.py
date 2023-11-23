@@ -10,6 +10,7 @@ import os
 from io import BytesIO
 
 from src.infra.oss import oss
+from src.utils.load_yaml import load_yaml
 from .configs import TctBaseConfig
 from .src.detect_tct_disk import disc_detect
 from .src.cell_counting import *
@@ -41,8 +42,21 @@ MODEL_NAME = 'TCTAnalysis_v2_2'
 
 
 class AlgBase:
-    def __init__(self):
+    def __init__(self, config_path='', threshold=None):
         self.config = TctBaseConfig()
+        self.yaml = load_yaml(config_path)
+        self.model_path = oss.path_join('AI', MODEL_NAME, 'Model')
+
+        self.cell_det_net = self.load_celldet_model()
+        self.wsi_net = self.load_wsi_model_768_global(model_name=self.yaml['wsi_net']['model_name'], weights_name=self.yaml['wsi_net']['weights_name'])
+        self.microbe_net = self.load_microbe_cvnxt(model_name=self.yaml['microbe_net']['model_name'], weights_name=self.yaml['microbe_net']['weights_name']) if self.config.is_microbe_detect else None
+        self.cell_net = self.load_cell0921_model(model_name=self.yaml['cell_net']['model_name'], weights_name=self.yaml['cell_net']['weights_name'])
+        self.qc_net1 = self.load_qc_net(model_name=self.yaml['qc_net1']['model_name'], weights_name=self.yaml['qc_net1']['weights_name']) if self.config.is_qc else None
+        self.microbe_qc_net = None
+        self.cell_cls_func = detect_mix20x_scale1_qc
+        self.cell_det_func = count_cells_slide_thread_noqc
+        self.pos_threshold = 0.33 if threshold is None else threshold
+
         self.result = {
             'bboxes': np.empty((0, 4), dtype=int),
             'cell_pred': np.empty((0,), dtype=int),
@@ -61,18 +75,9 @@ class AlgBase:
             'cell_bboxes1': np.empty((0, 4), dtype=int),
             'cell_prob1': np.empty((0,), dtype=float)
         }
-        self.cell_det_net = None
-        self.wsi_net = None
-        self.microbe_net = None
-        self.cell_net = None
-        self.qc_net1 = None
-        self.microbe_qc_net = None
-        self.cell_cls_func = detect_mix20x_scale1_qc
-        self.cell_det_func = count_cells_slide_thread_noqc
-        self.pos_threshold = None
 
     def load_celldet_model(self, model_name='tct_unet_tiny', weights_name='weights_epoch_8100.pth'):
-        model_file_key = oss.path_join('AI', MODEL_NAME, 'Model', model_name, weights_name)
+        model_file_key = oss.path_join(self.model_path, model_name, weights_name)
         model_file = oss.get_object_to_io(model_file_key)
         trt_model_file_key = os.path.splitext(model_file_key)[0] + '.cc'
         if use_trt and oss.object_exists(trt_model_file_key):
@@ -99,7 +104,8 @@ class AlgBase:
         wsi_net = denseWsiNet(class_num=6, in_channels=768, use_aux=False, use_self='global')
         wsi_net_ln = denseWsiNet_ln(class_num=6, in_channels=768, use_aux=False, use_self='global')
 
-        wsi_model_file = oss.get_object_to_io(oss.path_join('AI', MODEL_NAME, 'Model', model_name, weights_name))
+        model_file_key = oss.path_join(self.model_path, model_name, weights_name)
+        wsi_model_file = oss.get_object_to_io(model_file_key)
 
         wsi_net_weights_dict = torch.load(wsi_model_file, map_location=lambda storage, loc: storage)
         try:
@@ -118,7 +124,7 @@ class AlgBase:
 
     def load_cell0921_model(self, model_name='microbe_20x_convnext_rgb_20220704',
                             weights_name='checkpoint-best-ema.pth'):
-        model_file_key = oss.path_join('AI', MODEL_NAME, 'Model', model_name, weights_name)
+        model_file_key = oss.path_join(self.model_path, model_name, weights_name)
         model_file = oss.get_object_to_io(model_file_key)
         trt_model_file_key = os.path.splitext(model_file_key)[0] + '.cc'
         if use_trt and os.path.exists(trt_model_file_key):
@@ -150,7 +156,7 @@ class AlgBase:
 
     def load_qc_net(self, model_name='', weights_name='.pth'):
 
-        model_file_key = oss.path_join('AI', MODEL_NAME, 'Model', model_name, weights_name)
+        model_file_key = oss.path_join(self.model_path, model_name, weights_name)
         model_file = oss.get_object_to_io(model_file_key)
         trt_model_file_key = os.path.splitext(model_file_key)[0] + '3.cc'
         if os.path.exists(trt_model_file_key):
@@ -173,7 +179,7 @@ class AlgBase:
             return model
 
     def load_microbe_cvnxt(self, model_name='', weights_name=''):
-        model_file_key = oss.path_join('AI', MODEL_NAME, 'Model', model_name, weights_name)
+        model_file_key = oss.path_join(self.model_path, model_name, weights_name)
         model_file = oss.get_object_to_io(model_file_key)
         trt_model_file_key = os.path.splitext(model_file_key)[0] + '.cc'
         if use_trt and os.path.exists(trt_model_file_key):

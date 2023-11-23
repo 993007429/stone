@@ -1,0 +1,17 @@
+tct1:
+  v1: LCT40k_convnext_nofz.yaml
+  v2: LCT40k_convnext_HDX.yaml
+  v3: LCT_mobile_micro0324.yaml
+  v4: LCT_mix80k0417_8.yaml
+
+lct1:
+  v1: yolov6l6_15cls_0923_10x.yaml
+  v2: yolov6l6_15cls_0923_10x_1019wsi.yaml
+
+tct2:
+  v1: yolov6l6_15cls_0923_10x.yaml
+  v2: yolov6l6_15cls_0923_10x_1019wsi.yaml
+
+lct2:
+  v1: yolov6l6_15cls_0923_10x.yaml
+  v2: yolov6l6_15cls_0923_10x_1019wsi.yaml
