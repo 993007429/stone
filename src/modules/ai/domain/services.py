@@ -380,6 +380,12 @@ class AiDomainService(object):
         analysis = self.repository.get_analysis_by_pk(analysis_id)
         return analysis, 'get analysis success'
 
+    def create_analysis(self, **kwargs) -> Tuple[Optional[AnalysisEntity], str]:
+        new_analysis = AnalysisEntity.parse_obj(kwargs)
+        success = self.repository.save(new_analysis)
+        if success:
+            return new_analysis, 'create analysis success'
+        return None, 'create analysis failed'
 
 
 

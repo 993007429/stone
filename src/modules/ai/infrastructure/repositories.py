@@ -31,6 +31,15 @@ class SQLAlchemyAIRepository(AIRepository):
         assert s is not None
         return s
 
+    def save(self, entity: AnalysisEntity) -> bool:
+        model = Analysis(**entity.dict())
+        self._session.begin()
+        self._session.add(model)
+        self._session.flush([model])
+        self._session.commit()
+        entity.from_orm(model)
+        return True
+
     @property
     def mark_table_suffix(self) -> Optional[str]:
         return self._mark_table_suffix

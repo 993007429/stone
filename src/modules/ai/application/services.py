@@ -2,6 +2,7 @@ import logging
 import time
 
 from setting import RANK_AI_TASK
+from src.app.request_context import request_context
 from src.modules.ai.application import tasks
 from src.modules.ai.domain.services import AiDomainService
 from src.modules.ai.domain.value_objects import TaskParam, AIType
@@ -54,6 +55,16 @@ class AiService(object):
         alg_time = time.time() - start_time
         logger.info(f'任务 {task_param.slice_id} - 算法部分完成,耗时{alg_time}')
 
+        analysis = dict(userid=request_context.current_user.userid,
+                        username=request_context.current_user.username,
+                        slice_id=task_param.slice_id,
+                        ai_model=task_param.ai_model,
+                        model_version=task_param.model_version,
+                        status='',
+                        time_consume=alg_time)
+
+        self.domain_service.create_analysis(**analysis)
+
         self.domain_service.create_ai_marks(
             ai_model=task_param.ai_model,
             slide_path=task_param.slide_path,
@@ -61,8 +72,6 @@ class AiService(object):
             roi_marks=[mark.dict() for mark in result.roi_marks],
             skip_mark_to_tile=task_param.ai_model in [AIType.bm]
         )
-
-        # self.domain_service.create_ai_record()
 
         total_time = time.time() - start_time
         logger.info(f'任务 {task_param.slice_id} - 全部完成,耗时{total_time}')
@@ -80,23 +89,3 @@ class AiService(object):
     def get_analysis(self, analysis_id: int) -> AppResponse:
         self.domain_service.get_analysis(analysis_id)
         return AppResponse()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
