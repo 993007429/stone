@@ -34,3 +34,10 @@ class MarkEntity(BaseEntity):
     @property
     def slice_path(self):
         return ''
+
+
+class AnalysisEntity(BaseEntity):
+    pass
+
+
+

@@ -1,5 +1,5 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, Nested, DateTime
+from apiflask.fields import Integer, String, Nested, DateTime, List
 from apiflask.validators import Length, OneOf
 from marshmallow.fields import Bool
 

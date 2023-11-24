@@ -9,50 +9,20 @@ class AnalysesQuery(PageQuery):
     userid = Integer(required=True)
 
 
-class CalculationIn(Schema):
-    analysis_id = Integer(required=True)
-
-
-class CalculationOut(Schema):
+class AnalysisOut(Schema):
+    id = Integer(required=True)
     userid = Integer(required=True)
     username = String(required=True)
-    analysis_id = Integer(required=True)
     slice_id = Integer(required=True)
     ai_model = String(required=True)
-    model_version = String(required=True, validate=[Length(8, 32)])
-    status = String(required=True, validate=[Length(0, 255)])
+    model_version = String(required=True)
+    status = String(required=True)
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     time_consume = DurationField(required=True)
 
 
-class SingleCalculationOut(Schema):
+class ListAnalysesOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(CalculationOut)
-
-
-class ListAnalysesQuery(Schema):
-    code = Integer(required=True)
-    message = String(required=True)
-    data = Nested(CalculationOut)
+    data = Nested(AnalysisOut)
     pagination = Nested(PaginationSchema)
-
-
-class AnalysisIn(Schema):
-    analysis_id = Integer(required=True)
-
-
-class ResultOut(Schema):
-    analysis_id = Integer(required=True)
-    slice_id = Integer(required=True)
-    ai_model = String(required=True)
-    model_version = String(required=True, validate=[Length(8, 32)])
-    status = String(required=True, validate=[Length(0, 255)])
-    created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
-    time_consume = DurationField(required=True)
-
-
-class SingleAnalysisOut(Schema):
-    code = Integer(required=True)
-    message = String(required=True)
-    data = Nested(ResultOut)

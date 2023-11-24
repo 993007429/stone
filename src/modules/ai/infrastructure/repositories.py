@@ -4,11 +4,12 @@ from typing import List, Optional, Tuple
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from src.modules.ai.domain.entities import MarkEntity
+from src.modules.ai.domain.entities import MarkEntity, AnalysisEntity
 from src.modules.ai.domain.repositories import AIRepository
 from src.modules.ai.domain.value_objects import AIType
-from src.modules.ai.infrastructure.models import get_ai_mark_model, get_ai_mark_to_tile_model, NPCountModel, \
+from src.modules.ai.infrastructure.mark_models import get_ai_mark_model, get_ai_mark_to_tile_model, NPCountModel, \
     Pdl1sCountModel, MarkGroupModel, ChangeRecordModel
+from src.modules.ai.infrastructure.models import Analysis
 from src.seedwork.infrastructure.models import Base
 
 
@@ -82,7 +83,21 @@ class SQLAlchemyAIRepository(AIRepository):
 
         Base.metadata.create_all(engine, tables=tables)
 
+    def get_analyses(self, **kwargs) -> List[AnalysisEntity]:
+        self._session.begin()
+        query = self._session.query(Analysis).filter_by(**kwargs)
+        models = query.all()
+        self._session.commit()
+        return [AnalysisEntity(**model.dict) for model in models]
 
+    def get_analysis_by_pk(self, pk: int) -> Optional[AnalysisEntity]:
+        self._session.begin()
+        query = self._session.query(Analysis).filter_by(id=pk)
+        model = query.first()
+        self._session.commit()
+        if not model:
+            return None
+        return AnalysisEntity(**model.dict)
 
 
 

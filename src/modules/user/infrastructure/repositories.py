@@ -44,7 +44,7 @@ class SQLAlchemyUserRepository(UserRepository):
         self._session.commit()
         return True, 'Update user success'
 
-    def gets(self) -> List[Optional[UserEntity]]:
+    def gets(self) -> List[UserEntity]:
         self._session.begin()
         query = self._session.query(User)
         models = query.all()

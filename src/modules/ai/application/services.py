@@ -73,6 +73,21 @@ class AiService(object):
         err_msg, result = self.domain_service.get_ai_task_result(task_id)
         return AppResponse(err_code=1 if err_msg else 0, message=err_msg, data=result)
 
+    def get_analyses(self, **kwargs) -> AppResponse:
+        self.domain_service.get_analyses(**kwargs)
+        return AppResponse()
+
+    def get_analysis(self, analysis_id: int) -> AppResponse:
+        self.domain_service.get_analysis(analysis_id)
+        return AppResponse()
+
+
+
+
+
+
+
+
 
 
 

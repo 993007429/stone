@@ -19,7 +19,7 @@ from src.celery.app import app as celery_app
 from celery.exceptions import TimeoutError as CeleryTimeoutError
 
 from src.modules.ai.domain.consts import AI_TYPE_MANUAL_MARK_TABLE_MAPPING
-from src.modules.ai.domain.entities import MarkEntity
+from src.modules.ai.domain.entities import MarkEntity, AnalysisEntity
 from src.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam, AIType
 from src.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from src.modules.ai.utils.prob import save_prob_to_file
@@ -372,8 +372,13 @@ class AiDomainService(object):
 
         return '', cell_mark_entities + roi_mark_entities
 
+    def get_analyses(self, **kwargs) -> Tuple[List[AnalysisEntity], str]:
+        analyses = self.repository.get_analyses(**kwargs)
+        return [analysis for analysis in analyses], 'get analyses success'
 
-
+    def get_analysis(self, analysis_id: int) -> Tuple[Optional[AnalysisEntity], str]:
+        analysis = self.repository.get_analysis_by_pk(analysis_id)
+        return analysis, 'get analysis success'
 
 
 
