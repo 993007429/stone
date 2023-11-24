@@ -24,11 +24,10 @@ class RequestContext:
 
     def connect_db(self):
         session = get_session()
-        self._db_session.set(session)
+        self.db_session.set(session)
 
     def connect_slice_db(self, db_file_path: str):
         session = get_session_by_db_uri(f'sqlite:///{db_file_path}')
-        session.begin()
         self.slice_db_session.set(session)
 
     def close_slice_db(self, commit=True):

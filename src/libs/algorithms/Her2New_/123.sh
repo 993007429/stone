@@ -1,1 +1,0 @@
-mpiexec --allow-run-as-root -np 1 C:\Users\hezhenfan\AppData\Local\Programs\Python\.virtualenvs\dyborg\Scripts\python.exe -m main --ppid 21692 --slide "D:\data\123.sdpc" --mask "D:\code\stone\src\libs\algorithms\Her2New_/data/mask_result/123_mask.png" --roi [] [] --vis none

@@ -1,7 +1,7 @@
 from src.app.request_context import RequestContext, request_context
 from src.modules.ai.application.services import AiService
 from src.modules.ai.domain.services import AiDomainService
-from src.modules.ai.infrastructure.repositories import SQLAlchemyAiRepository
+from src.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from src.modules.slice.application.services import SliceService
 from src.modules.slice.domain.services import SliceDomainService
 from src.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
@@ -49,7 +49,7 @@ class AiContainer(containers.DeclarativeContainer):
     slice_container = providers.DependenciesContainer()
 
     repository = providers.Factory(
-        SQLAlchemyAiRepository,
+        SQLAlchemyAIRepository,
         session=core_container.request_context.provided.db_session,
         slice_db_session=core_container.request_context.provided.slice_db_session
     )

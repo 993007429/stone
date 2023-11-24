@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import sys
 import stat
 
@@ -395,15 +396,27 @@ def cal_cell(o_slide_path, roi_list, opt):
         command.append('--vis {}'.format(vis))
         command_str = ' '.join(command)
 
-        bat_name = '{}.sh'.format(
-            os.path.splitext(
-                os.path.basename(o_slide_path))[0].strip().replace(
-                " ", '').replace("(", '').replace(")", '').replace("+", ''))
+        # bat_name = '{}.sh'.format(
+        #     os.path.splitext(
+        #         os.path.basename(o_slide_path))[0].strip().replace(
+        #         " ", '').replace("(", '').replace(")", '').replace("+", ''))
+        # with open(os.path.join(current_root, bat_name), 'w', encoding='utf-8') as f:
+        #     f.write(command_str)
+        # os.chmod(os.path.join(current_root, bat_name), stat.S_IRWXU)
+
+        bat_name = os.path.splitext(os.path.basename(slide_path))[0]
+        bat_name = re.sub('[’!"#$%&\'()*+,-./:;<=>?@，。?★、…【】《》？“”‘’！[\\]^_`{|}~\s]+', "", bat_name)
+
         if sys.platform == 'win32':
-            bat_name.replace('/', '\\')
-        with open(os.path.join(current_root, bat_name), 'w', encoding='utf-8') as f:
-            f.write(command_str)
-        os.chmod(os.path.join(current_root, bat_name), stat.S_IRWXU)
+            bat_name = 'run_{}.bat'.format(bat_name)
+            with open(os.path.join(current_root, bat_name), 'w', encoding='gbk') as f:
+                f.write(command_str)
+        elif sys.platform == 'linux':
+            bat_name = 'run_{}.sh'.format(bat_name)
+            bat_name = bat_name.replace(' ', '_')
+            with open(os.path.join(current_root, bat_name), 'w', encoding='utf-8') as f:
+                f.write(command_str)
+            os.chmod(os.path.join(current_root, bat_name), stat.S_IRWXU)
         status = subprocess.Popen(os.path.join(current_root, bat_name), cwd=current_root, shell=True,
                                   env=os.environ.copy())
         returncode = status.wait()

@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
 
 
-class AnalysisRepository(metaclass=ABCMeta):
+class AIRepository(metaclass=ABCMeta):
     pass

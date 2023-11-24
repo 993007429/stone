@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import time
 from functools import wraps
 from inspect import getfullargspec
 from typing import Optional, Type, Tuple, List, Union, Any
@@ -16,10 +17,14 @@ from src.libs.algorithms.DNA1.dna_alg import DNA_1020
 from src.libs.heimdall.dispatch import open_slide
 from src.celery.app import app as celery_app
 from celery.exceptions import TimeoutError as CeleryTimeoutError
+
+from src.modules.ai.domain.consts import AI_TYPE_MANUAL_MARK_TABLE_MAPPING
+from src.modules.ai.domain.entities import MarkEntity
 from src.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam, AIType
-from src.modules.ai.infrastructure.repositories import SQLAlchemyAiRepository
+from src.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from src.modules.ai.utils.prob import save_prob_to_file
 from src.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
+from src.utils.id_worker import IdWorker
 
 from src.utils.load_yaml import load_yaml
 
@@ -31,9 +36,10 @@ def connect_slice_db():
 
         @wraps(f)
         def wrapped(*args, **kwargs):
-            # _self: SliceAnalysisService = args[0]
+            _self: AiDomainService = args[0]
 
-            db_doc_path = kwargs['slide_path']
+            # db_doc_path = kwargs['slide_path']
+            db_doc_path = 'D:\\data\\slice.db'
             db_template_path = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources', 'slice.db')
             if not os.path.exists(db_doc_path):
@@ -41,9 +47,9 @@ def connect_slice_db():
 
             request_context.connect_slice_db(db_doc_path)
 
-            # ai_type = request_context.ai_type
-            #
-            # if ai_type:
+            ai_model = kwargs['ai_model']
+
+            if ai_model:
             #     template_id = 0
             #     if ai_type == AIType.label:
             #         slice_info = _self.slice_service.get_slice_info(case_id=case_id, file_id=file_id).data
@@ -52,13 +58,15 @@ def connect_slice_db():
             #         if 'template_id' in func_args and not kwargs.get('template_id'):
             #             kwargs['template_id'] = template_id
 
-                # mark_table_suffix = _self.domain_service.get_mark_table_suffix(ai_type=ai_type, template_id=template_id)
-                # _self.domain_service.repository.mark_table_suffix = mark_table_suffix
-                # _self.domain_service.repository.create_mark_tables(ai_type=ai_type)
+                # mark_table_suffix = _self.repository.get_mark_table_suffix(ai_type=ai_type, template_id=template_id)
+                # mark_table_suffix = ai_model.value
+                mark_table_suffix = 'tct2'
+                _self.repository.mark_table_suffix = mark_table_suffix
+                _self.repository.create_mark_tables(ai_type=ai_model)
 
-            # manual_table_suffix = AI_TYPE_MANUAL_MARK_TABLE_MAPPING.get(ai_type, 'human')
-            # _self.domain_service.repository.manual.mark_table_suffix = manual_table_suffix
-            # _self.domain_service.repository.manual.create_mark_tables(ai_type=ai_type)
+            manual_table_suffix = AI_TYPE_MANUAL_MARK_TABLE_MAPPING.get(ai_model, 'human')
+            _self.repository.mark_table_suffix = manual_table_suffix
+            _self.repository.create_mark_tables(ai_type=ai_model)
 
             r = f(*args, **kwargs)
 
@@ -74,7 +82,7 @@ def connect_slice_db():
 class AiDomainService(object):
     RANK_AI_TASK = RANK_AI_TASK
 
-    def __init__(self, repository: SQLAlchemyAiRepository):
+    def __init__(self, repository: SQLAlchemyAIRepository):
         self.repository = repository
 
     def get_ai_task_result(self, task_id: str) -> Tuple[str, Optional[dict]]:
@@ -325,14 +333,44 @@ class AiDomainService(object):
     @connect_slice_db()
     def create_ai_marks(
             self,
+            ai_model: str,
             slide_path: str,
             cell_marks: List[dict],
             roi_marks: List[dict],
             skip_mark_to_tile: bool = False
-    ):
-        pass
+    ) -> Tuple[str, Optional[List[MarkEntity]]]:
+        cell_mark_entities, roi_mark_entities = [], []
+        group_ids = set()
 
+        id_worker = IdWorker(1, 2, 0)
 
+        for item in roi_marks + cell_marks:
+            item['create_time'] = int(round(time.time() * 1000))
+            if 'id' not in item:
+                item['id'] = id_worker.get_next_id() or id_worker.get_new_id()
+            # if not item['position']['x']:
+            #     whole_slide_roi = self.repository.get_mark(item['id'])
+            #     if whole_slide_roi:
+            #         whole_slide_roi.update_data(**item)
+            #     else:
+            #         whole_slide_roi = MarkEntity(raw_data=item)
+            #     self.repository.save_mark(whole_slide_roi)
+            #     continue
+
+            new_mark = MarkEntity(**item)
+            
+            if new_mark.mark_type == 3:
+                roi_mark_entities.append(new_mark)
+            else:
+                cell_mark_entities.append(new_mark)
+
+            saved = self.repository.batch_save_marks(
+                roi_mark_entities) and self.repository.batch_save_marks(cell_mark_entities)
+
+            if not saved:
+                return 'create ai marks tailed', None
+
+            return '', cell_mark_entities + roi_mark_entities
 
 
 

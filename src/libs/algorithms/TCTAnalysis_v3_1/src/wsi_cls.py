@@ -55,7 +55,6 @@ class WSIClassifier:
         model.eval()
         return model
 
-
     @torch.no_grad()
     def infer_wsi(self, slide, det_result):
         if slide.mpp is not None:

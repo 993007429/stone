@@ -52,12 +52,13 @@ class AiService(object):
         alg_time = time.time() - start_time
         logger.info(f'任务 {task_param.slice_id} - 算法部分完成,耗时{alg_time}')
 
-        # self.domain_service.create_ai_marks(
-        #     slide_path=task_param.slide_path,
-        #     cell_marks=[mark.dict() for mark in result.cell_marks],
-        #     roi_marks=[mark.dict() for mark in result.roi_marks],
-        #     skip_mark_to_tile=task_param.ai_model in [AIType.bm]
-        # )
+        self.domain_service.create_ai_marks(
+            ai_model=task_param.ai_model,
+            slide_path=task_param.slide_path,
+            cell_marks=[mark.dict() for mark in result.cell_marks],
+            roi_marks=[mark.dict() for mark in result.roi_marks],
+            skip_mark_to_tile=task_param.ai_model in [AIType.bm]
+        )
 
         # self.domain_service.create_ai_record()
 
