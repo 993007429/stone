@@ -65,8 +65,8 @@ def connect_slice_db():
                 _self.repository.create_mark_tables(ai_type=ai_model)
 
             manual_table_suffix = AI_TYPE_MANUAL_MARK_TABLE_MAPPING.get(ai_model, 'human')
-            _self.repository.mark_table_suffix = manual_table_suffix
-            _self.repository.create_mark_tables(ai_type=ai_model)
+            _self.repository.manual.mark_table_suffix = manual_table_suffix
+            _self.repository.manual.create_mark_tables(ai_type=ai_model)
 
             r = f(*args, **kwargs)
 
@@ -160,15 +160,15 @@ class AiDomainService(object):
                 ai_result=ai_result
             ))
 
-            ai_result = roi_marks[0].ai_result
+        ai_result = roi_marks[0].ai_result
 
-            return ALGResult(
-                roi_marks=roi_marks,
-                ai_suggest=' '.join(ai_result['diagnosis']) + ' ' + ','.join(ai_result['microbe']),
-                slide_quality=ai_result['slide_quality'],
-                cell_num=ai_result['cell_num'],
-                prob_dict=prob_dict
-            )
+        return ALGResult(
+            roi_marks=roi_marks,
+            ai_suggest=' '.join(ai_result['diagnosis']) + ' ' + ','.join(ai_result['microbe']),
+            slide_quality=ai_result['slide_quality'],
+            cell_num=ai_result['cell_num'],
+            prob_dict=prob_dict
+        )
 
     def run_lct(self, task_param: TaskParam) -> ALGResult:
         return self.run_tct(task_param)
@@ -358,19 +358,19 @@ class AiDomainService(object):
             #     continue
 
             new_mark = MarkEntity(**item)
-            
+
             if new_mark.mark_type == 3:
                 roi_mark_entities.append(new_mark)
             else:
                 cell_mark_entities.append(new_mark)
 
-            saved = self.repository.batch_save_marks(
-                roi_mark_entities) and self.repository.batch_save_marks(cell_mark_entities)
+        saved = self.repository.batch_save_marks(
+            roi_mark_entities) and self.repository.batch_save_marks(cell_mark_entities)
 
-            if not saved:
-                return 'create ai marks tailed', None
+        if not saved:
+            return 'create ai marks tailed', None
 
-            return '', cell_mark_entities + roi_mark_entities
+        return '', cell_mark_entities + roi_mark_entities
 
 
 

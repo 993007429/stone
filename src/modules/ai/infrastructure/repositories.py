@@ -14,10 +14,15 @@ from src.seedwork.infrastructure.models import Base
 
 class SQLAlchemyAIRepository(AIRepository):
 
-    def __init__(self, session: ContextVar, slice_db_session: ContextVar):
+    def __init__(self, session: ContextVar, slice_db_session: ContextVar, manual: Optional[AIRepository] = None):
         self._session_cv = session
         self._slice_db_session_cv = slice_db_session
         self._mark_table_suffix = None
+        self._manual = manual
+
+    @property
+    def manual(self) -> 'AIRepository':
+        return self._manual
 
     @property
     def _session(self) -> Session:
@@ -26,7 +31,7 @@ class SQLAlchemyAIRepository(AIRepository):
         return s
 
     @property
-    def mark_table_suffix(self):
+    def mark_table_suffix(self) -> Optional[str]:
         return self._mark_table_suffix
 
     @mark_table_suffix.setter
@@ -52,7 +57,9 @@ class SQLAlchemyAIRepository(AIRepository):
         return True, 'Create mark success'
 
     def batch_save_marks(self, entities: List[MarkEntity]) -> bool:
+        self._slice_db_session.begin()
         self._slice_db_session.bulk_insert_mappings(self.mark_model_class, [entity.dict() for entity in entities])
+        self._slice_db_session.commit()
         return True
 
     def create_mark_tables(self, ai_type: AIType):

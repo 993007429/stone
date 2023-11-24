@@ -25,6 +25,8 @@ class AiService(object):
         # task_param.slide_path = self.slice_service.get_slice_path(task_param.slice_id).data
         # result = tasks.run_ai_task(task_param)
         result = self.run_ai_task(task_param)
+
+        result.task_id = 1
         rank = cache.get(self.RANK_AI_TASK, [])
         rank.append(task_id := result.task_id)
         cache.set(self.RANK_AI_TASK, rank)

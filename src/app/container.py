@@ -48,10 +48,17 @@ class AiContainer(containers.DeclarativeContainer):
 
     slice_container = providers.DependenciesContainer()
 
-    repository = providers.Factory(
+    _manual_repository = providers.Factory(
         SQLAlchemyAIRepository,
         session=core_container.request_context.provided.db_session,
         slice_db_session=core_container.request_context.provided.slice_db_session
+    )
+
+    repository = providers.Factory(
+        SQLAlchemyAIRepository,
+        session=core_container.request_context.provided.db_session,
+        slice_db_session=core_container.request_context.provided.slice_db_session,
+        manual=_manual_repository
     )
 
     ai_domain_service = providers.Factory(AiDomainService, repository=repository)
