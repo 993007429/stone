@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from src.modules.slice.domain.entities import SliceEntity
 from src.modules.slice.domain.repositories import SliceRepository
-from src.modules.slice.infrastructure.models import Slice
+from src.modules.slice.infrastructure.models import Slice, Label
 
 
 class SQLAlchemySliceRepository(SliceRepository):
@@ -131,6 +131,20 @@ class SQLAlchemySliceRepository(SliceRepository):
             kwargs, synchronize_session=False)
         self._session.commit()
         return updated_count
+
+    def add_labels(self, **kwargs) -> int:
+        ids = kwargs['ids']
+        label_ids = kwargs['label_ids']
+
+        self._session.begin()
+        slices = self._session.query(Slice).filter(Slice.id.in_(ids)).all()
+        labels = self._session.query(Label).filter(Label.id.in_(label_ids)).all()
+
+        for slice_ in slices:
+            slice_.labels.extend(labels)
+        self._session.add_all(slices + labels)
+        self._session.commit()
+        return slices.count(Slice.id)
 
     def save(self, entity: SliceEntity) -> Tuple[bool, SliceEntity]:
         model = Slice(**entity.dict())

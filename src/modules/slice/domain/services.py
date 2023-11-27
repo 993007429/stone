@@ -22,7 +22,7 @@ class SliceDomainService(object):
         slide = self.repository.get_slice_by_id(slice_id)
         if not slide:
             return None, 'no slice'
-        return slide, 'get slice success'
+        return slide, 'get slice succeed'
 
     def upload_slice(self, **kwargs) -> str:
         slice_file = kwargs['slice_file']
@@ -50,22 +50,26 @@ class SliceDomainService(object):
 
     def create_slice(self, **kwargs) -> Tuple[Optional[SliceEntity], str]:
         slice_ = SliceEntity.parse_obj(kwargs)
-        success, new_slice = self.repository.save(slice_)
-        if success:
-            return new_slice, 'create slice success'
+        succeed, new_slice = self.repository.save(slice_)
+        if succeed:
+            return new_slice, 'create slice succeed'
         return None, 'create slice failed'
 
     def filter_slices(self, **kwargs) -> Tuple[List[SliceEntity], dict, str]:
         slices, pagination = self.repository.filter_slices(**kwargs)
-        return slices, pagination, 'filter slice success'
+        return slices, pagination, 'filter slices succeed'
 
     def delete_slices(self, **kwargs) -> Tuple[int, str]:
         deleted_count = self.repository.delete_slices(**kwargs)
-        return deleted_count, 'delete slice success'
+        return deleted_count, 'delete slices succeed'
 
     def update_slices(self, **kwargs) -> Tuple[int, str]:
         updated_count = self.repository.update_slices(**kwargs)
-        return updated_count, 'update slice success'
+        return updated_count, 'update slices succeed'
+
+    def add_labels(self, **kwargs) -> Tuple[int, str]:
+        affected_count = self.repository.add_labels(**kwargs)
+        return affected_count, 'add labels to slices succeed'
 
 
 

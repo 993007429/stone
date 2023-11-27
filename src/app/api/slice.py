@@ -9,8 +9,8 @@ from src.app.auth import auth_required
 from src.app.db import connect_db
 from src.app.permission import permission_required
 from src.app.schema.slice import ListSliceOut, SlicePageQuery, SingleSliceOut, SliceFilter, SliceIdsOut, SliceIdsIn, \
-    WSIIn, SliceId, ROIIn, LabelSliceIdsIn, DSSliceIdsIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, \
-    SliceUploadIn, SingleSliceUploadOut, SliceInT, SliceUpdateIn
+    WSIIn, SliceId, ROIIn, DSSliceIdsIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, \
+    SliceUploadIn, SingleSliceUploadOut, SliceInT, SliceUpdateIn, SliceAndLabelIdsIn
 from src.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -80,12 +80,12 @@ def get_comparison_slices(query_data, json_data):
     return res.response
 
 
-@slice_blueprint.put('/add-label')
-@slice_blueprint.input(LabelSliceIdsIn, location='json')
+@slice_blueprint.put('/add-labels')
+@slice_blueprint.input(SliceAndLabelIdsIn, location='json')
 @slice_blueprint.output(SliceIdsOut)
 @slice_blueprint.doc(summary='添加标签', security='ApiAuth')
-def add_label(json_data):
-    res = AppServiceFactory.slice_service.add_label(**json_data)
+def add_labels(json_data):
+    res = AppServiceFactory.slice_service.add_labels(**json_data)
     return res.response
 
 

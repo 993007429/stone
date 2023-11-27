@@ -41,3 +41,6 @@ class SliceService(object):
         updated_count, message = self.domain_service.update_slices(**kwargs)
         return AppResponse(message=message, data={'updated_count': updated_count})
 
+    def add_labels(self, **kwargs) -> AppResponse[dict]:
+        affected_count, message = self.domain_service.add_labels(**kwargs)
+        return AppResponse(message=message, data={'affected_count': affected_count})

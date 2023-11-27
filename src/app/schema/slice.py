@@ -84,6 +84,7 @@ class SliceInT(Schema):
     parent_id = Integer(required=False, description='关联数据(父级数据ID)')
     name = String(required=True, description='切片名')
     data_type = String(required=True, description='数据类型(WSI、ROI、Patch)')
+    wh_stat = String(required=True, description='入库状态')
 
 
 class SliceUploadIn(Schema):
@@ -191,9 +192,9 @@ class SliceIdsOut(Schema):
     data = Dict(keys=String(), values=Integer(required=True), description='受影响切片数量')
 
 
-class LabelSliceIdsIn(Schema):
+class SliceAndLabelIdsIn(Schema):
     ids = List(Integer(required=True), description='切片ID列表')
-    label_id = Integer(required=True, description='标签ID')
+    label_ids = List(Integer(required=True, description='标签ID列表'))
 
 
 class DSSliceIdsIn(Schema):

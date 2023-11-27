@@ -10,6 +10,8 @@ class SliceEntity(BaseEntity):
     parent_id: Optional[int]
     name: str
     data_type: str
+    wh_stat: str
+    is_deleted: int = 0
 
     class Config:
         orm_mode = True
