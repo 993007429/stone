@@ -12,3 +12,5 @@ class Slice(Base):
     parent_id = Column(Integer, nullable=True)
     name = Column(String(255), nullable=False)
     data_type = Column(String(255), nullable=False)
+    wh_stat = Column(String(255), nullable=False)
+    is_deleted = Column(Integer, nullable=False)

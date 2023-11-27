@@ -33,5 +33,11 @@ class SliceService(object):
         slice_, message = self.domain_service.get_slice_by_id(slice_id)
         return AppResponse(data={'slice': slice_.dict()})
 
+    def delete_slices(self, **kwargs) -> AppResponse[dict]:
+        deleted_count, message = self.domain_service.delete_slices(**kwargs)
+        return AppResponse(message=message, data={'deleted_count': deleted_count})
 
+    def update_slices(self, **kwargs) -> AppResponse[dict]:
+        updated_count, message = self.domain_service.update_slices(**kwargs)
+        return AppResponse(message=message, data={'updated_count': updated_count})
 

@@ -115,6 +115,23 @@ class SQLAlchemySliceRepository(SliceRepository):
 
         return slices, pagination
 
+    def delete_slices(self, **kwargs) -> int:
+        ids = kwargs['ids']
+        self._session.begin()
+        deleted_count = self._session.query(Slice).filter(Slice.id.in_(ids)).update(
+            {'is_deleted': 1}, synchronize_session=False)
+        self._session.commit()
+        return deleted_count
+
+    def update_slices(self, **kwargs) -> int:
+        ids = kwargs['ids']
+        del kwargs['ids']
+        self._session.begin()
+        updated_count = self._session.query(Slice).filter(Slice.id.in_(ids)).update(
+            kwargs, synchronize_session=False)
+        self._session.commit()
+        return updated_count
+
     def save(self, entity: SliceEntity) -> Tuple[bool, SliceEntity]:
         model = Slice(**entity.dict())
         self._session.begin()

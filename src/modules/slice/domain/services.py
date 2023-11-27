@@ -59,8 +59,14 @@ class SliceDomainService(object):
         slices, pagination = self.repository.filter_slices(**kwargs)
         return slices, pagination, 'filter slice success'
 
-    def get_slice(self, slice_id) -> Optional[SliceEntity]:
-        slice_ = self.repository.get_slice_by_id(slice_id)
+    def delete_slices(self, **kwargs) -> Tuple[int, str]:
+        deleted_count = self.repository.delete_slices(**kwargs)
+        return deleted_count, 'delete slice success'
+
+    def update_slices(self, **kwargs) -> Tuple[int, str]:
+        updated_count = self.repository.update_slices(**kwargs)
+        return updated_count, 'update slice success'
+
 
 
 
