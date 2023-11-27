@@ -16,13 +16,14 @@ from src.app.service_factory import AppServiceFactory
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
 
 
-@slice_blueprint.get('')
+@slice_blueprint.post('/filter')
+@connect_db()
 @slice_blueprint.input(SlicePageQuery, location='query')
 @slice_blueprint.input(SliceFilter, location='json')
 @slice_blueprint.output(ListSliceOut)
 @slice_blueprint.doc(summary='切片列表', security='ApiAuth')
-def get_slices(query_data, json_data):
-    res = AppServiceFactory.slice_service.get_slices(**query_data, **json_data)
+def filter_slices(query_data, json_data):
+    res = AppServiceFactory.slice_service.filter_slices(**{'page_query': query_data, 'filter': json_data})
     return res.response
 
 

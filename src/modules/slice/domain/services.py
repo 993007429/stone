@@ -1,7 +1,7 @@
 import logging
 import os
 import uuid
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 from werkzeug.utils import secure_filename
 
@@ -49,11 +49,15 @@ class SliceDomainService(object):
         return slice_key
 
     def create_slice(self, **kwargs) -> Tuple[Optional[SliceEntity], str]:
-        slide = SliceEntity.parse_obj(kwargs)
-        success, new_slice = self.repository.save(slide)
+        slice_ = SliceEntity.parse_obj(kwargs)
+        success, new_slice = self.repository.save(slice_)
         if success:
             return new_slice, 'create slice success'
         return None, 'create slice failed'
+
+    def filter_slices(self, **kwargs) -> Tuple[List[SliceEntity], dict, str]:
+        slices, pagination = self.repository.filter_slices(**kwargs)
+        return slices, pagination, 'filter slice success'
 
 
 

@@ -24,5 +24,4 @@ class Filter(Schema):
 class PaginationSchema(Schema):
     page = Integer()
     per_page = Integer()
-    pages = Integer()
     total = Integer()

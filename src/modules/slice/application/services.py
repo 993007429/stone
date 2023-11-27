@@ -21,21 +21,11 @@ class SliceService(object):
         slice_key = self.domain_service.upload_slice(**kwargs)
         return AppResponse(data={'slice_key': slice_key})
 
-    def create_slice(self, **kwargs) -> AppResponse[str]:
-        slide, message = self.domain_service.create_slice(**kwargs)
-        return AppResponse(message=message, data=slide.dict())
+    def create_slice(self, **kwargs) -> AppResponse[dict]:
+        slice_, message = self.domain_service.create_slice(**kwargs)
+        return AppResponse(message=message, data={'slice': slice_.dict()})
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def filter_slices(self, **kwargs) -> AppResponse[dict]:
+        slices, pagination, message = self.domain_service.filter_slices(**kwargs)
+        return AppResponse(message=message, data={'slices': [slice_.dict() for slice_ in slices]}, pagination=pagination)
 

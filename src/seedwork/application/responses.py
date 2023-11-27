@@ -10,6 +10,7 @@ class AppResponse(BaseModel, Generic[T]):
     err_code: int = 0
     message: Optional[str] = None
     data: Optional[T] = None
+    pagination: Optional[dict] = None
 
     def __repr__(self):
         return f'Response(err_code={self.err_code}, message={self.message})'
@@ -19,5 +20,6 @@ class AppResponse(BaseModel, Generic[T]):
         return {
             'code': self.err_code,
             'message': self.message,
-            'data': self.data
+            'data': self.data,
+            'pagination': self.pagination,
         }

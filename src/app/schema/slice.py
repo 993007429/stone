@@ -1,5 +1,5 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, DateTime, URL, Float, File
+from apiflask.fields import Integer, String, List, Nested, DateTime, URL, Float, File, Dict
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 from werkzeug.utils import secure_filename
@@ -93,7 +93,7 @@ class SliceUploadIn(Schema):
 class SingleSliceUploadOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested({'slice_key': String(required=True)})
+    data = Dict(keys=String(), values=String(required=True))
 
 
 class SliceOut(SliceBase):
@@ -115,13 +115,13 @@ class ComparisonSliceOut(Schema):
 class SingleSliceOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(SliceOut)
+    data = Dict(keys=String(), values=Nested(SliceOut))
 
 
 class ListSliceOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = List(Nested(SliceOut))
+    data = Dict(keys=String(), values=List(Nested(SliceOut)))
     pagination = Nested(PaginationSchema)
 
 
@@ -136,7 +136,7 @@ class SliceIdsIn(Schema):
 class SliceIdsOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = List(Integer(required=True), description='切片ID列表')
+    data = Dict(keys=String(), values=List(Integer(required=True), description='切片ID列表'))
 
 
 class LabelSliceIdsIn(Schema):
@@ -152,7 +152,7 @@ class DSSliceIdsIn(Schema):
 class ComparisonListSliceOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = List(Nested(ComparisonSliceOut))
+    data = Dict(keys=String(), values=List(Nested(ComparisonSliceOut)))
     pagination = Nested(PaginationSchema)
 
 
