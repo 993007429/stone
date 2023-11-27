@@ -8,7 +8,7 @@ from src.seedwork.infrastructure.models import Base
 class Slice(Base):
     __tablename__ = 'slice'
 
-    username = Column(String(255), unique=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
-    role = Column(String(255), nullable=False)
-    creator = Column(String(255), nullable=False, comment='创建者')
+    slice_key = Column(String(255), nullable=False)
+    parent_id = Column(Integer, nullable=True)
+    name = Column(String(255), nullable=False)
+    data_type = Column(String(255), nullable=False)

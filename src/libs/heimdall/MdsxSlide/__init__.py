@@ -1,3 +1,4 @@
+import os
 import sys
 import math
 from io import BytesIO
@@ -12,6 +13,7 @@ from ..SlideBase import SlideBase
 
 if sys.platform == 'win32':
     DEFAULT_ENCODING = 'gbk'
+    os.add_dll_directory(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'win_libs'))
     lib = windll.LoadLibrary('MDSFileParser.dll')
 else:
     DEFAULT_ENCODING = 'utf-8'

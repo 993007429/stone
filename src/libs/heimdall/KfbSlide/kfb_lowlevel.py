@@ -1,6 +1,7 @@
 from __future__ import division
 
 import logging
+import os
 import sys
 
 from ctypes import *
@@ -8,6 +9,7 @@ from itertools import count
 import numpy as np
 
 if sys.platform == 'win32':
+    os.add_dll_directory(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'win_libs'))
     _lib = windll.LoadLibrary('libkfbslide.dll')
 elif sys.platform == 'linux':
     _lib = cdll.LoadLibrary('libkfbslide.so')

@@ -6,10 +6,13 @@ from src.seedwork.domain.value_objects import GenericUUID
 
 
 class SliceEntity(BaseEntity):
-    username: str
-    password_hash: str
-    role: str
-    creator: str
+    slice_key: Optional[str]
+    parent_id: Optional[int]
+    name: str
+    data_type: str
+
+    class Config:
+        orm_mode = True
 
     @property
     def slice_path(self):

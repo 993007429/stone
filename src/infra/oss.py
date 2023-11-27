@@ -195,7 +195,7 @@ class MinIO(Oss):
         return self.public_client.get_presigned_url(
             method, bucket_name=self.bucket_name, object_name=key,
             expires=datetime.timedelta(seconds=expire_in),
-            extra_query_params={'cyborg': f'{rand}'}
+            extra_query_params={'stone': f'{rand}'}
         )
 
     def generate_sign_token(self, filetype: str, target_dir: str, expire_in: int = 300) -> dict:
@@ -224,6 +224,16 @@ oss: Oss = MinIO(
     secret=setting.MINIO_ACCESS_SECRET,
     pub_endpoint=setting.PUBLIC_ENDPOINT,
     private_endpoint=setting.PRIVATE_ENDPOINT,
-    bucket_name=setting.BUCKET_NAME,
+    bucket_name=setting.MODEL_BUCKET,
     use_https=setting.USE_HTTPS
 ) if setting.MINIO_ACCESS_KEY else None
+
+
+# slice_oss: Oss = MinIO(
+#     access_key=setting.MINIO_ACCESS_KEY,
+#     secret=setting.MINIO_ACCESS_SECRET,
+#     pub_endpoint=setting.PUBLIC_ENDPOINT,
+#     private_endpoint=setting.PRIVATE_ENDPOINT,
+#     bucket_name=setting.SLICE_BUCKET,
+#     use_https=setting.USE_HTTPS
+# ) if setting.MINIO_ACCESS_KEY else None

@@ -1,7 +1,8 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, DateTime, URL, Float
+from apiflask.fields import Integer, String, List, Nested, DateTime, URL, Float, File
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
+from werkzeug.utils import secure_filename
 
 from src.app.base_schema import DurationField, PageQuery, Filter, PaginationSchema
 from src.modules.slice.domain.value_objects import LogicType
@@ -22,8 +23,8 @@ class ComparisonSliceFilter(Schema):
     models = List(Integer(required=True), description='模型ID列表')
 
 
-class SliceOut(Schema):
-    id = Integer(required=True)
+class SliceBase(Schema):
+    slice_key = String(required=True, description='切片唯一ID')
     parent_id = String(required=True, description='关联数据(父级数据ID)')
     name = String(required=True, validate=[Length(0, 255)], description='切片名')
     data_type = String(required=True, description='数据类型(WSI、ROI、Patch)')
@@ -72,6 +73,31 @@ class SliceOut(Schema):
     rev_stat = String(required=False, description='复核状态(待复核/已复核) 二期')
     rev = String(required=False, description='复核诊断结果(最后一次内部医生复核诊断结果) 二期')
     rev_date = String(required=False, description='复核日期(最后一次内部医生复核诊断日期) 二期')
+
+
+class SliceIn(SliceBase):
+    pass
+
+
+class SliceInT(Schema):
+    slice_key = String(required=True, description='切片唯一ID')
+    parent_id = Integer(required=False, description='关联数据(父级数据ID)')
+    name = String(required=True, description='切片名')
+    data_type = String(required=True, description='数据类型(WSI、ROI、Patch)')
+
+
+class SliceUploadIn(Schema):
+    slice_file = File()
+
+
+class SingleSliceUploadOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = Nested({'slice_key': String(required=True)})
+
+
+class SliceOut(SliceBase):
+    id = Integer(required=True)
 
 
 class ModelResultOut(Schema):

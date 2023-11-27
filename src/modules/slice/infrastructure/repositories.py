@@ -28,3 +28,30 @@ class SQLAlchemySliceRepository(SliceRepository):
         if not model:
             return None
         return SliceEntity(**model.dict)
+
+    def save(self, entity: SliceEntity) -> Tuple[bool, SliceEntity]:
+        model = Slice(**entity.dict())
+        self._session.begin()
+        self._session.add(model)
+        self._session.flush([model])
+        self._session.commit()
+        return True, entity.from_orm(model)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
