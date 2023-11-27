@@ -26,6 +26,7 @@ api_blueprint.register_blueprint(ft_blueprint)
 
 def api_before_request():
     # request_context.begin_request()
+    request_context.connect_db()
     token = request.headers.get("Authorization")
     if token:
         try:

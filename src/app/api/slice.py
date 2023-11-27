@@ -17,7 +17,6 @@ slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
 
 
 @slice_blueprint.post('/filter')
-@connect_db()
 @slice_blueprint.input(SlicePageQuery, location='query')
 @slice_blueprint.input(SliceFilter, location='json')
 @slice_blueprint.output(ListSliceOut)
@@ -28,7 +27,6 @@ def filter_slices(query_data, json_data):
 
 
 @slice_blueprint.post('/upload')
-@connect_db()
 @slice_blueprint.input(SliceUploadIn, location='form_and_files')
 @slice_blueprint.output(SingleSliceUploadOut)
 @slice_blueprint.doc(summary='上传切片文件', security='ApiAuth')
@@ -38,7 +36,6 @@ def upload_slice(form_and_files_data):
 
 
 @slice_blueprint.post('')
-@connect_db()
 @slice_blueprint.input(SliceInT, location='json')
 @slice_blueprint.output(SingleSliceOut)
 @slice_blueprint.doc(summary='创建切片', security='ApiAuth')

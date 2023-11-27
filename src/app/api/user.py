@@ -16,7 +16,6 @@ user_blueprint = APIBlueprint('用户', __name__, url_prefix='/users')
 
 
 @user_blueprint.post('/login')
-@connect_db()
 @user_blueprint.input(LoginIn, location='json')
 @user_blueprint.output(ApiLoginOut)
 @user_blueprint.doc(summary='登录', security='ApiAuth')
@@ -26,7 +25,6 @@ def login(json_data):
 
 
 @user_blueprint.post('')
-@connect_db()
 @auth_required()
 @permission_required([IsAdmin])
 @user_blueprint.input(UserIn, location='json')
@@ -38,7 +36,6 @@ def create_user(json_data):
 
 
 @user_blueprint.get('')
-@connect_db()
 @auth_required()
 @permission_required([IsAdmin])
 @user_blueprint.input(UserPageQuery, location='query')
@@ -50,7 +47,6 @@ def get_users(query_data):
 
 
 @user_blueprint.get('/<int:userid>')
-@connect_db()
 # @auth_required()
 # @permission_required([IsAdmin])
 @user_blueprint.output(SingleUserOut)
@@ -61,7 +57,6 @@ def get_user(userid):
 
 
 @user_blueprint.put('/<int:userid>')
-@connect_db()
 # @auth_required()
 # @permission_required([IsAdmin])
 @user_blueprint.input(UserIn, location='json')
@@ -73,7 +68,6 @@ def update_user(userid):
 
 
 @user_blueprint.delete('/<int:userid>')
-@connect_db()
 # @auth_required()
 # @permission_required([IsAdmin])
 @user_blueprint.output(SingleUserOut)

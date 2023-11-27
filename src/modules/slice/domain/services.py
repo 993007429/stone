@@ -59,6 +59,8 @@ class SliceDomainService(object):
         slices, pagination = self.repository.filter_slices(**kwargs)
         return slices, pagination, 'filter slice success'
 
+    def get_slice(self, slice_id) -> Optional[SliceEntity]:
+        slice_ = self.repository.get_slice_by_id(slice_id)
 
 
 
