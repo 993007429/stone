@@ -10,7 +10,7 @@ from src.app.db import connect_db
 from src.app.permission import permission_required
 from src.app.schema.slice import ListSliceOut, SlicePageQuery, SingleSliceOut, SliceFilter, SliceIdsOut, SliceIdsIn, \
     WSIIn, SliceId, ROIIn, DSSliceIdsIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, \
-    SliceUploadIn, SingleSliceUploadOut, SliceInT, SliceUpdateIn, SliceAndLabelIdsIn
+    SliceUploadIn, SingleSliceUploadOut, SliceUpdateIn, SliceAndLabelIdsIn
 from src.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -36,7 +36,7 @@ def upload_slice(form_and_files_data):
 
 
 @slice_blueprint.post('')
-@slice_blueprint.input(SliceInT, location='json')
+@slice_blueprint.input(SliceIn, location='json')
 @slice_blueprint.output(SingleSliceOut)
 @slice_blueprint.doc(summary='创建切片', security='ApiAuth')
 def create_slice(json_data):

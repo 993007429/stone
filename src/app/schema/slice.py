@@ -1,11 +1,11 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, DateTime, URL, Float, File, Dict, Raw
+from apiflask.fields import Integer, String, List, Nested, DateTime, URL, Float, File, Dict, Raw, Boolean
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 from werkzeug.utils import secure_filename
 
 from src.app.base_schema import DurationField, PageQuery, Filter, PaginationSchema
-from src.modules.slice.domain.value_objects import LogicType
+from src.modules.slice.domain.value_objects import LogicType, SliceAnalysisStat, DataType
 
 
 class SlicePageQuery(PageQuery):
@@ -25,20 +25,18 @@ class ComparisonSliceFilter(Schema):
 
 class SliceBase(Schema):
     slice_key = String(required=True, description='切片唯一ID')
-    parent_id = String(required=False, description='关联数据(父级数据ID)')
+    parent_id = Integer(required=False, description='关联数据(父级数据ID)')
     name = String(required=True, description='切片名')
-    data_type = String(required=False, description='数据类型(WSI、ROI、Patch)')
-    no = Integer(required=False, description='切片号')
+    data_type = Integer(required=False, description='数据类型(WSI、ROI、Patch)', validate=[OneOf([1, 2, 3, 4])])
+    anal_stat = Integer(required=False, description='处理状态', validate=[OneOf([1, 2, 3, 4, 5])])
+    wh_stat = Boolean(required=False, description='入库状态', validate=[OneOf([True, False])])
+    no = String(required=False, description='切片号')
     label = String(required=False, description='切片标签(open slide读取label, 卡片视图切换)')
     macro = String(required=False, description='宏观图(open slide读取macro image, 卡片视图切换)')
-    thumbnail = URL(required=False, description='切片缩略图')
-    anal_stat = String(required=False, description='处理状态')
-    wh_stat = String(required=False, description='入库状态')
+    thumbnail = String(required=False, description='切片缩略图')
     ai_model = String(required=False, description='AI模块(最后一次处理数据所用的AI模块)')
     ai_suggest = String(required=False, description='AI建议(最后一次AI分析结果)')
-    last_anal = DateTime(required=False, description='AI分析日期(最后一次AI分析时间)')
     qua = String(required=False, description='质控结果(合格/不合格{不合格原因eg模糊}/null, 双击展开质控详细记录)')
-    last_qua = DateTime(required=False, description='质控日期(最后一次质控标签时间)')
     p_num = String(required=False, description='病理号')
     clin_info = String(required=False, description='临床信息')
     slice_so = String(required=False, description='切片来源')
@@ -46,7 +44,6 @@ class SliceBase(Schema):
     sam_type = String(required=False, description='样本类型')
     sam_site = String(required=False, description='取样部位')
     data_co = String(required=False, description='数据采集人')
-    sto_date = DateTime(required=False, description='入库日期')
     img_feat = String(required=False, description='图像特征')
     diagnosis = String(required=False, description='医院诊断(跟随模块走的结构化诊断分级结果)')
     img_c = String(required=False, description='图像色度')
@@ -63,8 +60,7 @@ class SliceBase(Schema):
     cc = String(required=False, description='颜色校正(有/无/无法读取/不明)')
     mpp = String(required=False, description='mpp')
     f_path = String(required=False, description='存储路径')
-    f_size = String(required=False, description='文件大小')
-    created_at = DateTime(required=False, format='%Y-%m-%d %H:%M:%S')
+    f_size = Float(required=False, description='文件大小')
 
     # anno_stat = String(required=False, description='标注状态(待标注/已标注) 二期')
     # anno_count = String(required=False, description='标注数量 二期')
@@ -75,15 +71,17 @@ class SliceBase(Schema):
 
 
 class SliceIn(SliceBase):
-    pass
+    sto_date = DateTime(required=False, description='入库日期')
+    last_anal = DateTime(required=False, description='AI分析日期(最后一次AI分析时间)')
+    last_qua = DateTime(required=False, description='质控日期(最后一次质控标签时间)')
 
 
-class SliceInT(Schema):
-    slice_key = String(required=True, description='切片唯一ID')
-    parent_id = Integer(required=False, description='关联数据(父级数据ID)')
-    name = String(required=True, description='切片名')
-    data_type = String(required=True, description='数据类型(WSI、ROI、Patch)')
-    wh_stat = String(required=True, description='入库状态')
+class SliceOut(SliceBase):
+    id = Integer(required=True)
+    created_at = DateTime(required=False, format='%Y-%m-%d %H:%M:%S')
+    sto_date = DateTime(required=False, description='入库日期', format='%Y-%m-%d %H:%M:%S')
+    last_anal = DateTime(required=False, description='AI分析日期(最后一次AI分析时间)', format='%Y-%m-%d %H:%M:%S')
+    last_qua = DateTime(required=False, description='质控日期(最后一次质控标签时间)', format='%Y-%m-%d %H:%M:%S')
 
 
 class SliceUploadIn(Schema):
@@ -94,10 +92,6 @@ class SingleSliceUploadOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Dict(keys=String(), values=String(required=True))
-
-
-class SliceOut(SliceBase):
-    id = Integer(required=True)
 
 
 class ModelResultOut(Schema):

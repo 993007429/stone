@@ -18,8 +18,8 @@ class DataType(BaseEnum):
 
 
 class SliceAnalysisStat(BaseEnum):
-    default = 0  # 待处理
-    analyzing = 1  # 处理中
-    success = 2  # 已处理
-    failed = 3  # 处理异常
-    time_out = 4  # 处理超时
+    default = 1  # 待处理
+    analyzing = 2  # 处理中
+    success = 3  # 已处理
+    failed = 4  # 处理异常
+    time_out = 5  # 处理超时
