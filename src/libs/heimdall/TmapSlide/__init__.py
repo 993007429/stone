@@ -1,3 +1,4 @@
+import os
 import sys
 import math
 from enum import Enum
@@ -13,6 +14,7 @@ from ..SlideBase import SlideBase
 if sys.platform == 'win32':
     from ctypes import windll
     cur_encoding = 'gbk'
+    os.add_dll_directory(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'win_libs'))
     lib = windll.LoadLibrary('iViewerSDK.dll')
 else:
     from ctypes import cdll

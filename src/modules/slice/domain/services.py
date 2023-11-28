@@ -37,7 +37,7 @@ class SliceDomainService(object):
 
         slice_filename = secure_filename(slice_file.filename)
         slice_key = uuid.uuid4().hex
-        slice_dir = os.path.join('D:\\data\\111', slice_key)
+        slice_dir = os.path.join(setting.DATA_DIR, slice_key)
         slice_path = os.path.join(slice_dir, slice_filename)
 
         if not os.path.exists(slice_dir):

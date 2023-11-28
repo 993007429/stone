@@ -31,15 +31,18 @@ rather than in the high-level interface.)
 """
 
 from __future__ import division
+
+import os
 from ctypes import *
 from itertools import count
 import PIL.Image
 import platform
 import sys
 
-if platform.system() == 'Windows':
-    _lib = cdll.LoadLibrary('libopenslide-0.dll')
-elif platform.system() == 'Darwin':
+if sys.platform == 'win32':
+    os.add_dll_directory(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'win_libs'))
+    _lib = windll.LoadLibrary('libopenslide-0.dll')
+elif sys.platform == 'Darwin':
     try:
         _lib = cdll.LoadLibrary('libopenslide.0.dylib')
     except OSError:
