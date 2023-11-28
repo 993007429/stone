@@ -35,8 +35,8 @@ def get_label(slice_id):
 @label_blueprint.input(LabelIn, location='json')
 @label_blueprint.output(SingleLabelOut)
 @label_blueprint.doc(summary='更新标签', security='ApiAuth')
-def update_label(json_data):
-    res = AppServiceFactory.slice_service.update_label(**json_data)
+def update_label(label_id, json_data):
+    res = AppServiceFactory.slice_service.update_label(**{'label_id': label_id, 'label_data': json_data})
     return res.response
 
 

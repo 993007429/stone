@@ -185,6 +185,9 @@ class SQLAlchemySliceRepository(SliceRepository):
         self._session.begin()
         deleted_count = self._session.query(Label).filter(Label.id.in_(ids)).update(
             {'is_deleted': 1}, synchronize_session=False)
+
+        self._session.query(SliceLabel).filter(SliceLabel.label_id.in_(ids)).update(
+            {'is_deleted': 1}, synchronize_session=False)
         self._session.commit()
         return deleted_count
 
@@ -197,12 +200,19 @@ class SQLAlchemySliceRepository(SliceRepository):
         self._session.commit()
         return updated_count
 
-    def update_labels(self, **kwargs) -> int:
-        ids = kwargs['ids']
-        del kwargs['ids']
+    def update_label(self, **kwargs) -> int:
+        label_id = kwargs['label_id']
+        del kwargs['label_id']
         self._session.begin()
-        updated_count = self._session.query(Label).filter(Label.id.in_(ids)).update(
-            kwargs, synchronize_session=False)
+        to_update_model = self._session.query(Label).filter(Label.id == label_id).first()
+
+        name = kwargs['label_data'].get('name')
+        if name and name != to_update_model.name:
+            self._session.query(SliceLabel).filter(SliceLabel.label_id == label_id).update(
+                {'label_name': name}, synchronize_session=False)
+
+        updated_count = self._session.query(Label).filter(Label.id == label_id).update(
+            {'is_deleted': 1}, synchronize_session=False)
         self._session.commit()
         return updated_count
 

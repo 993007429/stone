@@ -86,9 +86,9 @@ class SliceDomainService(object):
         deleted_count = self.repository.delete_labels(**kwargs)
         return deleted_count, 'delete labels succeed'
 
-    def update_labels(self, **kwargs) -> Tuple[int, str]:
-        updated_count = self.repository.update_labels(**kwargs)
-        return updated_count, 'update labels succeed'
+    def update_label(self, **kwargs) -> Tuple[int, str]:
+        updated_count = self.repository.update_label(**kwargs)
+        return updated_count, 'update label succeed'
 
 
 

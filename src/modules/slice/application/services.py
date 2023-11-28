@@ -57,6 +57,6 @@ class SliceService(object):
         deleted_count, message = self.domain_service.delete_labels(**kwargs)
         return AppResponse(message=message, data={'deleted_count': deleted_count})
 
-    def update_labels(self, **kwargs) -> AppResponse[dict]:
-        updated_count, message = self.domain_service.update_labels(**kwargs)
+    def update_label(self, **kwargs) -> AppResponse[dict]:
+        updated_count, message = self.domain_service.update_label(**kwargs)
         return AppResponse(message=message, data={'updated_count': updated_count})
