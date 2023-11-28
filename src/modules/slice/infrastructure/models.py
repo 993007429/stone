@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime, BigInteger, Table, ForeignKey, Float, Boolean, \
-    SmallInteger
+    SmallInteger, text, literal_column
 
 from src.modules.slice.domain.value_objects import DataType, SliceAnalysisStat
 from src.seedwork.infrastructure.models import Base
@@ -18,16 +18,16 @@ class SliceLabel(Base):
 class Slice(Base):
     __tablename__ = 'slice'
 
-    slice_key = Column(String(255), nullable=False, default='', comment='切片唯一ID')
+    slice_key = Column(String(255), nullable=False, server_default=text('""'), comment='切片唯一ID')
     parent_id = Column(Integer, nullable=True, comment='关联数据(父级数据ID)')
-    name = Column(String(255), nullable=False, default='', comment='切片名')
-    data_type = Column(SmallInteger, nullable=False, default=DataType.wsi.value, comment='数据类型(WSI、ROI、Patch)')
-    no = Column(String(255), nullable=True, default='', comment='切片号')
-    label = Column(String(255), nullable=True, default='', comment='切片标签(open slide读取label, 卡片视图切换)')
-    macro = Column(String(255), nullable=True, default='', comment='宏观图(open slide读取macro image, 卡片视图切换)')
-    thumbnail = Column(String(255), nullable=True, default='', comment='切片缩略图')
-    anal_stat = Column(SmallInteger, nullable=False, default=SliceAnalysisStat.default.value, comment='处理状态')
-    wh_stat = Column(Boolean, nullable=False, default=False, comment='入库状态')
+    name = Column(String(255), nullable=False, server_default=text('""'), comment='切片名')
+    data_type = Column(SmallInteger, nullable=False, server_default=literal_column(f'{DataType.wsi.value}'), comment='数据类型(WSI、ROI、Patch)')
+    no = Column(String(255), nullable=True, comment='切片号')
+    label = Column(String(255), nullable=True, comment='切片标签(open slide读取label, 卡片视图切换)')
+    macro = Column(String(255), nullable=True, comment='宏观图(open slide读取macro image, 卡片视图切换)')
+    thumbnail = Column(String(255), nullable=True, comment='切片缩略图')
+    anal_stat = Column(SmallInteger, nullable=False, server_default=literal_column(f'{SliceAnalysisStat.default.value}'), comment='处理状态')
+    wh_stat = Column(Boolean, nullable=False, server_default=literal_column('0'), comment='入库状态')
     ai_model = Column(String(255), nullable=True, comment='AI模块(最后一次处理数据所用的AI模块)')
     ai_suggest = Column(String(255), nullable=True, comment='AI建议(最后一次AI分析结果)')
     last_anal = Column(DateTime, nullable=True, comment='AI分析日期(最后一次AI分析时间)')
@@ -63,8 +63,8 @@ class Slice(Base):
 class Label(Base):
     __tablename__ = 'label'
 
-    name = Column(String(255), nullable=True, default='')
-    creator = Column(String(255), nullable=True, default='')
+    name = Column(String(255), unique=True, nullable=False)
+    creator = Column(String(255), nullable=True)
 
 
 

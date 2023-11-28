@@ -5,8 +5,8 @@ from src.seedwork.domain.value_objects import BaseEnum, BaseValueObject
 
 @enum.unique
 class RoleType(BaseEnum):
-    admin = "admin"
-    user = "user"
+    admin = 'admin'
+    user = 'user'
 
 
 class LoginUser(BaseValueObject):
