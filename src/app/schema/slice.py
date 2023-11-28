@@ -193,7 +193,7 @@ class SliceIdsOut(Schema):
 
 
 class SliceAndLabelIdsIn(Schema):
-    ids = List(Integer(required=True), description='切片ID列表')
+    slice_ids = List(Integer(required=True), description='切片ID列表')
     label_ids = List(Integer(required=True, description='标签ID列表'))
 
 

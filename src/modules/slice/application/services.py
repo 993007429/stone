@@ -23,6 +23,8 @@ class SliceService(object):
 
     def create_slice(self, **kwargs) -> AppResponse[dict]:
         slice_, message = self.domain_service.create_slice(**kwargs)
+        if not slice_:
+            return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'slice': slice_.dict()})
 
     def filter_slices(self, **kwargs) -> AppResponse[dict]:

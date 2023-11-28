@@ -59,13 +59,31 @@ class SliceDomainService(object):
     def create_slice(self, **kwargs) -> Tuple[Optional[SliceEntity], str]:
         slice_ = SliceEntity.parse_obj(kwargs)
         succeed, new_slice = self.repository.save_slice(slice_)
-        if succeed:
-            return new_slice, 'create slice succeed'
-        return None, 'create slice failed'
+        if not succeed:
+            return None, 'Duplicate slice'
+        return new_slice, 'Create slice succeed'
+
+    def create_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:
+        label = LabelEntity.parse_obj(kwargs)
+        succeed, new_label = self.repository.save_label(label)
+        if not succeed:
+            return None, 'Duplicate label'
+        return new_label, 'Create label succeed'
 
     def filter_slices(self, **kwargs) -> Tuple[List[SliceEntity], dict, str]:
-        slices, pagination = self.repository.filter_slices(**kwargs)
+        page = kwargs['page_query']['page']
+        per_page = kwargs['page_query']['per_page']
+        logic = kwargs['filter']['logic']
+        filters = kwargs['filter']['filters']
+        slices, pagination = self.repository.filter_slices(page, per_page, logic, filters)
         return slices, pagination, 'filter slices succeed'
+
+    def filter_labels(self, **kwargs) -> Tuple[List[LabelEntity], dict, str]:
+        page = kwargs['page_query']['page']
+        per_page = kwargs['page_query']['per_page']
+        filters = kwargs['filter']['filters']
+        labels, pagination = self.repository.filter_labels(page, per_page, filters)
+        return labels, pagination, 'filter labels succeed'
 
     @transaction
     def delete_slices(self, **kwargs) -> Tuple[int, str]:
@@ -77,23 +95,18 @@ class SliceDomainService(object):
         return deleted_count, 'delete slices succeed'
 
     def update_slices(self, **kwargs) -> Tuple[int, str]:
-        updated_count = self.repository.update_slices(**kwargs)
+        ids = kwargs.pop('ids')
+        update_data = kwargs
+        updated_count = self.repository.update_slices(ids, update_data)
         return updated_count, 'update slices succeed'
 
     def add_labels(self, **kwargs) -> Tuple[int, str]:
-        affected_count = self.repository.add_labels(**kwargs)
+        slice_ids = kwargs['slice_ids']
+        label_ids = kwargs['label_ids']
+        affected_count = self.repository.add_labels(slice_ids, label_ids)
         return affected_count, 'add labels to slices succeed'
 
-    def create_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:
-        label = LabelEntity.parse_obj(kwargs)
-        succeed, new_label = self.repository.save_label(label)
-        if succeed:
-            return new_label, 'create label succeed'
-        return None, 'create label failed'
 
-    def filter_labels(self, **kwargs) -> Tuple[List[LabelEntity], dict, str]:
-        labels, pagination = self.repository.filter_labels(**kwargs)
-        return labels, pagination, 'filter labels succeed'
 
     def delete_labels(self, **kwargs) -> Tuple[int, str]:
         deleted_count = self.repository.delete_labels(**kwargs)
