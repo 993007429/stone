@@ -44,3 +44,19 @@ class SliceService(object):
     def add_labels(self, **kwargs) -> AppResponse[dict]:
         affected_count, message = self.domain_service.add_labels(**kwargs)
         return AppResponse(message=message, data={'affected_count': affected_count})
+
+    def create_label(self, **kwargs) -> AppResponse[dict]:
+        label, message = self.domain_service.create_label(**kwargs)
+        return AppResponse(message=message, data={'label': label.dict()})
+
+    def filter_labels(self, **kwargs) -> AppResponse[dict]:
+        labels, pagination, message = self.domain_service.filter_labels(**kwargs)
+        return AppResponse(message=message, data={'labels': [label.dict() for label in labels]}, pagination=pagination)
+
+    def delete_labels(self, **kwargs) -> AppResponse[dict]:
+        deleted_count, message = self.domain_service.delete_labels(**kwargs)
+        return AppResponse(message=message, data={'deleted_count': deleted_count})
+
+    def update_labels(self, **kwargs) -> AppResponse[dict]:
+        updated_count, message = self.domain_service.update_labels(**kwargs)
+        return AppResponse(message=message, data={'updated_count': updated_count})

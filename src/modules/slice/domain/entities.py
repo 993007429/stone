@@ -19,3 +19,23 @@ class SliceEntity(BaseEntity):
     @property
     def slice_path(self):
         return ''
+
+
+class LabelEntity(BaseEntity):
+    name: str
+    count: int
+    creator: str
+    is_deleted: int = 0
+
+    class Config:
+        orm_mode = True
+
+
+
+
+
+
+
+
+
+

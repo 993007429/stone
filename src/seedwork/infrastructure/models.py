@@ -12,6 +12,7 @@ class _Base:
     id = Column(BigInteger, primary_key=True)
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     last_modified = Column(DateTime, nullable=False, default=datetime.now)
+    is_deleted = Column(Integer, nullable=False, default=0)
 
     @property
     def dict(self) -> dict:

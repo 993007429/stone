@@ -13,13 +13,13 @@ from src.app.service_factory import AppServiceFactory
 label_blueprint = APIBlueprint('标签', __name__, url_prefix='/labels')
 
 
-@label_blueprint.get('')
+@label_blueprint.post('/filter')
 @label_blueprint.input(LabelPageQuery, location='query')
 @label_blueprint.input(LabelFilter, location='json')
 @label_blueprint.output(ListLabelOut)
 @label_blueprint.doc(summary='标签列表', security='ApiAuth')
-def get_labels(query_data, json_data):
-    res = AppServiceFactory.slice_service.get_labels(**query_data, **json_data)
+def filter_labels(query_data, json_data):
+    res = AppServiceFactory.slice_service.filter_labels(**{'page_query': query_data, 'filter': json_data})
     return res.response
 
 

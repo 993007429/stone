@@ -12,7 +12,8 @@ class LabelPageQuery(PageQuery):
 
 
 class LabelFilter(Schema):
-    name = String(required=True)
+    logic = String(required=True, validate=[OneOf([LogicType.and_.value, LogicType.or_.value])])
+    filters = List(Nested(Filter))
 
 
 class LabelIn(Schema):

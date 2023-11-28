@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 
 import setting
 from src.libs.heimdall.dispatch import open_slide
-from src.modules.slice.domain.entities import SliceEntity
+from src.modules.slice.domain.entities import SliceEntity, LabelEntity
 from src.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ class SliceDomainService(object):
 
     def create_slice(self, **kwargs) -> Tuple[Optional[SliceEntity], str]:
         slice_ = SliceEntity.parse_obj(kwargs)
-        succeed, new_slice = self.repository.save(slice_)
+        succeed, new_slice = self.repository.save_slice(slice_)
         if succeed:
             return new_slice, 'create slice succeed'
         return None, 'create slice failed'
@@ -70,6 +70,25 @@ class SliceDomainService(object):
     def add_labels(self, **kwargs) -> Tuple[int, str]:
         affected_count = self.repository.add_labels(**kwargs)
         return affected_count, 'add labels to slices succeed'
+
+    def create_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:
+        label = LabelEntity.parse_obj(kwargs)
+        succeed, new_label = self.repository.save_label(label)
+        if succeed:
+            return new_label, 'create label succeed'
+        return None, 'create label failed'
+
+    def filter_labels(self, **kwargs) -> Tuple[List[LabelEntity], dict, str]:
+        labels, pagination = self.repository.filter_labels(**kwargs)
+        return labels, pagination, 'filter labels succeed'
+
+    def delete_labels(self, **kwargs) -> Tuple[int, str]:
+        deleted_count = self.repository.delete_labels(**kwargs)
+        return deleted_count, 'delete labels succeed'
+
+    def update_labels(self, **kwargs) -> Tuple[int, str]:
+        updated_count = self.repository.update_labels(**kwargs)
+        return updated_count, 'update labels succeed'
 
 
 

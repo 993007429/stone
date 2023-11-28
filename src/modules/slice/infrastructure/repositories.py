@@ -6,7 +6,7 @@ from sqlalchemy import not_, and_, or_, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from src.modules.slice.domain.entities import SliceEntity
+from src.modules.slice.domain.entities import SliceEntity, LabelEntity
 from src.modules.slice.domain.repositories import SliceRepository
 from src.modules.slice.infrastructure.models import Slice, Label, SliceLabel
 
@@ -115,10 +115,75 @@ class SQLAlchemySliceRepository(SliceRepository):
 
         return slices, pagination
 
+    def filter_labels(self, **kwargs) -> Tuple[List[LabelEntity], dict]:
+        page = kwargs['page_query']['page']
+        per_page = kwargs['page_query']['per_page']
+        filters = kwargs['filter']['filters']
+
+        self._session.begin()
+        query = self._session.query(Label)
+
+        for filter_ in filters:
+            field = filter_['field']
+            condition = filter_['condition']
+            value = filter_['value']
+            if field in ['create_at']:
+                if condition == 'equal':
+                    query = query.filter(and_(getattr(Label, field) == value))
+                elif condition == 'greater_than':
+                    query = query.filter(and_(getattr(Label, field).__gt__(value)))
+                elif condition == 'less_than':
+                    query = query.filter(and_(getattr(Label, field).__lt__(value)))
+                elif condition == 'is_null':
+                    query = query.filter(and_(not_(getattr(Label, field).is_(None))))
+                elif condition == 'not_null':
+                    query = query.filter(and_(not_(getattr(Label, field).is_not(None))))
+            else:
+                if condition == 'equal':
+                    query = query.filter(and_(getattr(Label, field) == value))
+                elif condition == 'unequal':
+                    query = query.filter(and_(getattr(Label, field) != value))
+                elif condition == 'contain':
+                    query = query.filter(and_(getattr(Label, field).contains(value)))
+                elif condition == 'not_contain':
+                    query = query.filter(and_(not_(getattr(Label, field).contains(value))))
+                elif condition == 'is_null':
+                    query = query.filter(and_(not_(getattr(Label, field).is_(None))))
+                elif condition == 'not_null':
+                    query = query.filter(and_(not_(getattr(Label, field).is_not(None))))
+
+        query = query.order_by(desc(Slice.id))
+        total = query.count()
+
+        page = min(page, math.ceil(total / per_page))
+        offset = (page - 1) * per_page
+        query = query.offset(offset).limit(per_page)
+
+        pagination = {
+            'total': total,
+            'page': page,
+            'per_page': per_page
+        }
+
+        labels = []
+        for model in query.all():
+            entity = LabelEntity.from_orm(model)
+            labels.append(entity)
+
+        return labels, pagination
+
     def delete_slices(self, **kwargs) -> int:
         ids = kwargs['ids']
         self._session.begin()
         deleted_count = self._session.query(Slice).filter(Slice.id.in_(ids)).update(
+            {'is_deleted': 1}, synchronize_session=False)
+        self._session.commit()
+        return deleted_count
+
+    def delete_labels(self, **kwargs) -> int:
+        ids = kwargs['ids']
+        self._session.begin()
+        deleted_count = self._session.query(Label).filter(Label.id.in_(ids)).update(
             {'is_deleted': 1}, synchronize_session=False)
         self._session.commit()
         return deleted_count
@@ -128,6 +193,15 @@ class SQLAlchemySliceRepository(SliceRepository):
         del kwargs['ids']
         self._session.begin()
         updated_count = self._session.query(Slice).filter(Slice.id.in_(ids)).update(
+            kwargs, synchronize_session=False)
+        self._session.commit()
+        return updated_count
+
+    def update_labels(self, **kwargs) -> int:
+        ids = kwargs['ids']
+        del kwargs['ids']
+        self._session.begin()
+        updated_count = self._session.query(Label).filter(Label.id.in_(ids)).update(
             kwargs, synchronize_session=False)
         self._session.commit()
         return updated_count
@@ -150,13 +224,28 @@ class SQLAlchemySliceRepository(SliceRepository):
         self._session.commit()
         return len(ids)
 
-    def save(self, entity: SliceEntity) -> Tuple[bool, SliceEntity]:
+    def save_slice(self, entity: SliceEntity) -> Tuple[bool, Optional[SliceEntity, str]]:
         model = Slice(**entity.dict())
         self._session.begin()
-        self._session.add(model)
-        self._session.flush([model])
-        self._session.commit()
+        try:
+            self._session.add(model)
+            self._session.flush([model])
+            self._session.commit()
+        except IntegrityError as e:
+            return False, 'Duplicate slice '
         return True, entity.from_orm(model)
+
+    def save_label(self, entity: LabelEntity) -> Tuple[bool, Optional[LabelEntity, str]]:
+        model = Label(**entity.dict())
+        self._session.begin()
+        try:
+            self._session.add(model)
+            self._session.flush([model])
+            self._session.commit()
+        except IntegrityError as e:
+            return False, 'Duplicate label'
+        return True, entity.from_orm(model)
+
 
 
 
