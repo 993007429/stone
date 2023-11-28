@@ -32,7 +32,7 @@ class SliceDomainService(object):
             return None, 'no label'
         return label, 'get label succeed'
 
-    def upload_slice(self, **kwargs) -> str:
+    def upload_slice(self, **kwargs) -> Tuple[str, str]:
         slice_file = kwargs['slice_file']
 
         slice_filename = secure_filename(slice_file.filename)
@@ -54,7 +54,7 @@ class SliceDomainService(object):
         except Exception as e:
             logger.exception(e)
 
-        return slice_key
+        return slice_key, slice_filename
 
     def create_slice(self, **kwargs) -> Tuple[Optional[SliceEntity], str]:
         slice_ = SliceEntity.parse_obj(kwargs)

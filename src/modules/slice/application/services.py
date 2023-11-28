@@ -18,8 +18,8 @@ class SliceService(object):
         return AppResponse(message=message, data={'slice_path': slice_.slice_path if slice_ else None})
 
     def upload_slice(self, **kwargs) -> AppResponse[dict]:
-        slice_key = self.domain_service.upload_slice(**kwargs)
-        return AppResponse(data={'slice_key': slice_key})
+        slice_key, slice_filename = self.domain_service.upload_slice(**kwargs)
+        return AppResponse(data={'slice_key': slice_key, 'slice_filename': slice_filename})
 
     def create_slice(self, **kwargs) -> AppResponse[dict]:
         slice_, message = self.domain_service.create_slice(**kwargs)
