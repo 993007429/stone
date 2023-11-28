@@ -25,7 +25,6 @@ api_blueprint.register_blueprint(ft_blueprint)
 
 
 def api_before_request():
-    # request_context.begin_request()
     request_context.connect_db()
     token = request.headers.get("Authorization")
     if token:
@@ -44,7 +43,7 @@ def api_before_request():
 
 
 def api_after_request(response):
-    # request_context.end_request(commit=True)
+    request_context.close_db(commit=True)
     return response
 
 

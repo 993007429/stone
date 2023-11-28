@@ -23,19 +23,15 @@ class SQLAlchemySliceRepository(SliceRepository):
         return s
 
     def get_slice_by_id(self, pk: int) -> Optional[SliceEntity]:
-        self._session.begin()
         query = self._session.query(Slice).filter_by(id=pk)
         model = query.first()
-        self._session.commit()
         if not model:
             return None
         return SliceEntity(**model.dict)
 
     def get_label_by_id(self, pk: int) -> Optional[LabelEntity]:
-        self._session.begin()
         query = self._session.query(Label).filter_by(id=pk)
         model = query.first()
-        self._session.commit()
         if not model:
             return None
         return LabelEntity(**model.dict)
@@ -46,7 +42,6 @@ class SQLAlchemySliceRepository(SliceRepository):
         logic = kwargs['filter']['logic']
         filters = kwargs['filter']['filters']
 
-        self._session.begin()
         query = self._session.query(Slice)
 
         for filter_ in filters:
@@ -129,7 +124,6 @@ class SQLAlchemySliceRepository(SliceRepository):
         per_page = kwargs['page_query']['per_page']
         filters = kwargs['filter']['filters']
 
-        self._session.begin()
         query = self._session.query(Label)
 
         for filter_ in filters:
@@ -183,57 +177,48 @@ class SQLAlchemySliceRepository(SliceRepository):
 
     def delete_slices(self, **kwargs) -> int:
         ids = kwargs['ids']
-        self._session.begin()
         deleted_count = self._session.query(Slice).filter(Slice.id.in_(ids)).update(
             {'is_deleted': 1}, synchronize_session=False)
-        self._session.commit()
         return deleted_count
 
     def delete_labels(self, **kwargs) -> int:
         ids = kwargs['ids']
-        self._session.begin()
         deleted_count = self._session.query(Label).filter(Label.id.in_(ids)).update(
             {'is_deleted': 1}, synchronize_session=False)
 
         self._session.query(SliceLabel).filter(SliceLabel.label_id.in_(ids)).update(
             {'is_deleted': 1}, synchronize_session=False)
-        self._session.commit()
         return deleted_count
 
     def update_slices(self, **kwargs) -> int:
         ids = kwargs['ids']
         del kwargs['ids']
-        self._session.begin()
         updated_count = self._session.query(Slice).filter(Slice.id.in_(ids)).update(
             kwargs, synchronize_session=False)
-        self._session.commit()
         return updated_count
 
-    def update_label(self, **kwargs) -> bool:
+    def update_label(self, **kwargs) -> Tuple[int, str]:
         label_id = kwargs['label_id']
         label_data = kwargs['label_data']
-        self._session.begin()
         to_update_model_name = self._session.query(Label).filter(Label.id == label_id).first().name
 
         name = label_data.get('name')
         label_exists = self._session.query(exists().where(Label.name == name)).scalar()
         if label_exists:
-            return False
+            return 0, 'Duplicate label name '
 
         if name and name != to_update_model_name:
             self._session.query(SliceLabel).filter(SliceLabel.label_id == label_id).update(
                 {'label_name': name}, synchronize_session=False)
 
-        self._session.query(Label).filter(Label.id == label_id).update(
+        updated_count = self._session.query(Label).filter(Label.id == label_id).update(
             {'is_deleted': 1}, synchronize_session=False)
-        self._session.commit()
-        return True
+        return updated_count, 'Update label succeed'
 
     def add_labels(self, **kwargs) -> int:
         ids = kwargs['ids']
         label_ids = kwargs['label_ids']
 
-        self._session.begin()
         slices = self._session.query(Slice).filter(Slice.id.in_(ids)).all()
         labels = self._session.query(Label).filter(Label.id.in_(label_ids)).all()
 
@@ -244,27 +229,22 @@ class SQLAlchemySliceRepository(SliceRepository):
                 slice_labels.append(slice_label)
 
         self._session.add_all(slice_labels)
-        self._session.commit()
         return len(ids)
 
     def save_slice(self, entity: SliceEntity) -> Tuple[bool, Optional[SliceEntity, str]]:
         model = Slice(**entity.dict())
-        self._session.begin()
         try:
             self._session.add(model)
             self._session.flush([model])
-            self._session.commit()
         except IntegrityError as e:
             return False, 'Duplicate slice '
         return True, entity.from_orm(model)
 
     def save_label(self, entity: LabelEntity) -> Tuple[bool, Optional[LabelEntity, str]]:
         model = Label(**entity.dict())
-        self._session.begin()
         try:
             self._session.add(model)
             self._session.flush([model])
-            self._session.commit()
         except IntegrityError as e:
             return False, 'Duplicate label'
         return True, entity.from_orm(model)

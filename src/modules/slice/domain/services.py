@@ -66,6 +66,14 @@ class SliceDomainService(object):
         return slices, pagination, 'filter slices succeed'
 
     def delete_slices(self, **kwargs) -> Tuple[int, str]:
+        # get slices
+
+        # delete slices
+
+        # remove dir
+
+        # remove failed rollback delete
+
         deleted_count = self.repository.delete_slices(**kwargs)
         return deleted_count, 'delete slices succeed'
 
@@ -93,8 +101,10 @@ class SliceDomainService(object):
         return deleted_count, 'delete labels succeed'
 
     def update_label(self, **kwargs) -> Tuple[int, str]:
-        updated_count = self.repository.update_label(**kwargs)
-        return updated_count, 'update label succeed'
+        updated_count, message = self.repository.update_label(**kwargs)
+        if updated_count:
+            return updated_count, message
+        return 0, message
 
 
 
