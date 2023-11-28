@@ -26,8 +26,8 @@ def filter_labels(query_data, json_data):
 @label_blueprint.get('/<int:label_id>')
 @label_blueprint.output(SingleLabelOut)
 @label_blueprint.doc(summary='标签详情', security='ApiAuth')
-def get_label(slice_id):
-    res = AppServiceFactory.slice_service.get_label(slice_id)
+def get_label(label_id):
+    res = AppServiceFactory.slice_service.get_label(label_id)
     return res.response
 
 

@@ -2,7 +2,7 @@ import math
 from contextvars import ContextVar
 from typing import List, Optional, Tuple
 
-from sqlalchemy import not_, and_, or_, desc
+from sqlalchemy import not_, and_, or_, desc, exists
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -30,6 +30,15 @@ class SQLAlchemySliceRepository(SliceRepository):
         if not model:
             return None
         return SliceEntity(**model.dict)
+
+    def get_label_by_id(self, pk: int) -> Optional[LabelEntity]:
+        self._session.begin()
+        query = self._session.query(Label).filter_by(id=pk)
+        model = query.first()
+        self._session.commit()
+        if not model:
+            return None
+        return LabelEntity(**model.dict)
 
     def filter_slices(self, **kwargs) -> Tuple[List[SliceEntity], dict]:
         page = kwargs['page_query']['page']
@@ -200,21 +209,25 @@ class SQLAlchemySliceRepository(SliceRepository):
         self._session.commit()
         return updated_count
 
-    def update_label(self, **kwargs) -> int:
+    def update_label(self, **kwargs) -> bool:
         label_id = kwargs['label_id']
-        del kwargs['label_id']
+        label_data = kwargs['label_data']
         self._session.begin()
-        to_update_model = self._session.query(Label).filter(Label.id == label_id).first()
+        to_update_model_name = self._session.query(Label).filter(Label.id == label_id).first().name
 
-        name = kwargs['label_data'].get('name')
-        if name and name != to_update_model.name:
+        name = label_data.get('name')
+        label_exists = self._session.query(exists().where(Label.name == name)).scalar()
+        if label_exists:
+            return False
+
+        if name and name != to_update_model_name:
             self._session.query(SliceLabel).filter(SliceLabel.label_id == label_id).update(
                 {'label_name': name}, synchronize_session=False)
 
-        updated_count = self._session.query(Label).filter(Label.id == label_id).update(
+        self._session.query(Label).filter(Label.id == label_id).update(
             {'is_deleted': 1}, synchronize_session=False)
         self._session.commit()
-        return updated_count
+        return True
 
     def add_labels(self, **kwargs) -> int:
         ids = kwargs['ids']

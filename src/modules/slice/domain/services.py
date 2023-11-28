@@ -24,6 +24,12 @@ class SliceDomainService(object):
             return None, 'no slice'
         return slide, 'get slice succeed'
 
+    def get_label_by_id(self, label_id: int) -> Tuple[Optional[LabelEntity], str]:
+        label = self.repository.get_label_by_id(label_id)
+        if not label:
+            return None, 'no label'
+        return label, 'get label succeed'
+
     def upload_slice(self, **kwargs) -> str:
         slice_file = kwargs['slice_file']
 
