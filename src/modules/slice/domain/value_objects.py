@@ -3,13 +3,11 @@ import enum
 from src.seedwork.domain.value_objects import BaseEnum, BaseValueObject
 
 
-@enum.unique
 class LogicType(BaseEnum):
     and_ = "and"
     or_ = "or"
 
 
-@enum.unique
 class DataType(BaseEnum):
     wsi = 1  # 全场图
     roi = 2  # roi
@@ -23,3 +21,21 @@ class SliceAnalysisStat(BaseEnum):
     success = 3  # 已处理
     failed = 4  # 处理异常
     time_out = 5  # 处理超时
+
+
+class Condition(BaseEnum):
+    equal = 'equal'
+    unequal = 'unequal'
+    greater_than = 'greater_than'
+    less_than = 'less_than'
+    is_null = 'is_null'
+    not_null = 'not_null'
+    contain = 'contain'
+    not_contain = 'not_contain'
+
+
+
+
+
+
+

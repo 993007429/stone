@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from src.modules.slice.domain.entities import SliceEntity, LabelEntity
 from src.modules.slice.domain.repositories import SliceRepository
+from src.modules.slice.domain.value_objects import Condition, LogicType
 from src.modules.slice.infrastructure.models import Slice, Label, SliceLabel
 
 
@@ -118,62 +119,62 @@ class SQLAlchemySliceRepository(SliceRepository):
             condition = filter_['condition']
             value = filter_['value']
             if field in ['create_at']:
-                if logic == 'and':
-                    if condition == 'equal':
+                if logic == LogicType.and_.value:
+                    if condition == Condition.equal.value:
                         query = query.filter(and_(getattr(Slice, field) == value))
-                    elif condition == 'greater_than':
+                    elif condition == Condition.greater_than.value:
                         query = query.filter(and_(getattr(Slice, field).__gt__(value)))
-                    elif condition == 'less_than':
+                    elif condition == Condition.less_than.value:
                         query = query.filter(and_(getattr(Slice, field).__lt__(value)))
-                    elif condition == 'is_null':
+                    elif condition == Condition.is_null.value:
                         query = query.filter(and_(not_(getattr(Slice, field).is_(None))))
-                    elif condition == 'not_null':
+                    elif condition == Condition.not_null.value:
                         query = query.filter(and_(not_(getattr(Slice, field).is_not(None))))
-                elif logic == 'or':
-                    if condition == 'equal':
+                elif logic == LogicType.or_.value:
+                    if condition == Condition.equal.value:
                         query = query.filter(or_(getattr(Slice, field) == value))
-                    elif condition == 'greater_than':
+                    elif condition == Condition.greater_than.value:
                         query = query.filter(and_(getattr(Slice, field) != value))
-                    elif condition == 'less_than':
+                    elif condition == Condition.less_than.value:
                         query = query.filter(and_(getattr(Slice, field).contains(value)))
-                    elif condition == 'is_null':
+                    elif condition == Condition.is_null.value:
                         query = query.filter(or_(not_(getattr(Slice, field).is_(None))))
-                    elif condition == 'not_null':
+                    elif condition == Condition.not_null.value:
                         query = query.filter(or_(not_(getattr(Slice, field).is_not(None))))
             else:
-                if logic == 'and':
-                    if condition == 'equal':
+                if logic == LogicType.and_.value:
+                    if condition == Condition.equal.value:
                         query = query.filter(and_(getattr(Slice, field) == value))
-                    elif condition == 'unequal':
+                    elif condition == Condition.unequal.value:
                         query = query.filter(and_(getattr(Slice, field) != value))
-                    elif condition == 'contain':
+                    elif condition == Condition.contain.value:
                         query = query.filter(and_(getattr(Slice, field).contains(value)))
-                    elif condition == 'not_contain':
+                    elif condition == Condition.not_contain.value:
                         query = query.filter(and_(not_(getattr(Slice, field).contains(value))))
-                    elif condition == 'is_null':
+                    elif condition == Condition.is_null.value:
                         query = query.filter(and_(not_(getattr(Slice, field).is_(None))))
-                    elif condition == 'not_null':
+                    elif condition == Condition.not_null.value:
                         query = query.filter(and_(not_(getattr(Slice, field).is_not(None))))
-                elif logic == 'or':
-                    if condition == 'equal':
+                elif logic == LogicType.or_.value:
+                    if condition == Condition.equal.value:
                         query = query.filter(or_(getattr(Slice, field) == value))
-                    elif condition == 'unequal':
+                    elif condition == Condition.unequal.value:
                         query = query.filter(or_(getattr(Slice, field) != value))
-                    elif condition == 'contain':
+                    elif condition == Condition.contain.value:
                         query = query.filter(or_(getattr(Slice, field).contains(value)))
-                    elif condition == 'not_contain':
+                    elif condition == Condition.not_contain.value:
                         query = query.filter(or_(not_(getattr(Slice, field).contains(value))))
-                    elif condition == 'is_null':
+                    elif condition == Condition.is_null.value:
                         query = query.filter(or_(not_(getattr(Slice, field).is_(None))))
-                    elif condition == 'not_null':
+                    elif condition == Condition.not_null.value:
                         query = query.filter(or_(not_(getattr(Slice, field).is_not(None))))
 
         query = query.order_by(desc(Slice.id))
         total = query.count()
 
-        page = min(page, math.ceil(total / per_page))
-        offset = (page - 1) * per_page
-        query = query.offset(offset).limit(per_page)
+        # page = min(page, math.ceil(total / per_page))
+        # offset = page * per_page
+        # query = query.offset(offset).limit(per_page)
 
         pagination = {
             'total': total,

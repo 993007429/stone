@@ -3,7 +3,7 @@ from apiflask.fields import Integer, String, List, Nested, DateTime, URL
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
-from src.app.base_schema import DurationField, PageQuery, Filter, PaginationSchema
+from src.app.base_schema import DurationField, PageQuery, PaginationSchema
 from src.modules.slice.domain.value_objects import LogicType
 
 
