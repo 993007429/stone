@@ -23,11 +23,21 @@ class SQLAlchemySliceRepository(SliceRepository):
         return s
 
     def get_slice_by_id(self, pk: int) -> Optional[SliceEntity]:
-        query = self._session.query(Slice).filter_by(id=pk)
+        query = self._session.query(Slice).filter(Slice.id == pk)
         model = query.first()
         if not model:
             return None
         return SliceEntity(**model.dict)
+
+    def get_slices(self, ids: list) -> List[SliceEntity]:
+        query = self._session.query(Slice).filter(Slice.id.in_(ids))
+        models = query.all()
+        return [SliceEntity.from_orm(model) for model in models]
+
+    def delete_slices(self, ids: list) -> int:
+        deleted_count = self._session.query(Slice).filter(Slice.id.in_(ids)).update(
+            {'is_deleted': 1}, synchronize_session=False)
+        return deleted_count
 
     def get_label_by_id(self, pk: int) -> Optional[LabelEntity]:
         query = self._session.query(Label).filter_by(id=pk)
@@ -174,12 +184,6 @@ class SQLAlchemySliceRepository(SliceRepository):
             labels.append(entity)
 
         return labels, pagination
-
-    def delete_slices(self, **kwargs) -> int:
-        ids = kwargs['ids']
-        deleted_count = self._session.query(Slice).filter(Slice.id.in_(ids)).update(
-            {'is_deleted': 1}, synchronize_session=False)
-        return deleted_count
 
     def delete_labels(self, **kwargs) -> int:
         ids = kwargs['ids']

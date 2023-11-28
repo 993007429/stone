@@ -6,6 +6,8 @@ from typing import Tuple, Optional, List
 from werkzeug.utils import secure_filename
 
 import setting
+from src.infra.fs import fs
+from src.infra.session import transaction
 from src.libs.heimdall.dispatch import open_slide
 from src.modules.slice.domain.entities import SliceEntity, LabelEntity
 from src.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
@@ -65,16 +67,13 @@ class SliceDomainService(object):
         slices, pagination = self.repository.filter_slices(**kwargs)
         return slices, pagination, 'filter slices succeed'
 
+    @transaction
     def delete_slices(self, **kwargs) -> Tuple[int, str]:
-        # get slices
-
-        # delete slices
-
-        # remove dir
-
-        # remove failed rollback delete
-
-        deleted_count = self.repository.delete_slices(**kwargs)
+        slices = self.repository.get_slices(kwargs['ids'])
+        deleted_count = self.repository.delete_slices(kwargs['ids'])
+        for slice_ in slices:
+            slice_dir = os.path.join(setting.DATA_DIR, slice_.slice_key)
+            fs.remove_dir(slice_dir)
         return deleted_count, 'delete slices succeed'
 
     def update_slices(self, **kwargs) -> Tuple[int, str]:
