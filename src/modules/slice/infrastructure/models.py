@@ -10,8 +10,9 @@ class SliceLabel(Base):
     __tablename__ = "slice_label"
 
     id = Column(BigInteger, primary_key=True)
-    slice_id = Column(Integer, ForeignKey("slice.id"))
-    label_id = Column(Integer, ForeignKey("label.id"))
+    slice_id = Column(Integer, nullable=False)
+    label_id = Column(Integer, nullable=False)
+    label_name = Column(String(255), nullable=False)
 
 
 class Slice(Base):
@@ -24,16 +25,12 @@ class Slice(Base):
     wh_stat = Column(String(255), nullable=False)
     is_deleted = Column(Integer, nullable=False)
 
-    labels = relationship('Label', secondary='slice_label', back_populates='slices')
-
 
 class Label(Base):
     __tablename__ = 'label'
 
     name = Column(String(255), nullable=False)
     is_deleted = Column(Integer, nullable=False)
-
-    slices = relationship('Slice', secondary='slice_label', back_populates='labels')
 
 
 

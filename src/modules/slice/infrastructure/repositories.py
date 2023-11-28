@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from src.modules.slice.domain.entities import SliceEntity
 from src.modules.slice.domain.repositories import SliceRepository
-from src.modules.slice.infrastructure.models import Slice, Label
+from src.modules.slice.infrastructure.models import Slice, Label, SliceLabel
 
 
 class SQLAlchemySliceRepository(SliceRepository):
@@ -140,11 +140,15 @@ class SQLAlchemySliceRepository(SliceRepository):
         slices = self._session.query(Slice).filter(Slice.id.in_(ids)).all()
         labels = self._session.query(Label).filter(Label.id.in_(label_ids)).all()
 
+        slice_labels = []
         for slice_ in slices:
-            slice_.labels.extend(labels)
-        self._session.add_all(slices + labels)
+            for label in labels:
+                slice_label = SliceLabel(slice_id=slice_.id, label_id=label.id, label_name=label.name)
+                slice_labels.append(slice_label)
+
+        self._session.add_all(slice_labels)
         self._session.commit()
-        return slices.count(Slice.id)
+        return len(ids)
 
     def save(self, entity: SliceEntity) -> Tuple[bool, SliceEntity]:
         model = Slice(**entity.dict())
