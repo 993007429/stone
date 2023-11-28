@@ -26,7 +26,7 @@ class ComparisonSliceFilter(Schema):
 class SliceBase(Schema):
     slice_key = String(required=True, description='切片唯一ID')
     parent_id = Integer(required=False, description='关联数据(父级数据ID)')
-    name = String(required=True, description='切片名')
+    name = String(required=False, description='切片名')
     data_type = Integer(required=False, description='数据类型(WSI、ROI、Patch)', validate=[OneOf([1, 2, 3, 4])])
     anal_stat = Integer(required=False, description='处理状态', validate=[OneOf([1, 2, 3, 4, 5])])
     wh_stat = Boolean(required=False, description='入库状态', validate=[OneOf([True, False])])

@@ -11,7 +11,7 @@ class SliceEntity(BaseEntity):
     name: Optional[str]
     data_type: Optional[int]
     anal_stat: Optional[int]
-    wh_stat: Optional[int]
+    wh_stat: Optional[bool]
     no: Optional[str]
     label: Optional[str]
     macro: Optional[str]
