@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime, BigInteger
+from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime, BigInteger, Boolean, func, text
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import inspect, JSON
 from sqlalchemy.orm import declarative_base
@@ -10,9 +10,9 @@ class _Base:
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     id = Column(BigInteger, primary_key=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.now)
-    last_modified = Column(DateTime, nullable=False, default=datetime.now)
-    is_deleted = Column(Integer, nullable=False, default=0)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    last_modified = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
+    is_deleted = Column(Boolean, nullable=False, server_default=text('0'))
 
     @property
     def dict(self) -> dict:

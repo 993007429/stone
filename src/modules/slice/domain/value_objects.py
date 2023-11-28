@@ -10,14 +10,16 @@ class LogicType(BaseEnum):
 
 
 @enum.unique
-class WhStat(BaseEnum):
-    NOT_IN_STOCK = 0  # 待入库
-    IN_STOCK = 1  # 已入库
-
-
-@enum.unique
 class DataType(BaseEnum):
-    WSI = 'WSI'  # 全场图
-    ROI = 'ROI'  # roi
-    PATCH = 'PATCH'  # patch
-    TEXT = 'TEXT',  # 文本
+    wsi = 1  # 全场图
+    roi = 2  # roi
+    patch = 3  # patch
+    text = 4,  # 文本
+
+
+class SliceAnalysisStat(BaseEnum):
+    default = 0  # 待处理
+    analyzing = 1  # 处理中
+    success = 2  # 已处理
+    failed = 3  # 处理异常
+    time_out = 4  # 处理超时
