@@ -81,11 +81,11 @@ class SQLAlchemySliceRepository(SliceRepository):
             {'is_deleted': 1}, synchronize_session=False)
         return deleted_count
 
-    def delete_dataset(self, label_id: int) -> int:
-        deleted_count = self._session.query(Label).filter(Label.id == label_id).update(
+    def delete_dataset(self, dataset_id: int) -> int:
+        deleted_count = self._session.query(DataSet).filter(DataSet.id == dataset_id).update(
             {'is_deleted': 1}, synchronize_session=False)
 
-        self._session.query(SliceLabel).filter(SliceLabel.label_id == label_id).update(
+        self._session.query(SliceLabel).filter(SliceLabel.label_id == dataset_id).update(
             {'is_deleted': 1}, synchronize_session=False)
         return deleted_count
 
