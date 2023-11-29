@@ -9,8 +9,8 @@ from src.app.auth import auth_required
 from src.app.db import connect_db
 from src.app.permission import permission_required
 from src.app.schema.slice import ListSliceOut, SlicePageQuery, SingleSliceOut, SliceFilter, SliceIdsOut, SliceIdsIn, \
-    WSIIn, SliceId, ROIIn, DSSliceIdsIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, \
-    SliceUploadIn, SingleSliceUploadOut, SliceUpdateIn, SliceAndLabelIdsIn, SingleSliceFieldOut
+    WSIIn, SliceId, ROIIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, \
+    SliceUploadIn, SingleSliceUploadOut, SliceUpdateIn, SingleSliceFieldOut, SliceAndLabelIdsIn
 from src.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -86,15 +86,6 @@ def get_comparison_slices(query_data, json_data):
 @slice_blueprint.doc(summary='添加标签', security='ApiAuth')
 def add_labels(json_data):
     res = AppServiceFactory.slice_service.add_labels(**json_data)
-    return res.response
-
-
-@slice_blueprint.put('/add-ds')
-@slice_blueprint.input(DSSliceIdsIn, location='json')
-@slice_blueprint.output(SliceIdsOut)
-@slice_blueprint.doc(summary='添加到数据集', security='ApiAuth')
-def add_dataset(json_data):
-    res = AppServiceFactory.slice_service.add_dataset(**json_data)
     return res.response
 
 

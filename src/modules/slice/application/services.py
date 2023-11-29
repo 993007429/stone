@@ -63,6 +63,12 @@ class SliceService(object):
             return AppResponse(message=message, err_code=1)
         return AppResponse(data={'label': label.dict()})
 
+    def get_dataset(self, label_id: int) -> AppResponse[dict]:
+        dataset, message = self.domain_service.get_dataset_by_id(label_id)
+        if not dataset:
+            return AppResponse(message=message, err_code=1)
+        return AppResponse(data={'dataset': dataset.dict()})
+
     def get_slice_fields(self) -> AppResponse[dict]:
         fields = self.domain_service.get_slice_fields()
         return AppResponse(data={'fields': fields})
@@ -79,6 +85,10 @@ class SliceService(object):
         affected_count, message = self.domain_service.add_labels(**kwargs)
         return AppResponse(message=message, data={'affected_count': affected_count})
 
+    def add_slices(self, **kwargs) -> AppResponse[dict]:
+        affected_count, message = self.domain_service.add_slices(**kwargs)
+        return AppResponse(message=message, data={'affected_count': affected_count})
+
     def delete_label(self, label_id: int) -> AppResponse[dict]:
         deleted_count, message = self.domain_service.delete_label(label_id)
         return AppResponse(message=message, data={'deleted_count': deleted_count})
@@ -92,3 +102,9 @@ class SliceService(object):
         if not label:
             return AppResponse(message=message, err_code=1)
         return AppResponse(message=message, data={'label': label.dict()})
+
+    def update_dataset(self, **kwargs) -> AppResponse[dict]:
+        dataset, message = self.domain_service.update_dataset(**kwargs)
+        if not dataset:
+            return AppResponse(message=message, err_code=1)
+        return AppResponse(message=message, data={'dataset': dataset.dict()})

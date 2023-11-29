@@ -20,16 +20,16 @@ class SliceLabel(Base):
     label_name = Column(String(255), nullable=True)
 
 
-class SliceDataSet(Base):
-    __tablename__ = "slice_dataset"
+class DataSetSlice(Base):
+    __tablename__ = "dataset_slice"
 
     __table_args__ = (
-        Index('idx_slice_id', 'slice_id'),
         Index('idx_dataset_id', 'dataset_id'),
+        Index('idx_slice_id', 'slice_id'),
     )
 
-    slice_id = Column(BigInteger, nullable=False)
     dataset_id = Column(BigInteger, nullable=False)
+    slice_id = Column(BigInteger, nullable=False)
 
 
 class Slice(Base):

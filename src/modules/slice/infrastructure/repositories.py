@@ -6,10 +6,11 @@ from sqlalchemy import not_, and_, or_, desc, exists
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from src.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity, DataSetEntity
+from src.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity, DataSetEntity, \
+    DataSetSliceEntity
 from src.modules.slice.domain.repositories import SliceRepository
 from src.modules.slice.domain.value_objects import Condition, LogicType
-from src.modules.slice.infrastructure.models import Slice, Label, SliceLabel, DataSet
+from src.modules.slice.infrastructure.models import Slice, Label, SliceLabel, DataSet, DataSetSlice
 
 
 class SQLAlchemySliceRepository(SliceRepository):
@@ -47,6 +48,13 @@ class SQLAlchemySliceRepository(SliceRepository):
             return None
         return LabelEntity(**model.dict)
 
+    def get_dataset_by_id(self, pk: int) -> Optional[DataSetEntity]:
+        query = self._session.query(DataSet).filter(DataSet.id == pk, DataSet.is_deleted.is_(False))
+        model = query.first()
+        if not model:
+            return None
+        return DataSetEntity(**model.dict)
+
     def get_label_by_name(self, name: str) -> Optional[LabelEntity]:
         query = self._session.query(Label).filter_by(name=name)
         model = query.first()
@@ -73,6 +81,12 @@ class SQLAlchemySliceRepository(SliceRepository):
         models = query.order_by(SliceLabel.slice_id).all()
         return [SliceLabelEntity.from_orm(model) for model in models]
 
+    def get_dataset_slices_by_dataset(self, dataset_id: int) -> List[DataSetSliceEntity]:
+        query = self._session.query(DataSetSlice).filter(
+            DataSetSlice.dataset_id == dataset_id, DataSetSlice.is_deleted.is_(False))
+        models = query.order_by(DataSetSlice.dataset_id).all()
+        return [SliceLabelEntity.from_orm(model) for model in models]
+
     def delete_label(self, label_id: int) -> int:
         deleted_count = self._session.query(Label).filter(Label.id == label_id).update(
             {'is_deleted': 1}, synchronize_session=False)
@@ -85,7 +99,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         deleted_count = self._session.query(DataSet).filter(DataSet.id == dataset_id).update(
             {'is_deleted': 1}, synchronize_session=False)
 
-        self._session.query(SliceLabel).filter(SliceLabel.label_id == dataset_id).update(
+        self._session.query(DataSetSlice).filter(DataSetSlice.dataset_id == dataset_id).update(
             {'is_deleted': 1}, synchronize_session=False)
         return deleted_count
 
@@ -106,6 +120,11 @@ class SQLAlchemySliceRepository(SliceRepository):
             {'name': name}, synchronize_session=False)
         return updated_count, 'Update label succeed'
 
+    def update_dataset(self, dataset_id: int, dataset_data: dict) -> Tuple[int, str]:
+        updated_count = self._session.query(DataSet).filter(DataSet.id == dataset_id).update(
+            dataset_data, synchronize_session=False)
+        return updated_count, 'Update label succeed'
+
     def add_labels(self, slice_ids: list, label_ids: list) -> int:
         slices = self._session.query(Slice).filter(Slice.id.in_(slice_ids)).all()
         labels = self._session.query(Label).filter(Label.id.in_(label_ids)).all()
@@ -117,6 +136,17 @@ class SQLAlchemySliceRepository(SliceRepository):
                 slice_labels.append(slice_label)
         self._session.add_all(slice_labels)
         return len(slice_ids)
+
+    def add_slices(self, dataset_id: list, slice_ids: list) -> bool:
+        dataset = self._session.query(DataSet).filter(DataSet.id == dataset_id).first()
+        slices = self._session.query(Slice).filter(Slice.id.in_(slice_ids)).all()
+
+        dataset_slices = []
+        for slice_ in slices:
+            dataset_slice = DataSetSlice(dataset_id=dataset.id, slice_id=slice_.id)
+            dataset_slices.append(dataset_slice)
+        self._session.add_all(dataset_slices)
+        return True
 
     def save_slice(self, entity: SliceEntity) -> Tuple[bool, Optional[SliceEntity]]:
         model = Slice(**entity.dict())

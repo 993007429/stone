@@ -8,7 +8,7 @@ from src.app.auth import auth_required
 from src.app.db import connect_db
 from src.app.permission import permission_required
 from src.app.schema.dataset import DataSetPageQuery, DataSetFilter, ListDataSetOut, SingleDataSetOut, DataSetIn, \
-    DataSetIdsOut
+    DataSetIdsOut, DataSetAndSliceIdsIn
 from src.app.service_factory import AppServiceFactory
 
 dataset_blueprint = APIBlueprint('数据集', __name__, url_prefix='/datasets')
@@ -24,6 +24,15 @@ def filter_datasets(query_data, json_data):
     return res.response
 
 
+@dataset_blueprint.put('/add-slices')
+@dataset_blueprint.input(DataSetAndSliceIdsIn, location='json')
+@dataset_blueprint.output(DataSetIdsOut)
+@dataset_blueprint.doc(summary='添加切片', security='ApiAuth')
+def add_slices(json_data):
+    res = AppServiceFactory.slice_service.add_slices(**json_data)
+    return res.response
+
+
 @dataset_blueprint.get('/<int:dataset_id>')
 @dataset_blueprint.output(SingleDataSetOut)
 @dataset_blueprint.doc(summary='数据集详情', security='ApiAuth')
@@ -33,11 +42,11 @@ def get_dataset(dataset_id):
 
 
 @dataset_blueprint.put('/<int:dataset_id>')
-@dataset_blueprint.input(DataSetIn)
+@dataset_blueprint.input(DataSetIn, location='json')
 @dataset_blueprint.output(SingleDataSetOut)
 @dataset_blueprint.doc(summary='更新数据集', security='ApiAuth')
-def update_dataset(dataset_id):
-    res = AppServiceFactory.slice_service.update_dataset(dataset_id)
+def update_dataset(dataset_id, json_data):
+    res = AppServiceFactory.slice_service.update_dataset(**{'dataset_id': dataset_id, 'dataset_data': json_data})
     return res.response
 
 

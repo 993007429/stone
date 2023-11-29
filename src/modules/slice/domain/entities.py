@@ -86,6 +86,12 @@ class DataSetEntity(BaseEntity):
         orm_mode = True
 
 
+class DataSetSliceEntity(BaseEntity):
+    dataset_id: Optional[int]
+    slice_id: Optional[int]
+
+    class Config:
+        orm_mode = True
 
 
 

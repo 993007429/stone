@@ -32,7 +32,6 @@ class SlicePageQuery(PageQuery):
 
 
 class Filter(Schema):
-
     field = String(required=True, validate=OneOf(Slice.__table__.columns.keys()))
     condition = String(required=True, validate=OneOf([i.value for i in list(Condition.__members__.values())]))
     value = Raw(required=True)
@@ -246,11 +245,6 @@ class SliceAndLabelIdsIn(Schema):
     label_ids = List(Integer(required=True, description='标签ID列表'))
 
 
-class DSSliceIdsIn(Schema):
-    ids = List(Integer(required=True), description='切片ID列表')
-    dataset_id = Integer(required=True, description='数据集ID')
-
-
 class ComparisonListSliceOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
@@ -267,15 +261,3 @@ class WSIIn(Schema):
 
 class ROIIn(Schema):
     id: int = Integer(required=True, description='切片ID')
-
-
-
-
-
-
-
-
-
-
-
-

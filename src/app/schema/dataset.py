@@ -65,3 +65,13 @@ class DataSetIdsOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Dict(keys=String(), values=Integer(required=True), description='受影响数据集数量')
+
+
+class DataSetAndSliceIdsIn(Schema):
+    dataset_ids = List(Integer(required=True, description='数据集ID列表'), required=True)
+    slice_ids = List(Integer(required=True), description='切片ID列表', required=True)
+
+
+class DSSliceIdsIn(Schema):
+    ids = List(Integer(required=True), description='切片ID列表')
+    dataset_id = Integer(required=True, description='数据集ID')
