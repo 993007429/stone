@@ -54,12 +54,11 @@ class SQLAlchemySliceRepository(SliceRepository):
             return None
         return LabelEntity(**model.dict)
 
-    def delete_labels(self, **kwargs) -> int:
-        ids = kwargs['ids']
-        deleted_count = self._session.query(Label).filter(Label.id.in_(ids)).update(
+    def delete_label(self, label_id: int) -> int:
+        deleted_count = self._session.query(Label).filter(Label.id == label_id).update(
             {'is_deleted': 1}, synchronize_session=False)
 
-        self._session.query(SliceLabel).filter(SliceLabel.label_id.in_(ids)).update(
+        self._session.query(SliceLabel).filter(SliceLabel.label_id == label_id).update(
             {'is_deleted': 1}, synchronize_session=False)
         return deleted_count
 
@@ -68,22 +67,16 @@ class SQLAlchemySliceRepository(SliceRepository):
             update_data, synchronize_session=False)
         return updated_count
 
-    def update_label(self, **kwargs) -> Tuple[int, str]:
-        label_id = kwargs['label_id']
-        label_data = kwargs['label_data']
+    def update_label(self, label_id: int, label_data: dict) -> Tuple[int, str]:
         to_update_model_name = self._session.query(Label).filter(Label.id == label_id).first().name
 
         name = label_data.get('name')
-        label_exists = self._session.query(exists().where(Label.name == name)).scalar()
-        if label_exists:
-            return 0, 'Duplicate label name '
-
         if name and name != to_update_model_name:
             self._session.query(SliceLabel).filter(SliceLabel.label_id == label_id).update(
                 {'label_name': name}, synchronize_session=False)
 
         updated_count = self._session.query(Label).filter(Label.id == label_id).update(
-            {'is_deleted': 1}, synchronize_session=False)
+            {'name': name}, synchronize_session=False)
         return updated_count, 'Update label succeed'
 
     def add_labels(self, slice_ids: list, label_ids: list) -> int:

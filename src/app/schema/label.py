@@ -92,6 +92,10 @@ class ListLabelOut(Schema):
     pagination = Nested(PaginationSchema)
 
 
+class LabelIdsOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = Dict(keys=String(), values=Integer(required=True), description='受影响标签数量')
 
 
 

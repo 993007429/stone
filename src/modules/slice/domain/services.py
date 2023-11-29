@@ -116,12 +116,19 @@ class SliceDomainService(object):
         affected_count = self.repository.add_labels(slice_ids, label_ids)
         return affected_count, 'add labels to slices succeed'
 
-    def delete_labels(self, **kwargs) -> Tuple[int, str]:
-        deleted_count = self.repository.delete_labels(**kwargs)
+    def delete_label(self, label_id: int) -> Tuple[int, str]:
+        deleted_count = self.repository.delete_label(label_id)
         return deleted_count, 'delete labels succeed'
 
-    def update_label(self, **kwargs) -> Tuple[int, str]:
-        updated_count, message = self.repository.update_label(**kwargs)
+    def update_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:
+        label_id = kwargs['label_id']
+        label_data = kwargs['label_data']
+        label_exist = self.repository.get_label_by_name(label_data.get('name'))
+        if label_exist:
+            return None, 'Duplicate label name'
+
+        updated_count, message = self.repository.update_label(label_id, label_data)
+        new_label = self.repository.get_label_by_id(label_id)
         if updated_count:
-            return updated_count, message
-        return 0, message
+            return new_label, message
+        return None, message

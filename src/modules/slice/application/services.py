@@ -43,10 +43,14 @@ class SliceService(object):
 
     def get_slice(self, slice_id: int) -> AppResponse[dict]:
         slice_, message = self.domain_service.get_slice_by_id(slice_id)
+        if not slice_:
+            return AppResponse(message=message, err_code=1)
         return AppResponse(data={'slice': slice_.dict()})
 
     def get_label(self, label_id: int) -> AppResponse[dict]:
         label, message = self.domain_service.get_label_by_id(label_id)
+        if not label:
+            return AppResponse(message=message, err_code=1)
         return AppResponse(data={'label': label.dict()})
 
     def delete_slices(self, **kwargs) -> AppResponse[dict]:
@@ -61,10 +65,12 @@ class SliceService(object):
         affected_count, message = self.domain_service.add_labels(**kwargs)
         return AppResponse(message=message, data={'affected_count': affected_count})
 
-    def delete_labels(self, **kwargs) -> AppResponse[dict]:
-        deleted_count, message = self.domain_service.delete_labels(**kwargs)
+    def delete_label(self, label_id: int) -> AppResponse[dict]:
+        deleted_count, message = self.domain_service.delete_label(label_id)
         return AppResponse(message=message, data={'deleted_count': deleted_count})
 
     def update_label(self, **kwargs) -> AppResponse[dict]:
-        updated_count, message = self.domain_service.update_label(**kwargs)
-        return AppResponse(message=message, data={'updated_count': updated_count})
+        label, message = self.domain_service.update_label(**kwargs)
+        if not label:
+            return AppResponse(message=message, err_code=1)
+        return AppResponse(message=message, data={'label': label.dict()})
