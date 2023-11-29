@@ -8,10 +8,19 @@ from src.app.auth import auth_required
 from src.app.db import connect_db
 from src.app.permission import permission_required
 from src.app.schema.dataset import DataSetPageQuery, DataSetFilter, ListDataSetOut, SingleDataSetOut, DataSetIn, \
-    DataSetIdsOut, DataSetAndSliceIdsIn
+    DataSetIdsOut, DataSetAndSliceIdsIn, DataSetFuzzyQuery
 from src.app.service_factory import AppServiceFactory
 
 dataset_blueprint = APIBlueprint('数据集', __name__, url_prefix='/datasets')
+
+
+@dataset_blueprint.get('')
+@dataset_blueprint.input(DataSetFuzzyQuery, location='query')
+@dataset_blueprint.output(ListDataSetOut)
+@dataset_blueprint.doc(summary='登录用户数据集', security='ApiAuth')
+def get_datasets_for_user(query_data):
+    res = AppServiceFactory.slice_service.get_datasets_for_user(**query_data)
+    return res.response
 
 
 @dataset_blueprint.post('/filter')

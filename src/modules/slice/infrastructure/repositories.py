@@ -176,7 +176,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         return True, entity.from_orm(model)
 
     def filter_slices(self, page: int, per_page: int, logic: str, filters: list) -> Tuple[List[SliceEntity], dict]:
-        query = self._session.query(Slice)
+        query = self._session.query(Slice).filter(Slice.is_deleted.is_(False))
         for filter_ in filters:
             field = filter_['field']
             condition = filter_['condition']
@@ -252,7 +252,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         return slices, pagination
 
     def filter_labels(self, page: int, per_page: int, filters: list) -> Tuple[List[LabelEntity], dict]:
-        query = self._session.query(Label)
+        query = self._session.query(Label).filter(Label.is_deleted.is_(False))
         for filter_ in filters:
             field = filter_['field']
             condition = filter_['condition']
@@ -302,7 +302,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         return labels, pagination
 
     def filter_datasets(self, page: int, per_page: int, filters: list) -> Tuple[List[DataSetEntity], dict]:
-        query = self._session.query(DataSet)
+        query = self._session.query(DataSet).filter(DataSet.is_deleted.is_(False))
         for filter_ in filters:
             field = filter_['field']
             condition = filter_['condition']
@@ -350,3 +350,27 @@ class SQLAlchemySliceRepository(SliceRepository):
             datasets.append(entity)
 
         return datasets, pagination
+
+    def get_datasets_for_user(self, userid: int, name: Optional[str]) -> List[DataSetEntity]:
+        query = self._session.query(DataSet).filter(DataSet.userid == userid, DataSet.is_deleted.is_(False))
+        if name:
+            query = query.filter(DataSet.name.like(f'{name}%'))
+
+        datasets = []
+        for model in query.all():
+            entity = DataSetEntity.from_orm(model)
+            datasets.append(entity)
+        return datasets
+
+
+
+
+
+
+
+
+
+
+
+
+

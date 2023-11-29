@@ -51,6 +51,10 @@ class SliceService(object):
         datasets, pagination, message = self.domain_service.filter_datasets(**kwargs)
         return AppResponse(message=message, data={'datasets': [dataset.dict() for dataset in datasets]}, pagination=pagination)
 
+    def get_datasets_for_user(self, **kwargs) -> AppResponse[dict]:
+        datasets, message = self.domain_service.get_datasets_for_user(**kwargs)
+        return AppResponse(message=message, data={'datasets': [dataset.dict() for dataset in datasets]})
+
     def get_slice(self, slice_id: int) -> AppResponse[dict]:
         slice_, message = self.domain_service.get_slice_by_id(slice_id)
         if not slice_:

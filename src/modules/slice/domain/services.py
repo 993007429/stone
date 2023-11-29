@@ -151,6 +151,13 @@ class SliceDomainService(object):
         #     new_labels.append(new_label)
         return datasets, pagination, 'filter datasets succeed'
 
+    def get_datasets_for_user(self, **kwargs) -> Tuple[List[DataSetEntity], str]:
+        # userid = request_context.current_user.userid
+        userid = 1
+        name = kwargs.get('name')
+        datasets = self.repository.get_datasets_for_user(userid, name)
+        return datasets, 'filter datasets succeed'
+
     @transaction
     def delete_slices(self, **kwargs) -> Tuple[int, str]:
         slices = self.repository.get_slices(kwargs['ids'])
