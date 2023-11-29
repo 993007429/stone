@@ -77,6 +77,18 @@ class Label(Base):
     creator = Column(String(255), nullable=True)
 
 
+class DataSet(Base):
+    __tablename__ = 'dataset'
+
+    __table_args__ = (
+        Index('idx_userid', 'userid'),
+    )
+
+    name = Column(String(255), nullable=True)
+    remark = Column(String(255), nullable=True)
+    count = Column(Integer, nullable=True)
+    creator = Column(String(255), nullable=True)
+    userid = Column(BigInteger, nullable=False)
 
 
 

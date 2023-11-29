@@ -144,6 +144,12 @@ class SingleSliceUploadOut(Schema):
     data = Dict(keys=String(), values=String(required=True))
 
 
+class SingleSliceFieldOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = Dict(keys=String(), values=List(String(required=True)))
+
+
 class ModelResultOut(Schema):
     id = Integer(required=True)
     name = String(required=True, description='模型名称')
@@ -242,7 +248,7 @@ class SliceAndLabelIdsIn(Schema):
 
 class DSSliceIdsIn(Schema):
     ids = List(Integer(required=True), description='切片ID列表')
-    ds_id = Integer(required=True, description='数据集ID')
+    dataset_id = Integer(required=True, description='数据集ID')
 
 
 class ComparisonListSliceOut(Schema):

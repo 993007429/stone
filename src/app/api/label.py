@@ -7,6 +7,7 @@ from marshmallow.fields import Integer
 from src.app.auth import auth_required
 from src.app.db import connect_db
 from src.app.permission import permission_required
+from src.app.schema.dataset import DataSetIdsOut
 from src.app.schema.label import LabelPageQuery, LabelFilter, ListLabelOut, SingleLabelOut, LabelIn, LabelIdsOut
 from src.app.service_factory import AppServiceFactory
 
@@ -50,7 +51,7 @@ def update_label(label_id, json_data):
 
 
 @label_blueprint.delete('/<int:label_id>')
-@label_blueprint.output(LabelIdsOut)
+@label_blueprint.output(DataSetIdsOut)
 @label_blueprint.doc(summary='删除标签', security='ApiAuth')
 def delete_label(label_id):
     res = AppServiceFactory.slice_service.delete_label(label_id)

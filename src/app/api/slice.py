@@ -10,7 +10,7 @@ from src.app.db import connect_db
 from src.app.permission import permission_required
 from src.app.schema.slice import ListSliceOut, SlicePageQuery, SingleSliceOut, SliceFilter, SliceIdsOut, SliceIdsIn, \
     WSIIn, SliceId, ROIIn, DSSliceIdsIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, \
-    SliceUploadIn, SingleSliceUploadOut, SliceUpdateIn, SliceAndLabelIdsIn
+    SliceUploadIn, SingleSliceUploadOut, SliceUpdateIn, SliceAndLabelIdsIn, SingleSliceFieldOut
 from src.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -125,7 +125,12 @@ def get_label(query_data):
     return send_from_directory('IMAGE_FOLDER', 'filename')
 
 
-
+@slice_blueprint.post('/fields')
+@slice_blueprint.output(SingleSliceFieldOut)
+@slice_blueprint.doc(summary='切片字段', security='ApiAuth')
+def get_slice_fields():
+    res = AppServiceFactory.slice_service.get_slice_fields()
+    return res.response
 
 
 

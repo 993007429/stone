@@ -33,6 +33,12 @@ class SliceService(object):
             return AppResponse(message=message, err_code=1)
         return AppResponse(message=message, data={'label': label.dict()})
 
+    def create_dataset(self, **kwargs) -> AppResponse[dict]:
+        dataset, message = self.domain_service.create_dataset(**kwargs)
+        if not dataset:
+            return AppResponse(message=message, err_code=1)
+        return AppResponse(message=message, data={'dataset': dataset.dict()})
+
     def filter_slices(self, **kwargs) -> AppResponse[dict]:
         slices, pagination, message = self.domain_service.filter_slices(**kwargs)
         return AppResponse(message=message, data={'slices': [slice_.dict() for slice_ in slices]}, pagination=pagination)
@@ -40,6 +46,10 @@ class SliceService(object):
     def filter_labels(self, **kwargs) -> AppResponse[dict]:
         labels, pagination, message = self.domain_service.filter_labels(**kwargs)
         return AppResponse(message=message, data={'labels': [label.dict() for label in labels]}, pagination=pagination)
+
+    def filter_datasets(self, **kwargs) -> AppResponse[dict]:
+        datasets, pagination, message = self.domain_service.filter_datasets(**kwargs)
+        return AppResponse(message=message, data={'datasets': [dataset.dict() for dataset in datasets]}, pagination=pagination)
 
     def get_slice(self, slice_id: int) -> AppResponse[dict]:
         slice_, message = self.domain_service.get_slice_by_id(slice_id)
@@ -52,6 +62,10 @@ class SliceService(object):
         if not label:
             return AppResponse(message=message, err_code=1)
         return AppResponse(data={'label': label.dict()})
+
+    def get_slice_fields(self) -> AppResponse[dict]:
+        fields = self.domain_service.get_slice_fields()
+        return AppResponse(data={'fields': fields})
 
     def delete_slices(self, **kwargs) -> AppResponse[dict]:
         deleted_count, message = self.domain_service.delete_slices(**kwargs)
@@ -67,6 +81,10 @@ class SliceService(object):
 
     def delete_label(self, label_id: int) -> AppResponse[dict]:
         deleted_count, message = self.domain_service.delete_label(label_id)
+        return AppResponse(message=message, data={'deleted_count': deleted_count})
+
+    def delete_dataset(self, label_id: int) -> AppResponse[dict]:
+        deleted_count, message = self.domain_service.delete_dataset(label_id)
         return AppResponse(message=message, data={'deleted_count': deleted_count})
 
     def update_label(self, **kwargs) -> AppResponse[dict]:

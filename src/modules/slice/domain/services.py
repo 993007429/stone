@@ -10,7 +10,7 @@ from src.app.request_context import request_context
 from src.infra.fs import fs
 from src.infra.session import transaction
 from src.libs.heimdall.dispatch import open_slide
-from src.modules.slice.domain.entities import SliceEntity, LabelEntity
+from src.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity
 from src.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
 
 logger = logging.getLogger(__name__)
@@ -32,6 +32,10 @@ class SliceDomainService(object):
         if not label:
             return None, 'no label'
         return label, 'get label succeed'
+
+    def get_slice_fields(self) -> list:
+        fields = self.repository.get_slice_fields()
+        return fields
 
     def upload_slice(self, **kwargs) -> Tuple[str, str]:
         slice_file = kwargs['slice_file']
@@ -80,6 +84,21 @@ class SliceDomainService(object):
             return None, 'Duplicate label'
         return new_label, 'Create label succeed'
 
+    @transaction
+    def create_dataset(self, **kwargs) -> Tuple[Optional[DataSetEntity], str]:
+        kwargs['userid'] = 1
+        if current_user := request_context.current_user:
+            userid = current_user.userid
+            username = current_user.username
+            kwargs['userid'] = userid
+            kwargs['creator'] = username
+
+        dataset = DataSetEntity.parse_obj(kwargs)
+        succeed, new_data_set = self.repository.save_data_set(dataset)
+        if not succeed:
+            return None, 'Create data set failed'
+        return new_data_set, 'Create data set succeed'
+
     def filter_slices(self, **kwargs) -> Tuple[List[SliceEntity], dict, str]:
         page = kwargs['page_query']['page']
         per_page = kwargs['page_query']['per_page']
@@ -101,7 +120,30 @@ class SliceDomainService(object):
         per_page = kwargs['page_query']['per_page']
         filters = kwargs['filter']['filters']
         labels, pagination = self.repository.filter_labels(page, per_page, filters)
-        return labels, pagination, 'filter labels succeed'
+
+        new_labels = []
+        for label in labels:
+            slice_labels = self.repository.get_slice_labels_by_label(label.id)
+            label_dict = label.dict()
+            label_dict['count'] = len(slice_labels)
+            new_label = LabelEntity.parse_obj(label_dict)
+            new_labels.append(new_label)
+        return new_labels, pagination, 'filter labels succeed'
+
+    def filter_datasets(self, **kwargs) -> Tuple[List[DataSetEntity], dict, str]:
+        page = kwargs['page_query']['page']
+        per_page = kwargs['page_query']['per_page']
+        filters = kwargs['filter']['filters']
+        datasets, pagination = self.repository.filter_datasets(page, per_page, filters)
+
+        new_datasets = []
+        # for label in labels:
+        #     slice_labels = self.repository.get_slice_labels_by_label(label.id)
+        #     label_dict = label.dict()
+        #     label_dict['count'] = len(slice_labels)
+        #     new_label = LabelEntity.parse_obj(label_dict)
+        #     new_labels.append(new_label)
+        return datasets, pagination, 'filter datasets succeed'
 
     @transaction
     def delete_slices(self, **kwargs) -> Tuple[int, str]:
@@ -127,6 +169,10 @@ class SliceDomainService(object):
     def delete_label(self, label_id: int) -> Tuple[int, str]:
         deleted_count = self.repository.delete_label(label_id)
         return deleted_count, 'delete labels succeed'
+
+    def delete_dataset(self, dataset_id: int) -> Tuple[int, str]:
+        deleted_count = self.repository.delete_dataset(dataset_id)
+        return deleted_count, 'delete dataset succeed'
 
     def update_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:
         label_id = kwargs['label_id']

@@ -7,3 +7,4 @@ class BaseEntity(BaseModel):
     id: int = None
     created_at: datetime = None
     last_modified: datetime = None
+    is_deleted: bool = None

@@ -7,61 +7,53 @@ from marshmallow.fields import Integer
 from src.app.auth import auth_required
 from src.app.db import connect_db
 from src.app.permission import permission_required
-from src.app.schema.dataset import DSPageQuery, DSFilter, ListDSOut, SingleDSOut, DSIn
+from src.app.schema.dataset import DataSetPageQuery, DataSetFilter, ListDataSetOut, SingleDataSetOut, DataSetIn, \
+    DataSetIdsOut
 from src.app.service_factory import AppServiceFactory
 
-ds_blueprint = APIBlueprint('数据集', __name__, url_prefix='/datasets')
+dataset_blueprint = APIBlueprint('数据集', __name__, url_prefix='/datasets')
 
 
-@ds_blueprint.get('')
-@ds_blueprint.input(DSPageQuery, location='query')
-@ds_blueprint.input(DSFilter, location='json')
-@ds_blueprint.output(ListDSOut)
-@ds_blueprint.doc(summary='数据集列表', security='ApiAuth')
-def get_datasets(query_data, json_data):
-    res = AppServiceFactory.slice_service.get_datasets(**query_data, **json_data)
+@dataset_blueprint.post('/filter')
+@dataset_blueprint.input(DataSetPageQuery, location='query')
+@dataset_blueprint.input(DataSetFilter, location='json')
+@dataset_blueprint.output(ListDataSetOut)
+@dataset_blueprint.doc(summary='数据集列表', security='ApiAuth')
+def filter_datasets(query_data, json_data):
+    res = AppServiceFactory.slice_service.filter_datasets(**{'page_query': query_data, 'filter': json_data})
     return res.response
 
 
-@ds_blueprint.get('/<int:ds_id>')
-@ds_blueprint.output(SingleDSOut)
-@ds_blueprint.doc(summary='数据集详情', security='ApiAuth')
-def get_dataset(ds_id):
-    res = AppServiceFactory.slice_service.get_dataset(ds_id)
+@dataset_blueprint.get('/<int:dataset_id>')
+@dataset_blueprint.output(SingleDataSetOut)
+@dataset_blueprint.doc(summary='数据集详情', security='ApiAuth')
+def get_dataset(dataset_id):
+    res = AppServiceFactory.slice_service.get_dataset(dataset_id)
     return res.response
 
 
-@ds_blueprint.put('/<int:ds_id>')
-@ds_blueprint.input(DSIn)
-@ds_blueprint.output(SingleDSOut)
-@ds_blueprint.doc(summary='更新数据集', security='ApiAuth')
-def update_dataset(ds_id):
-    res = AppServiceFactory.slice_service.update_dataset(ds_id)
+@dataset_blueprint.put('/<int:dataset_id>')
+@dataset_blueprint.input(DataSetIn)
+@dataset_blueprint.output(SingleDataSetOut)
+@dataset_blueprint.doc(summary='更新数据集', security='ApiAuth')
+def update_dataset(dataset_id):
+    res = AppServiceFactory.slice_service.update_dataset(dataset_id)
     return res.response
 
 
-@ds_blueprint.delete('/<int:ds_id>')
-@ds_blueprint.output(SingleDSOut)
-@ds_blueprint.doc(summary='删除数据集', security='ApiAuth')
-def delete_dataset(ds_id):
-    res = AppServiceFactory.slice_service.delete_dataset(ds_id)
+@dataset_blueprint.delete('/<int:dataset_id>')
+@dataset_blueprint.output(DataSetIdsOut)
+@dataset_blueprint.doc(summary='删除数据集', security='ApiAuth')
+def delete_dataset(dataset_id):
+    res = AppServiceFactory.slice_service.delete_dataset(dataset_id)
     return res.response
 
 
-@ds_blueprint.post('')
-@ds_blueprint.input(DSIn)
-@ds_blueprint.output(SingleDSOut)
-@ds_blueprint.doc(summary='创建数据集', security='ApiAuth')
-def create_dataset(ds_id):
-    res = AppServiceFactory.slice_service.create_dataset(ds_id)
-    return res.response
-
-
-@ds_blueprint.post('/copy/<int:ds_id>')
-@ds_blueprint.output(SingleDSOut)
-@ds_blueprint.doc(summary='复制数据集', security='ApiAuth')
-def copy_dataset(ds_id):
-    res = AppServiceFactory.slice_service.copy_dataset(ds_id)
+@dataset_blueprint.post('/copy/<int:dataset_id>')
+@dataset_blueprint.output(SingleDataSetOut)
+@dataset_blueprint.doc(summary='复制数据集', security='ApiAuth')
+def copy_dataset(dataset_id):
+    res = AppServiceFactory.slice_service.copy_dataset(dataset_id)
     return res.response
 
 

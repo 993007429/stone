@@ -47,7 +47,6 @@ class SliceEntity(BaseEntity):
     f_path: Optional[str]
     f_size: Optional[float]
     created_at: Optional[datetime]
-    is_deleted: Optional[bool]
     labels: List[str] = None
 
     class Config:
@@ -61,7 +60,7 @@ class SliceEntity(BaseEntity):
 class LabelEntity(BaseEntity):
     name: Optional[str]
     creator: Optional[str]
-    is_deleted: Optional[bool]
+    count: Optional[int]
 
     class Config:
         orm_mode = True
@@ -75,6 +74,16 @@ class SliceLabelEntity(BaseEntity):
     class Config:
         orm_mode = True
 
+
+class DataSetEntity(BaseEntity):
+    userid: int
+    name: Optional[str]
+    remark: Optional[str]
+    count: Optional[int]
+    creator: Optional[str]
+
+    class Config:
+        orm_mode = True
 
 
 
