@@ -53,10 +53,10 @@ def transaction(f):
         session: Session = request_context.db_session.get()
         assert session is not None
 
-        if request_context.is_in_transaction:
-            return f(*args, **kwargs)
-        else:
-            request_context.is_in_transaction = True
+        # if request_context.is_in_transaction:
+        #     return f(*args, **kwargs)
+        # else:
+        #     request_context.is_in_transaction = True
 
         ret = None
         try:
@@ -65,7 +65,7 @@ def transaction(f):
         except Exception as e:
             logger.exception(e)
             session.rollback()
-        request_context.is_in_transaction = False
+        # request_context.is_in_transaction = False
         return ret
 
     return wrapper

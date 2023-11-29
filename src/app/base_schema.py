@@ -10,8 +10,8 @@ class DurationField(Raw):
 
 
 class PageQuery(Schema):
-    page = Integer(load_default=1)
-    per_page = Integer(load_default=10, validate=Range(max=100))
+    page = Integer(load_default=1, validate=Range(min=1))
+    per_page = Integer(load_default=10, validate=Range(max=10000))
 
 
 class PaginationSchema(Schema):

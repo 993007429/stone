@@ -23,6 +23,15 @@ def filter_labels(query_data, json_data):
     return res.response
 
 
+@label_blueprint.post('')
+@label_blueprint.input(LabelIn, location='json')
+@label_blueprint.output(SingleLabelOut)
+@label_blueprint.doc(summary='创建标签', security='ApiAuth')
+def create_label(json_data):
+    res = AppServiceFactory.slice_service.create_label(**json_data)
+    return res.response
+
+
 @label_blueprint.get('/<int:label_id>')
 @label_blueprint.output(SingleLabelOut)
 @label_blueprint.doc(summary='标签详情', security='ApiAuth')

@@ -53,6 +53,8 @@ class SliceService(object):
 
     def create_label(self, **kwargs) -> AppResponse[dict]:
         label, message = self.domain_service.create_label(**kwargs)
+        if not label:
+            return AppResponse(message=message, err_code=1)
         return AppResponse(message=message, data={'label': label.dict()})
 
     def filter_labels(self, **kwargs) -> AppResponse[dict]:

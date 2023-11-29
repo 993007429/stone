@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, DateTime, Raw
+from apiflask.fields import Integer, String, List, Nested, DateTime, Raw, Dict
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 from marshmallow import validates, ValidationError
@@ -43,9 +43,9 @@ class LabelIn(Schema):
 
 class LabelOut(Schema):
     id = Integer(required=True)
-    name = String(required=True, validate=[Length(0, 255)])
-    count = Integer(required=True, description='数据量')
-    creator = String(required=True, validate=[Length(0, 255)])
+    name = String(required=True)
+    count = Integer(required=False, description='数据量')
+    creator = String(required=False)
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     last_modified = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     is_deleted = Integer(required=True)
@@ -54,7 +54,7 @@ class LabelOut(Schema):
 class SingleLabelOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(LabelOut)
+    data = Dict(keys=String(), values=Nested(LabelOut))
 
 
 class ListLabelOut(Schema):

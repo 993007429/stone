@@ -6,6 +6,7 @@ from typing import Tuple, Optional, List
 from werkzeug.utils import secure_filename
 
 import setting
+from src.app.request_context import request_context
 from src.infra.fs import fs
 from src.infra.session import transaction
 from src.libs.heimdall.dispatch import open_slide
@@ -63,7 +64,16 @@ class SliceDomainService(object):
             return None, 'Duplicate slice'
         return new_slice, 'Create slice succeed'
 
+    @transaction
     def create_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:
+        label_exist = self.repository.get_label_by_name(kwargs['name'])
+        if label_exist:
+            return None, 'Duplicate label name'
+
+        if current_user := request_context.current_user:
+            username = current_user.username
+            kwargs['creator'] = username
+
         label = LabelEntity.parse_obj(kwargs)
         succeed, new_label = self.repository.save_label(label)
         if not succeed:
@@ -106,8 +116,6 @@ class SliceDomainService(object):
         affected_count = self.repository.add_labels(slice_ids, label_ids)
         return affected_count, 'add labels to slices succeed'
 
-
-
     def delete_labels(self, **kwargs) -> Tuple[int, str]:
         deleted_count = self.repository.delete_labels(**kwargs)
         return deleted_count, 'delete labels succeed'
@@ -117,29 +125,3 @@ class SliceDomainService(object):
         if updated_count:
             return updated_count, message
         return 0, message
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -58,10 +58,9 @@ class SliceEntity(BaseEntity):
 
 
 class LabelEntity(BaseEntity):
-    name: str
-    count: int
-    creator: str
-    is_deleted: int = 0
+    name: Optional[str]
+    creator: Optional[str]
+    is_deleted: Optional[bool]
 
     class Config:
         orm_mode = True

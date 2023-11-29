@@ -47,8 +47,12 @@ class SQLAlchemySliceRepository(SliceRepository):
             return None
         return LabelEntity(**model.dict)
 
-
-
+    def get_label_by_name(self, name: str) -> Optional[LabelEntity]:
+        query = self._session.query(Label).filter_by(name=name)
+        model = query.first()
+        if not model:
+            return None
+        return LabelEntity(**model.dict)
 
     def delete_labels(self, **kwargs) -> int:
         ids = kwargs['ids']
@@ -169,12 +173,11 @@ class SQLAlchemySliceRepository(SliceRepository):
                     elif condition == Condition.not_null.value:
                         query = query.filter(or_(not_(getattr(Slice, field).is_not(None))))
 
-        query = query.order_by(desc(Slice.id))
+        query = query.order_by(Slice.id)
         total = query.count()
 
-        # page = min(page, math.ceil(total / per_page))
-        # offset = page * per_page
-        # query = query.offset(offset).limit(per_page)
+        offset = min((page - 1), math.floor(total / per_page)) * per_page
+        query = query.offset(offset).limit(per_page)
 
         pagination = {
             'total': total,
