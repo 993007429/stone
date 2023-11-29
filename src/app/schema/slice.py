@@ -37,15 +37,6 @@ class Filter(Schema):
     condition = String(required=True, validate=OneOf([i.value for i in list(Condition.__members__.values())]))
     value = Raw(required=True)
 
-    def validate_value(self, value, field):
-        try:
-            return datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ')
-        except Exception:
-            if isinstance(value, (bool, int, float, str)):
-                return value
-            else:
-                raise ValidationError('value must be a bool or integer or str or datatime')
-
     @validates_schema(pass_many=True, pass_original=True)
     def validate_value(self, data, raw_data, **kwargs):
         filed = data.get('field')

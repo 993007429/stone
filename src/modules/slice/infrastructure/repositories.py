@@ -223,11 +223,10 @@ class SQLAlchemySliceRepository(SliceRepository):
                 elif condition == 'not_null':
                     query = query.filter(and_(not_(getattr(Label, field).is_not(None))))
 
-        query = query.order_by(desc(Slice.id))
+        query = query.order_by(Label.id)
         total = query.count()
 
-        page = min(page, math.ceil(total / per_page))
-        offset = (page - 1) * per_page
+        offset = min((page - 1), math.floor(total / per_page)) * per_page
         query = query.offset(offset).limit(per_page)
 
         pagination = {

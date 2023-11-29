@@ -27,9 +27,19 @@ class SliceService(object):
             return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'slice': slice_.dict()})
 
+    def create_label(self, **kwargs) -> AppResponse[dict]:
+        label, message = self.domain_service.create_label(**kwargs)
+        if not label:
+            return AppResponse(message=message, err_code=1)
+        return AppResponse(message=message, data={'label': label.dict()})
+
     def filter_slices(self, **kwargs) -> AppResponse[dict]:
         slices, pagination, message = self.domain_service.filter_slices(**kwargs)
         return AppResponse(message=message, data={'slices': [slice_.dict() for slice_ in slices]}, pagination=pagination)
+
+    def filter_labels(self, **kwargs) -> AppResponse[dict]:
+        labels, pagination, message = self.domain_service.filter_labels(**kwargs)
+        return AppResponse(message=message, data={'labels': [label.dict() for label in labels]}, pagination=pagination)
 
     def get_slice(self, slice_id: int) -> AppResponse[dict]:
         slice_, message = self.domain_service.get_slice_by_id(slice_id)
@@ -50,16 +60,6 @@ class SliceService(object):
     def add_labels(self, **kwargs) -> AppResponse[dict]:
         affected_count, message = self.domain_service.add_labels(**kwargs)
         return AppResponse(message=message, data={'affected_count': affected_count})
-
-    def create_label(self, **kwargs) -> AppResponse[dict]:
-        label, message = self.domain_service.create_label(**kwargs)
-        if not label:
-            return AppResponse(message=message, err_code=1)
-        return AppResponse(message=message, data={'label': label.dict()})
-
-    def filter_labels(self, **kwargs) -> AppResponse[dict]:
-        labels, pagination, message = self.domain_service.filter_labels(**kwargs)
-        return AppResponse(message=message, data={'labels': [label.dict() for label in labels]}, pagination=pagination)
 
     def delete_labels(self, **kwargs) -> AppResponse[dict]:
         deleted_count, message = self.domain_service.delete_labels(**kwargs)
