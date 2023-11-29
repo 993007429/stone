@@ -14,6 +14,10 @@ class PageQuery(Schema):
     per_page = Integer(load_default=10, validate=Range(max=10000))
 
 
+class NameFuzzyQuery(Schema):
+    name = String(required=False)
+
+
 class PaginationSchema(Schema):
     page = Integer()
     per_page = Integer()

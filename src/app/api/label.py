@@ -5,6 +5,7 @@ from apiflask import APIBlueprint
 from marshmallow.fields import Integer
 
 from src.app.auth import auth_required
+from src.app.base_schema import NameFuzzyQuery
 from src.app.db import connect_db
 from src.app.permission import permission_required
 from src.app.schema.dataset import DataSetIdsOut
@@ -14,11 +15,20 @@ from src.app.service_factory import AppServiceFactory
 label_blueprint = APIBlueprint('标签', __name__, url_prefix='/labels')
 
 
+@label_blueprint.get('')
+@label_blueprint.input(NameFuzzyQuery, location='query')
+@label_blueprint.output(ListLabelOut)
+@label_blueprint.doc(summary='标签列表模糊筛选', security='ApiAuth')
+def get_labels_with_fuzzy(query_data):
+    res = AppServiceFactory.slice_service.get_labels_with_fuzzy(**query_data)
+    return res.response
+
+
 @label_blueprint.post('/filter')
 @label_blueprint.input(LabelPageQuery, location='query')
 @label_blueprint.input(LabelFilter, location='json')
 @label_blueprint.output(ListLabelOut)
-@label_blueprint.doc(summary='标签列表', security='ApiAuth')
+@label_blueprint.doc(summary='标签列表分页筛选', security='ApiAuth')
 def filter_labels(query_data, json_data):
     res = AppServiceFactory.slice_service.filter_labels(**{'page_query': query_data, 'filter': json_data})
     return res.response

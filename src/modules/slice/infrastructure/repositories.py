@@ -344,25 +344,19 @@ class SQLAlchemySliceRepository(SliceRepository):
             'per_page': per_page
         }
 
-        datasets = []
-        for model in query.all():
-            entity = DataSetEntity.from_orm(model)
-            datasets.append(entity)
+        return [DataSetEntity.from_orm(model) for model in query.all()], pagination
 
-        return datasets, pagination
-
-    def get_datasets_for_user(self, userid: int, name: Optional[str]) -> List[DataSetEntity]:
+    def get_datasets_with_fuzzy(self, userid: int, name: Optional[str]) -> List[DataSetEntity]:
         query = self._session.query(DataSet).filter(DataSet.userid == userid, DataSet.is_deleted.is_(False))
         if name:
             query = query.filter(DataSet.name.like(f'{name}%'))
+        return [DataSetEntity.from_orm(model) for model in query.all()]
 
-        datasets = []
-        for model in query.all():
-            entity = DataSetEntity.from_orm(model)
-            datasets.append(entity)
-        return datasets
-
-
+    def get_labels_with_fuzzy(self, name: Optional[str]) -> List[LabelEntity]:
+        query = self._session.query(Label).filter(Label.is_deleted.is_(False))
+        if name:
+            query = query.filter(Label.name.like(f'{name}%'))
+        return [LabelEntity.from_orm(model) for model in query.all()]
 
 
 

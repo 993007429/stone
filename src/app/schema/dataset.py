@@ -15,10 +15,6 @@ class DataSetPageQuery(PageQuery):
     pass
 
 
-class DataSetFuzzyQuery(Schema):
-    name = String(required=False)
-
-
 class Filter(Schema):
 
     field = String(required=True, validate=OneOf(DataSet.__table__.columns.keys()))

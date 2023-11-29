@@ -151,12 +151,17 @@ class SliceDomainService(object):
         #     new_labels.append(new_label)
         return datasets, pagination, 'filter datasets succeed'
 
-    def get_datasets_for_user(self, **kwargs) -> Tuple[List[DataSetEntity], str]:
+    def get_datasets_with_fuzzy(self, **kwargs) -> Tuple[List[DataSetEntity], str]:
         # userid = request_context.current_user.userid
         userid = 1
         name = kwargs.get('name')
-        datasets = self.repository.get_datasets_for_user(userid, name)
-        return datasets, 'filter datasets succeed'
+        datasets = self.repository.get_datasets_with_fuzzy(userid, name)
+        return datasets, 'get datasets succeed'
+
+    def get_labels_with_fuzzy(self, **kwargs) -> Tuple[List[LabelEntity], str]:
+        name = kwargs.get('name')
+        labels = self.repository.get_labels_with_fuzzy(name)
+        return labels, 'get labels succeed'
 
     @transaction
     def delete_slices(self, **kwargs) -> Tuple[int, str]:

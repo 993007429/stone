@@ -51,9 +51,13 @@ class SliceService(object):
         datasets, pagination, message = self.domain_service.filter_datasets(**kwargs)
         return AppResponse(message=message, data={'datasets': [dataset.dict() for dataset in datasets]}, pagination=pagination)
 
-    def get_datasets_for_user(self, **kwargs) -> AppResponse[dict]:
-        datasets, message = self.domain_service.get_datasets_for_user(**kwargs)
+    def get_datasets_with_fuzzy(self, **kwargs) -> AppResponse[dict]:
+        datasets, message = self.domain_service.get_datasets_with_fuzzy(**kwargs)
         return AppResponse(message=message, data={'datasets': [dataset.dict() for dataset in datasets]})
+
+    def get_labels_with_fuzzy(self, **kwargs) -> AppResponse[dict]:
+        labels, message = self.domain_service.get_labels_with_fuzzy(**kwargs)
+        return AppResponse(message=message, data={'labels': [label.dict() for label in labels]})
 
     def get_slice(self, slice_id: int) -> AppResponse[dict]:
         slice_, message = self.domain_service.get_slice_by_id(slice_id)
