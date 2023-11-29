@@ -86,7 +86,15 @@ class SliceDomainService(object):
         logic = kwargs['filter']['logic']
         filters = kwargs['filter']['filters']
         slices, pagination = self.repository.filter_slices(page, per_page, logic, filters)
-        return slices, pagination, 'filter slices succeed'
+
+        new_slices = []
+        for slice_ in slices:
+            slice_labels = self.repository.get_slice_labels_by_slice(slice_.id)
+            slice_dict = slice_.dict()
+            slice_dict['labels'] = [slice_label.label_name for slice_label in slice_labels]
+            new_slice = SliceEntity.parse_obj(slice_dict)
+            new_slices.append(new_slice)
+        return new_slices, pagination, 'filter slices succeed'
 
     def filter_labels(self, **kwargs) -> Tuple[List[LabelEntity], dict, str]:
         page = kwargs['page_query']['page']

@@ -131,6 +131,7 @@ class SliceOut(SliceBase):
     sto_date = DateTime(required=False, description='入库日期', format='%Y-%m-%d %H:%M:%S')
     last_anal = DateTime(required=False, description='AI分析日期(最后一次AI分析时间)', format='%Y-%m-%d %H:%M:%S')
     last_qua = DateTime(required=False, description='质控日期(最后一次质控标签时间)', format='%Y-%m-%d %H:%M:%S')
+    labels = List(String(required=True), description='标签列表')
 
 
 class SliceUploadIn(Schema):

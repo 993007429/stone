@@ -6,7 +6,7 @@ from sqlalchemy import not_, and_, or_, desc, exists
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from src.modules.slice.domain.entities import SliceEntity, LabelEntity
+from src.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity
 from src.modules.slice.domain.repositories import SliceRepository
 from src.modules.slice.domain.value_objects import Condition, LogicType
 from src.modules.slice.infrastructure.models import Slice, Label, SliceLabel
@@ -24,14 +24,14 @@ class SQLAlchemySliceRepository(SliceRepository):
         return s
 
     def get_slice_by_id(self, pk: int) -> Optional[SliceEntity]:
-        query = self._session.query(Slice).filter(Slice.id == pk)
+        query = self._session.query(Slice).filter(Slice.id == pk, Slice.is_deleted.is_(False))
         model = query.first()
         if not model:
             return None
         return SliceEntity(**model.dict)
 
     def get_slices(self, ids: list) -> List[SliceEntity]:
-        query = self._session.query(Slice).filter(Slice.id.in_(ids))
+        query = self._session.query(Slice).filter(Slice.id.in_(ids), Slice.is_deleted.is_(False))
         models = query.all()
         return [SliceEntity.from_orm(model) for model in models]
 
@@ -41,7 +41,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         return deleted_count
 
     def get_label_by_id(self, pk: int) -> Optional[LabelEntity]:
-        query = self._session.query(Label).filter_by(id=pk)
+        query = self._session.query(Label).filter(Label.id == pk, Label.is_deleted.is_(False))
         model = query.first()
         if not model:
             return None
@@ -53,6 +53,12 @@ class SQLAlchemySliceRepository(SliceRepository):
         if not model:
             return None
         return LabelEntity(**model.dict)
+
+    def get_slice_labels_by_slice(self, slice_id: int) -> List[SliceLabelEntity]:
+        query = self._session.query(SliceLabel).filter(
+            SliceLabel.slice_id == slice_id, SliceLabel.is_deleted.is_(False))
+        models = query.order_by(SliceLabel.label_id).all()
+        return [SliceLabelEntity.from_orm(model) for model in models]
 
     def delete_label(self, label_id: int) -> int:
         deleted_count = self._session.query(Label).filter(Label.id == label_id).update(
@@ -234,14 +240,3 @@ class SQLAlchemySliceRepository(SliceRepository):
             labels.append(entity)
 
         return labels, pagination
-
-
-
-
-
-
-
-
-
-
-

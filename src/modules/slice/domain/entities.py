@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 from src.seedwork.domain.entities import BaseEntity
@@ -48,6 +48,7 @@ class SliceEntity(BaseEntity):
     f_size: Optional[float]
     created_at: Optional[datetime]
     is_deleted: Optional[bool]
+    labels: List[str] = None
 
     class Config:
         orm_mode = True
@@ -64,6 +65,21 @@ class LabelEntity(BaseEntity):
 
     class Config:
         orm_mode = True
+
+
+class SliceLabelEntity(BaseEntity):
+    slice_id: Optional[int]
+    label_id: Optional[int]
+    label_name: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
+
+
+
+
 
 
 

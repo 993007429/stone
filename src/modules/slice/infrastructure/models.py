@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime, BigInteger, Table, ForeignKey, Float, Boolean, \
-    SmallInteger, text, literal_column
+    SmallInteger, text, literal_column, Index
 
 from src.modules.slice.domain.value_objects import DataType, SliceAnalysisStat
 from src.seedwork.infrastructure.models import Base
@@ -10,6 +10,11 @@ from src.seedwork.infrastructure.models import Base
 class SliceLabel(Base):
     __tablename__ = "slice_label"
 
+    __table_args__ = (
+        Index('idx_slice_id', 'slice_id'),
+        Index('idx_label_id', 'label_id'),
+    )
+
     slice_id = Column(BigInteger, nullable=False)
     label_id = Column(BigInteger, nullable=False)
     label_name = Column(String(255), nullable=True)
@@ -17,6 +22,11 @@ class SliceLabel(Base):
 
 class Slice(Base):
     __tablename__ = 'slice'
+
+    __table_args__ = (
+        Index('idx_slice_key', 'slice_key'),
+        Index('idx_data_type', 'data_type'),
+    )
 
     slice_key = Column(String(255), nullable=False, server_default=text('""'), comment='切片唯一ID')
     parent_id = Column(Integer, nullable=True, comment='关联数据(父级数据ID)')
