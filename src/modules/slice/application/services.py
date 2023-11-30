@@ -101,9 +101,13 @@ class SliceService(object):
         deleted_count, message = self.domain_service.delete_label(label_id)
         return AppResponse(message=message, data={'deleted_count': deleted_count})
 
-    def delete_dataset(self, label_id: int) -> AppResponse[dict]:
-        deleted_count, message = self.domain_service.delete_dataset(label_id)
+    def delete_dataset(self, dataset_id: int) -> AppResponse[dict]:
+        deleted_count, message = self.domain_service.delete_dataset(dataset_id)
         return AppResponse(message=message, data={'deleted_count': deleted_count})
+
+    def copy_dataset(self, dataset_id: int) -> AppResponse[dict]:
+        new_dataset, message = self.domain_service.copy_dataset(dataset_id)
+        return AppResponse(message=message, data={'new_dataset': new_dataset})
 
     def update_label(self, **kwargs) -> AppResponse[dict]:
         label, message = self.domain_service.update_label(**kwargs)
@@ -116,3 +120,19 @@ class SliceService(object):
         if not dataset:
             return AppResponse(message=message, err_code=1)
         return AppResponse(message=message, data={'dataset': dataset.dict()})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -10,7 +10,7 @@ from src.app.request_context import request_context
 from src.infra.fs import fs
 from src.infra.session import transaction
 from src.libs.heimdall.dispatch import open_slide
-from src.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity
+from src.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity
 from src.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
 
 logger = logging.getLogger(__name__)
@@ -205,6 +205,24 @@ class SliceDomainService(object):
         deleted_count = self.repository.delete_dataset(dataset_id)
         return deleted_count, 'delete dataset succeed'
 
+    @transaction
+    def copy_dataset(self, dataset_id: int) -> Tuple[Optional[DataSetEntity], str]:
+        old_dataset = self.repository.get_dataset_by_id(dataset_id)
+        if not old_dataset:
+            return None, 'no dataset selected'
+
+        success, new_dataset = self.repository.save_data_set(DataSetEntity.parse_obj(old_dataset.dict(exclude={'id'})))
+
+        old_dataset_slices = self.repository.get_dataset_slices_by_dataset(dataset_id)
+        news_en = []
+        for old_dataset_slice in old_dataset_slices:
+            new = old_dataset_slice.dict(exclude={'id'})
+            new['dataset_id'] = old_dataset.id
+            new_en = DataSetSliceEntity.parse_obj(new)
+            news_en.append(new_en)
+
+        return new_dataset, 'copy dataset succeed'
+
     def update_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:
         label_id = kwargs['label_id']
         label_data = kwargs['label_data']
@@ -227,6 +245,27 @@ class SliceDomainService(object):
         if updated_count:
             return new_dataset, message
         return None, message
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

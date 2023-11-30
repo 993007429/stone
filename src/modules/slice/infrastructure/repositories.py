@@ -53,7 +53,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         model = query.first()
         if not model:
             return None
-        return DataSetEntity(**model.dict)
+        return DataSetEntity.from_orm(model)
 
     def get_label_by_name(self, name: str) -> Optional[LabelEntity]:
         query = self._session.query(Label).filter_by(name=name)
@@ -85,7 +85,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         query = self._session.query(DataSetSlice).filter(
             DataSetSlice.dataset_id == dataset_id, DataSetSlice.is_deleted.is_(False))
         models = query.order_by(DataSetSlice.dataset_id).all()
-        return [SliceLabelEntity.from_orm(model) for model in models]
+        return [DataSetSliceEntity.from_orm(model) for model in models]
 
     def delete_label(self, label_id: int) -> int:
         deleted_count = self._session.query(Label).filter(Label.id == label_id).update(
@@ -96,6 +96,14 @@ class SQLAlchemySliceRepository(SliceRepository):
         return deleted_count
 
     def delete_dataset(self, dataset_id: int) -> int:
+        deleted_count = self._session.query(DataSet).filter(DataSet.id == dataset_id).update(
+            {'is_deleted': 1}, synchronize_session=False)
+
+        self._session.query(DataSetSlice).filter(DataSetSlice.dataset_id == dataset_id).update(
+            {'is_deleted': 1}, synchronize_session=False)
+        return deleted_count
+
+    def copy_dataset(self, dataset_id: int) -> Optional[DataSetEntity]:
         deleted_count = self._session.query(DataSet).filter(DataSet.id == dataset_id).update(
             {'is_deleted': 1}, synchronize_session=False)
 
@@ -172,6 +180,7 @@ class SQLAlchemySliceRepository(SliceRepository):
             self._session.add(model)
             self._session.flush([model])
         except IntegrityError as e:
+            # self._session.rollback()
             return False, None
         return True, entity.from_orm(model)
 
