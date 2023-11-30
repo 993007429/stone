@@ -62,12 +62,13 @@ class Filter(Schema):
 
 class SliceFilter(Schema):
     logic = String(required=True, validate=[OneOf([LogicType.and_.value, LogicType.or_.value])])
-    filters = List(Nested(Filter))
+    filters = List(Nested(Filter()), required=True)
+    label_ids = List(Integer(required=True), required=True)
 
 
 class ComparisonSliceFilter(Schema):
     logic = String(required=True, validate=[OneOf([LogicType.and_.value, LogicType.or_.value])])
-    filters = List(Nested(Filter))
+    filters = List(Nested(Filter()))
     models = List(Integer(required=True), description='模型ID列表')
 
 

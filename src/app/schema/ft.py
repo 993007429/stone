@@ -1,5 +1,5 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, DateTime, URL
+from apiflask.fields import Integer, String, List, Nested, DateTime, URL, Dict
 from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
@@ -13,24 +13,41 @@ class FieldCondition(Schema):
 
 
 class FTIn(Schema):
-    name = String(required=True, validate=[Length(0, 20)])
+    name = String(required=True)
+    logic = String(required=True)
+    fields = List(Nested(FieldCondition()))
 
 
 class FTOut(Schema):
     id = Integer(required=True)
-    name = String(required=True, validate=[Length(0, 20)])
-    logic = String(required=True, validate=[OneOf([LogicType.and_.value, LogicType.or_.value])])
-    field_condition = List(Nested(FieldCondition))
+    name = String(required=True)
+    logic = String(required=True)
+    fields = List(Nested(FieldCondition()), required=True)
 
 
 class SingleFTOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(FTOut)
+    data = Dict(keys=String(), values=Nested(FTOut()), required=True)
 
 
 class ListFTOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = List(Nested({'id': Integer(required=True), 'name': String(required=True, validate=[Length(0, 20)])}))
+    data = Dict(keys=String(), values=List(Nested(FTOut())), required=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

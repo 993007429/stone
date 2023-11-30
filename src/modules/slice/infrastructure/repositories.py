@@ -81,6 +81,12 @@ class SQLAlchemySliceRepository(SliceRepository):
         models = query.order_by(SliceLabel.slice_id).all()
         return [SliceLabelEntity.from_orm(model) for model in models]
 
+    def get_slice_labels_by_label_ids(self, label_ids: list) -> List[SliceLabelEntity]:
+        query = self._session.query(SliceLabel).filter(
+            SliceLabel.label_id.in_(label_ids), SliceLabel.is_deleted.is_(False))
+        models = query.order_by(SliceLabel.slice_id).all()
+        return [SliceLabelEntity.from_orm(model) for model in models]
+
     def get_dataset_slices_by_dataset(self, dataset_id: int) -> List[DataSetSliceEntity]:
         query = self._session.query(DataSetSlice).filter(
             DataSetSlice.dataset_id == dataset_id, DataSetSlice.is_deleted.is_(False))
@@ -184,8 +190,12 @@ class SQLAlchemySliceRepository(SliceRepository):
             return False, None
         return True, entity.from_orm(model)
 
-    def filter_slices(self, page: int, per_page: int, logic: str, filters: list) -> Tuple[List[SliceEntity], dict]:
+    def filter_slices(self, page: int, per_page: int, logic: str, filters: list, slice_ids: set) -> Tuple[List[SliceEntity], dict]:
         query = self._session.query(Slice).filter(Slice.is_deleted.is_(False))
+        total = query.count()
+        if slice_ids:
+            query = query.filter(Slice.id.in_(slice_ids))
+
         for filter_ in filters:
             field = filter_['field']
             condition = filter_['condition']
@@ -242,7 +252,6 @@ class SQLAlchemySliceRepository(SliceRepository):
                         query = query.filter(or_(not_(getattr(Slice, field).is_not(None))))
 
         query = query.order_by(Slice.id)
-        total = query.count()
 
         offset = min((page - 1), math.floor(total / per_page)) * per_page
         query = query.offset(offset).limit(per_page)

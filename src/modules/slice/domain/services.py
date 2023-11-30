@@ -110,7 +110,14 @@ class SliceDomainService(object):
         per_page = kwargs['page_query']['per_page']
         logic = kwargs['filter']['logic']
         filters = kwargs['filter']['filters']
-        slices, pagination = self.repository.filter_slices(page, per_page, logic, filters)
+        label_ids = kwargs['filter']['label_ids']
+
+        slice_ids = []
+        if label_ids:
+            slice_labels = self.repository.get_slice_labels_by_label_ids(label_ids)
+            slice_ids = [slice_label.slice_id for slice_label in slice_labels]
+
+        slices, pagination = self.repository.filter_slices(page, per_page, logic, filters, set(slice_ids))
 
         new_slices = []
         for slice_ in slices:
