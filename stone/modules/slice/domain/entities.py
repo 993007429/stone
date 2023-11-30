@@ -2,7 +2,6 @@ from typing import Optional, List
 from datetime import datetime
 
 from stone.seedwork.domain.entities import BaseEntity
-from stone.seedwork.domain.value_objects import GenericUUID
 
 
 class SliceEntity(BaseEntity):
@@ -92,16 +91,3 @@ class DataSetSliceEntity(BaseEntity):
 
     class Config:
         orm_mode = True
-
-
-
-
-
-
-
-
-
-
-
-
-

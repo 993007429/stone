@@ -1,4 +1,4 @@
-from stone.app.request_context import RequestContext, request_context
+from stone.app.request_context import RequestContext
 from stone.modules.ai.application.services import AiService
 from stone.modules.ai.domain.services import AiDomainService
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository

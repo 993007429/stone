@@ -2,12 +2,11 @@ from datetime import datetime
 
 from apiflask import Schema
 from apiflask.fields import Integer, String, List, Nested, DateTime, Raw, Dict
-from apiflask.validators import Range
-from apiflask.validators import Length, OneOf
-from marshmallow import validates, ValidationError, validates_schema
+from apiflask.validators import OneOf
+from marshmallow import ValidationError, validates_schema
 
-from stone.app.base_schema import DurationField, PageQuery, PaginationSchema
-from stone.modules.slice.domain.value_objects import LogicType, Condition
+from stone.app.base_schema import PageQuery, PaginationSchema
+from stone.modules.slice.domain.value_objects import Condition
 from stone.modules.slice.infrastructure.models import Label
 
 columns_with_types = {column_name: str(column.type) for column_name, column in Label.__table__.columns.items()}
@@ -95,16 +94,3 @@ class LabelIdsOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Dict(keys=String(), values=Integer(required=True), description='受影响标签数量')
-
-
-
-
-
-
-
-
-
-
-
-
-

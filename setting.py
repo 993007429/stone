@@ -28,7 +28,7 @@ DATA_DIR = LOCAL_SETTINGS['default']['data_dir']
 
 LOG_DIR = LOCAL_SETTINGS['default']['log_dir']
 
-APP_LOG_FILE = os.path.join(LOG_DIR, f'stone-app-log')
+APP_LOG_FILE = os.path.join(LOG_DIR, 'stone-app-log')
 
 LIMIT_URL = [
     'slice/createMark',
@@ -109,12 +109,10 @@ VERSION = '1.0.0'
 
 SECURITY_SCHEMES = {
     'ApiAuth': {
-      'type': 'apiKey',
-      'in': 'header',
-      'name': 'Authorization',
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
     }
 }
 
 RANK_AI_TASK = 'stone:ai_task:rank'
-
-

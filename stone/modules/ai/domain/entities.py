@@ -1,10 +1,7 @@
 from typing import Optional
-from datetime import datetime
-
 from pydantic import Field
 
 from stone.seedwork.domain.entities import BaseEntity
-from stone.seedwork.domain.value_objects import GenericUUID
 
 
 class MarkGroupEntity(BaseEntity):
@@ -38,6 +35,3 @@ class MarkEntity(BaseEntity):
 
 class AnalysisEntity(BaseEntity):
     pass
-
-
-

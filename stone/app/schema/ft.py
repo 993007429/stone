@@ -1,12 +1,5 @@
-from typing import TypeVar, Generic
-
 from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, DateTime, URL, Dict
-from apiflask.validators import Range
-from apiflask.validators import Length, OneOf
-
-from stone.app.base_schema import DurationField, PageQuery, PaginationSchema
-from stone.modules.slice.domain.value_objects import LogicType
+from apiflask.fields import Integer, String, List, Nested, Dict
 
 
 class FieldCondition(Schema):
@@ -37,13 +30,3 @@ class ListFTOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Dict(keys=String(), values=List(Nested(FTOut())), required=True)
-
-
-
-
-
-
-
-
-
-

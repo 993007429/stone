@@ -1,6 +1,4 @@
 import jwt
-from flask import request
-from sqlalchemy.exc import NoResultFound
 from functools import wraps
 
 import setting

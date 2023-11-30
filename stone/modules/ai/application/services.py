@@ -3,7 +3,6 @@ import time
 
 from setting import RANK_AI_TASK
 from stone.app.request_context import request_context
-from stone.modules.ai.application import tasks
 from stone.modules.ai.domain.services import AiDomainService
 from stone.modules.ai.domain.value_objects import TaskParam, AIType
 from stone.modules.slice.application.services import SliceService

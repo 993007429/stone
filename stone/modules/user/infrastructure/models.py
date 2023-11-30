@@ -1,6 +1,4 @@
-from datetime import datetime
-
-from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime, BigInteger, text
+from sqlalchemy import Column, String, text
 
 from stone.modules.user.domain.value_objects import RoleType
 from stone.seedwork.infrastructure.models import Base

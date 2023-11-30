@@ -1,16 +1,9 @@
-import asyncio
-from typing import List
-
 from apiflask import APIBlueprint, FileSchema
 from flask import send_from_directory
-from marshmallow.fields import Integer
 
-from stone.app.auth import auth_required
-from stone.app.db import connect_db
-from stone.app.permission import permission_required
 from stone.app.schema.slice import ListSliceOut, SlicePageQuery, SingleSliceOut, SliceFilter, SliceIdsOut, SliceIdsIn, \
-    WSIIn, SliceId, ROIIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, \
-    SliceUploadIn, SingleSliceUploadOut, SliceUpdateIn, SingleSliceFieldOut, SliceAndLabelIdsIn
+    WSIIn, SliceId, ROIIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, SliceUploadIn, \
+    SingleSliceUploadOut, SliceUpdateIn, SingleSliceFieldOut, SliceAndLabelIdsIn
 from stone.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -94,7 +87,7 @@ def add_labels(json_data):
 @slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
 @slice_blueprint.doc(summary='切片全场图', security='ApiAuth')
 def get_wsi(query_data):
-    res = AppServiceFactory.slice_service.get_wsi(**query_data)
+    AppServiceFactory.slice_service.get_wsi(**query_data)
     return send_from_directory('IMAGE_FOLDER', 'filename')
 
 
@@ -103,7 +96,7 @@ def get_wsi(query_data):
 @slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
 @slice_blueprint.doc(summary='ROI', security='ApiAuth')
 def get_roi(query_data):
-    res = AppServiceFactory.slice_service.get_roi(**query_data)
+    AppServiceFactory.slice_service.get_roi(**query_data)
     return send_from_directory('IMAGE_FOLDER', 'filename')
 
 
@@ -112,7 +105,7 @@ def get_roi(query_data):
 @slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
 @slice_blueprint.doc(summary='切片标签', security='ApiAuth')
 def get_label(query_data):
-    res = AppServiceFactory.slice_service.get_label(**query_data)
+    AppServiceFactory.slice_service.get_label(**query_data)
     return send_from_directory('IMAGE_FOLDER', 'filename')
 
 
@@ -122,9 +115,3 @@ def get_label(query_data):
 def get_slice_fields():
     res = AppServiceFactory.slice_service.get_slice_fields()
     return res.response
-
-
-
-
-
-

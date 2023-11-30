@@ -1,14 +1,10 @@
-from datetime import datetime
-
 from apiflask import Schema
 from apiflask.fields import Integer, String, List, Nested, DateTime, Raw, Dict
-from apiflask.validators import Range
-from apiflask.validators import Length, OneOf
-from marshmallow import validates, ValidationError, validates_schema
+from apiflask.validators import OneOf
 
-from stone.app.base_schema import DurationField, PageQuery, PaginationSchema
-from stone.modules.slice.domain.value_objects import LogicType, Condition
-from stone.modules.slice.infrastructure.models import Slice, DataSet
+from stone.app.base_schema import PageQuery, PaginationSchema
+from stone.modules.slice.domain.value_objects import Condition
+from stone.modules.slice.infrastructure.models import DataSet
 
 
 class DataSetPageQuery(PageQuery):

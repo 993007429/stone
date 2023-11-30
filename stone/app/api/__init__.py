@@ -35,7 +35,7 @@ def api_before_request():
         except jwt.ExpiredSignatureError:
             return {'code': 401, 'message': 'Token has expired'}
 
-        except (jwt.InvalidTokenError, jwt.DecodeError) as e:
+        except (jwt.InvalidTokenError, jwt.DecodeError):
             return {'code': 401, 'message': 'Invalid Token'}
 
         request_context.token = token

@@ -19,4 +19,3 @@ class AIRepository(metaclass=ABCMeta):
     @abstractmethod
     def mark_table_suffix(self, value):
         ...
-

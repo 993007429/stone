@@ -1,6 +1,5 @@
 from apiflask import Schema
 from apiflask.fields import Integer, String, List, Nested, DateTime
-from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
 
 from stone.app.base_schema import PageQuery, PaginationSchema

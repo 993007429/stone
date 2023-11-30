@@ -1,8 +1,5 @@
-from datetime import datetime
-
-from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime, BigInteger, Boolean, func, text, literal_column
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import inspect, JSON
+from sqlalchemy import Column, DateTime, BigInteger, Boolean, func, literal_column
+from sqlalchemy import inspect
 from sqlalchemy.orm import declarative_base
 
 

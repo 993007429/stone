@@ -3,8 +3,7 @@ import os
 import shutil
 import time
 from functools import wraps
-from inspect import getfullargspec
-from typing import Optional, Type, Tuple, List, Union, Any
+from typing import Optional, Tuple, List, Any
 
 from celery.result import AsyncResult
 
@@ -22,7 +21,6 @@ from stone.modules.ai.domain.consts import AI_TYPE_MANUAL_MARK_TABLE_MAPPING
 from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity
 from stone.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam, AIType
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
-from stone.modules.ai.utils.prob import save_prob_to_file
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
 from stone.utils.id_worker import IdWorker
 
@@ -50,13 +48,13 @@ def connect_slice_db():
             ai_model = kwargs['ai_model']
 
             if ai_model:
-            #     template_id = 0
-            #     if ai_type == AIType.label:
-            #         slice_info = _self.slice_service.get_slice_info(case_id=case_id, file_id=file_id).data
-            #         template_id = slice_info['templateId'] if slice_info else 0
-            #         func_args = getfullargspec(f)[0]
-            #         if 'template_id' in func_args and not kwargs.get('template_id'):
-            #             kwargs['template_id'] = template_id
+                #     template_id = 0
+                #     if ai_type == AIType.label:
+                #         slice_info = _self.slice_service.get_slice_info(case_id=case_id, file_id=file_id).data
+                #         template_id = slice_info['templateId'] if slice_info else 0
+                #         func_args = getfullargspec(f)[0]
+                #         if 'template_id' in func_args and not kwargs.get('template_id'):
+                #             kwargs['template_id'] = template_id
 
                 # mark_table_suffix = _self.repository.get_mark_table_suffix(ai_type=ai_type, template_id=template_id)
                 # mark_table_suffix = ai_model.value
@@ -194,6 +192,7 @@ class AiDomainService(object):
             tbs_result = alg_model.cal_tct(slide)
             dna_result = dna_alg_model.dna_test(slide)
 
+            from stone.modules.ai.utils.prob import save_prob_to_file
             prob_dict = save_prob_to_file(slide_path=task_param.slide_path, result=tbs_result)
             ai_result = generate_ai_result(result=tbs_result, roiid=roi['id'])
             ai_result.update(generate_dna_ai_result(result=dna_result, roiid=roi['id']))
@@ -333,14 +332,14 @@ class AiDomainService(object):
     @connect_slice_db()
     def create_ai_marks(
             self,
-            ai_model: str,
-            slide_path: str,
+            # ai_model: str,
+            # slide_path: str,
             cell_marks: List[dict],
             roi_marks: List[dict],
-            skip_mark_to_tile: bool = False
+            # skip_mark_to_tile: bool = False
     ) -> Tuple[str, Optional[List[MarkEntity]]]:
         cell_mark_entities, roi_mark_entities = [], []
-        group_ids = set()
+        # group_ids = set()
 
         id_worker = IdWorker(1, 2, 0)
 
@@ -386,38 +385,3 @@ class AiDomainService(object):
         if success:
             return new_analysis, 'create analysis success'
         return None, 'create analysis failed'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -149,7 +149,7 @@ class SliceDomainService(object):
         filters = kwargs['filter']['filters']
         datasets, pagination = self.repository.filter_datasets(page, per_page, filters)
 
-        new_datasets = []
+        # new_datasets = []
         # for label in labels:
         #     slice_labels = self.repository.get_slice_labels_by_label(label.id)
         #     label_dict = label.dict()
@@ -252,27 +252,3 @@ class SliceDomainService(object):
         if updated_count:
             return new_dataset, message
         return None, message
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

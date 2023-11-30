@@ -2,13 +2,11 @@ from datetime import datetime
 
 from apiflask import Schema
 from apiflask.fields import Integer, String, DateTime, URL, Float, File, Dict, Raw, Boolean, List, Nested
-from apiflask.validators import Range
 from apiflask.validators import Length, OneOf
-from marshmallow import validates, ValidationError, validates_schema
-from werkzeug.utils import secure_filename
+from marshmallow import ValidationError, validates_schema
 
-from stone.app.base_schema import DurationField, PageQuery, PaginationSchema
-from stone.modules.slice.domain.value_objects import LogicType, SliceAnalysisStat, DataType, Condition
+from stone.app.base_schema import PageQuery, PaginationSchema
+from stone.modules.slice.domain.value_objects import LogicType, Condition
 from stone.modules.slice.infrastructure.models import Slice
 
 columns_with_types = {column_name: str(column.type) for column_name, column in Slice.__table__.columns.items()}

@@ -1,6 +1,7 @@
 import enum
 from typing import Optional, List, TypeVar
 
+from stone.consts.common import Consts
 from stone.seedwork.domain.value_objects import BaseEnum, BaseValueObject
 from stone.utils.id_worker import IdWorker
 
@@ -123,5 +124,3 @@ class ALGResult(BaseValueObject):
     cell_num: Optional[int] = None
     prob_dict: Optional[dict] = None
     err_msg: Optional[str] = None
-
-

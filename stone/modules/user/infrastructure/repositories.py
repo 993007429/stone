@@ -27,7 +27,7 @@ class SQLAlchemyUserRepository(UserRepository):
             self._session.add(model)
             self._session.flush([model])
             self._session.commit()
-        except IntegrityError as e:
+        except IntegrityError:
             return False, 'Duplicate username '
         return True, 'Create user success'
 
@@ -74,4 +74,3 @@ class SQLAlchemyUserRepository(UserRepository):
         self._session.query(User).filter_by(id=pk).delete()
         self._session.commit()
         return True, 'Delete user success'
-

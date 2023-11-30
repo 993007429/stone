@@ -1,15 +1,8 @@
-import asyncio
-from typing import List
-
 from apiflask import APIBlueprint
-from marshmallow.fields import Integer
 
-from stone.app.auth import auth_required
 from stone.app.base_schema import NameFuzzyQuery
-from stone.app.db import connect_db
-from stone.app.permission import permission_required
 from stone.app.schema.dataset import DataSetIdsOut
-from stone.app.schema.label import LabelPageQuery, LabelFilter, ListLabelOut, SingleLabelOut, LabelIn, LabelIdsOut
+from stone.app.schema.label import LabelPageQuery, LabelFilter, ListLabelOut, SingleLabelOut, LabelIn
 from stone.app.service_factory import AppServiceFactory
 
 label_blueprint = APIBlueprint('标签', __name__, url_prefix='/labels')
@@ -66,16 +59,3 @@ def update_label(label_id, json_data):
 def delete_label(label_id):
     res = AppServiceFactory.slice_service.delete_label(label_id)
     return res.response
-
-
-
-
-
-
-
-
-
-
-
-
-

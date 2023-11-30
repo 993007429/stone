@@ -1,6 +1,4 @@
-import enum
-
-from stone.seedwork.domain.value_objects import BaseEnum, BaseValueObject
+from stone.seedwork.domain.value_objects import BaseEnum
 
 
 class LogicType(BaseEnum):
@@ -32,10 +30,3 @@ class Condition(BaseEnum):
     not_null = 'not_null'
     contain = 'contain'
     not_contain = 'not_contain'
-
-
-
-
-
-
-

@@ -2,7 +2,7 @@ import math
 from contextvars import ContextVar
 from typing import List, Optional, Tuple
 
-from sqlalchemy import not_, and_, or_, desc, exists
+from sqlalchemy import not_, and_, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -167,7 +167,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         try:
             self._session.add(model)
             self._session.flush([model])
-        except IntegrityError as e:
+        except IntegrityError:
             return False, None
         return True, entity.from_orm(model)
 
@@ -176,7 +176,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         try:
             self._session.add(model)
             self._session.flush([model])
-        except IntegrityError as e:
+        except IntegrityError:
             return False, None
         return True, entity.from_orm(model)
 
@@ -185,8 +185,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         try:
             self._session.add(model)
             self._session.flush([model])
-        except IntegrityError as e:
-            # self._session.rollback()
+        except IntegrityError:
             return False, None
         return True, entity.from_orm(model)
 
@@ -375,14 +374,3 @@ class SQLAlchemySliceRepository(SliceRepository):
         if name:
             query = query.filter(Label.name.like(f'{name}%'))
         return [LabelEntity.from_orm(model) for model in query.all()]
-
-
-
-
-
-
-
-
-
-
-

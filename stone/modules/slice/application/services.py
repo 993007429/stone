@@ -1,11 +1,5 @@
-import os
-import uuid
-
-from werkzeug.utils import secure_filename
-
 from stone.modules.slice.domain.services import SliceDomainService
 from stone.seedwork.application.responses import AppResponse
-from stone.libs.heimdall.dispatch import open_slide
 
 
 class SliceService(object):
@@ -120,19 +114,3 @@ class SliceService(object):
         if not dataset:
             return AppResponse(message=message, err_code=1)
         return AppResponse(message=message, data={'dataset': dataset.dict()})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,7 +1,4 @@
-from datetime import datetime
-
-from sqlalchemy import inspect, JSON, Column, String, Integer, DateTime, BigInteger, Table, ForeignKey, Float, Boolean, \
-    SmallInteger, text, literal_column, Index
+from sqlalchemy import Column, String, Integer, DateTime, BigInteger, Float, Boolean, SmallInteger, text, literal_column, Index
 
 from stone.modules.slice.domain.value_objects import DataType, SliceAnalysisStat
 from stone.seedwork.infrastructure.models import Base
@@ -101,12 +98,3 @@ class DataSet(Base):
     count = Column(Integer, nullable=True)
     creator = Column(String(255), nullable=True)
     userid = Column(BigInteger, nullable=False)
-
-
-
-
-
-
-
-
-
