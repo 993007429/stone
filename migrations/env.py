@@ -36,7 +36,7 @@ fileConfig(config.config_file_name)
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 import setting
-from src.seedwork.infrastructure.models import Base
+from stone.seedwork.infrastructure.models import Base
 config.set_main_option('sqlalchemy.url', setting.SQLALCHEMY_DATABASE_URI)
 target_metadata = Base.metadata
 
