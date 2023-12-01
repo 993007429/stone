@@ -5,7 +5,7 @@ from apiflask.fields import Integer, String, DateTime, URL, Float, File, Dict, R
 from apiflask.validators import Length, OneOf
 from marshmallow import ValidationError, validates_schema
 
-from stone.app.base_schema import PageQuery, PaginationSchema
+from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers
 from stone.modules.slice.domain.value_objects import LogicType, Condition
 from stone.modules.slice.infrastructure.models import Slice
 
@@ -240,8 +240,16 @@ class SliceIdsOut(Schema):
 
 
 class SliceAndLabelIdsIn(Schema):
-    slice_ids = List(Integer(required=True), description='切片ID列表')
-    label_ids = List(Integer(required=True, description='标签ID列表'))
+    slice_ids = List(Integer(required=True, validate=validate_positive_integers), description='切片ID列表', required=True)
+    label_ids = List(Integer(required=True, validate=validate_positive_integers), description='标签ID列表', required=True)
+
+    @validates_schema(pass_many=True)
+    def validate_value(self, data, **kwargs):
+        slice_ids = data.get('slice_ids')
+        label_ids = data.get('label_ids')
+
+        if not slice_ids or not label_ids:
+            raise ValidationError('List cannot be empty.')
 
 
 class ComparisonListSliceOut(Schema):

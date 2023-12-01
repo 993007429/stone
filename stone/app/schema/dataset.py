@@ -1,8 +1,8 @@
-from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, DateTime, Raw, Dict
-from apiflask.validators import OneOf
+from marshmallow import validates_schema, ValidationError, Schema
+from marshmallow.fields import Integer, String, List, Nested, DateTime, Raw, Dict
+from marshmallow.validate import OneOf
 
-from stone.app.base_schema import PageQuery, PaginationSchema
+from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers
 from stone.modules.slice.domain.value_objects import Condition
 from stone.modules.slice.infrastructure.models import DataSet
 
@@ -19,7 +19,7 @@ class Filter(Schema):
 
 
 class DataSetFilter(Schema):
-    name = String(required=True, allow_none=True)
+    filters = List(Nested(Filter()))
 
 
 class DataSetIn(Schema):
@@ -47,14 +47,14 @@ class DataSetOut(Schema):
 class SingleDataSetOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Dict(keys=String(), values=Nested(DataSetOut))
+    data = Dict(keys=String(), values=Nested(DataSetOut()))
 
 
 class ListDataSetOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Dict(keys=String(), values=List(Nested(DataSetOut)))
-    pagination = Nested(PaginationSchema)
+    data = Dict(keys=String(), values=List(Nested(DataSetOut())))
+    pagination = Nested(PaginationSchema())
 
 
 class DataSetIdsOut(Schema):
@@ -64,8 +64,16 @@ class DataSetIdsOut(Schema):
 
 
 class DataSetAndSliceIdsIn(Schema):
-    dataset_ids = List(Integer(required=True, description='数据集ID列表'), required=True)
-    slice_ids = List(Integer(required=True), description='切片ID列表', required=True)
+    dataset_ids = List(Integer(required=True, validate=validate_positive_integers), description='数据集ID列表', required=True)
+    slice_ids = List(Integer(required=True, validate=validate_positive_integers), description='切片ID列表', required=True)
+
+    @validates_schema(pass_many=True)
+    def validate_value(self, data, **kwargs):
+        dataset_ids = data.get('dataset_ids')
+        slice_ids = data.get('slice_ids')
+
+        if not dataset_ids or not slice_ids:
+            raise ValidationError('List cannot be empty.')
 
 
 class DSSliceIdsIn(Schema):

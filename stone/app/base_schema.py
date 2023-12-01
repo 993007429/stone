@@ -1,6 +1,7 @@
 from apiflask import Schema
 from apiflask.fields import Integer, String, Raw
 from apiflask.validators import Range
+from marshmallow import ValidationError
 
 
 class DurationField(Raw):
@@ -15,10 +16,15 @@ class PageQuery(Schema):
 
 
 class NameFuzzyQuery(Schema):
-    name = String(required=False)
+    name = String(required=True, allow_none=True)
 
 
 class PaginationSchema(Schema):
     page = Integer()
     per_page = Integer()
     total = Integer()
+
+
+def validate_positive_integers(num):
+    if not isinstance(num, int) or num <= 0:
+        raise ValidationError("Positive integers only.")
