@@ -83,11 +83,11 @@ class SliceService(object):
 
     def delete_slices(self, **kwargs) -> AppResponse[dict]:
         deleted_count, message = self.domain_service.delete_slices(**kwargs)
-        return AppResponse(message=message, data={'deleted_count': deleted_count})
+        return AppResponse(message=message, data={'affected_count': deleted_count})
 
     def update_slices(self, **kwargs) -> AppResponse[dict]:
         updated_count, message = self.domain_service.update_slices(**kwargs)
-        return AppResponse(message=message, data={'updated_count': updated_count})
+        return AppResponse(message=message, data={'affected_count': updated_count})
 
     def add_labels(self, **kwargs) -> AppResponse[dict]:
         affected_count, message = self.domain_service.add_labels(**kwargs)
@@ -99,11 +99,11 @@ class SliceService(object):
 
     def delete_label(self, label_id: int) -> AppResponse[dict]:
         deleted_count, message = self.domain_service.delete_label(label_id)
-        return AppResponse(message=message, data={'deleted_count': deleted_count})
+        return AppResponse(message=message, data={'affected_count': deleted_count})
 
     def delete_dataset(self, dataset_id: int) -> AppResponse[dict]:
         deleted_count, message = self.domain_service.delete_dataset(dataset_id)
-        return AppResponse(message=message, data={'deleted_count': deleted_count})
+        return AppResponse(message=message, data={'affected_count': deleted_count})
 
     def copy_dataset(self, dataset_id: int) -> AppResponse[dict]:
         new_dataset, message = self.domain_service.copy_dataset(dataset_id)

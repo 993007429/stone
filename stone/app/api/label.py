@@ -1,6 +1,6 @@
 from apiflask import APIBlueprint
 
-from stone.app.base_schema import NameFuzzyQuery
+from stone.app.base_schema import NameFuzzyQuery, APIAffectedCountOut
 from stone.app.schema.dataset import DataSetIdsOut
 from stone.app.schema.label import LabelPageQuery, LabelFilter, ListLabelOut, SingleLabelOut, LabelIn
 from stone.app.service_factory import AppServiceFactory
@@ -54,7 +54,7 @@ def update_label(label_id, json_data):
 
 
 @label_blueprint.delete('/<int:label_id>')
-@label_blueprint.output(DataSetIdsOut)
+@label_blueprint.output(APIAffectedCountOut())
 @label_blueprint.doc(summary='删除标签', security='ApiAuth')
 def delete_label(label_id):
     res = AppServiceFactory.slice_service.delete_label(label_id)

@@ -3,7 +3,7 @@ from marshmallow.fields import Integer, String, List, Nested, DateTime, Raw, Dic
 from marshmallow import validates_schema, ValidationError
 from marshmallow.validate import OneOf
 
-from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers
+from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers, AffectedCountOut
 from stone.modules.slice.domain.value_objects import Condition
 from stone.modules.slice.infrastructure.models import DataSet
 
@@ -40,32 +40,40 @@ class DataSetOut(Schema):
 
 
 class SingleDataSetOut(Schema):
+    dataset = Nested(DataSetOut())
+
+
+class APISingleDataSetOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Dict(keys=String(), values=Nested(DataSetOut()))
+    data = Nested(SingleDataSetOut())
 
 
 class StatisticsOut(Schema):
-    name: String()
-    count: Integer()
-    ratio: Float()
+    name = String()
+    count = Integer()
+    ratio = Float()
 
 
 class DataSetStatisticsOut(Schema):
+    id = Integer(required=True)
+    name = String(required=True)
+    creator = String(required=True, description='创建人')
+    remark = String(required=True, description='备注')
+    created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     annotations = List(Nested(StatisticsOut()))
     data_types = List(Nested(StatisticsOut()))
     label_names = List(Nested(StatisticsOut()))
 
 
-class DataOut(Schema):
-    # dataset_statistics: Nested(DataSetStatisticsOut())
-    dataset_statistics: String()
-
-
 class SingleDataSetStatisticsOut(Schema):
+    dataset_statistics = Nested(DataSetStatisticsOut())
+
+
+class APISingleDataSetStatisticsOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(DataOut())
+    data = Nested(SingleDataSetStatisticsOut())
 
 
 class ListDataSetOut(Schema):
@@ -73,12 +81,6 @@ class ListDataSetOut(Schema):
     message = String(required=True)
     data = Dict(keys=String(), values=List(Nested(DataSetOut())))
     pagination = Nested(PaginationSchema())
-
-
-class DataSetIdsOut(Schema):
-    code = Integer(required=True)
-    message = String(required=True)
-    data = Dict(keys=String(), values=Integer(required=True), description='受影响数据集数量')
 
 
 class DataSetAndSliceIdsIn(Schema):

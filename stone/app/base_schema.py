@@ -2,6 +2,12 @@ from apiflask import Schema
 from apiflask.fields import Integer, String, Raw
 from apiflask.validators import Range
 from marshmallow import ValidationError
+from marshmallow.fields import Nested
+
+
+def validate_positive_integers(num):
+    if not isinstance(num, int) or num <= 0:
+        raise ValidationError("Positive integers only.")
 
 
 class DurationField(Raw):
@@ -25,6 +31,11 @@ class PaginationSchema(Schema):
     total = Integer()
 
 
-def validate_positive_integers(num):
-    if not isinstance(num, int) or num <= 0:
-        raise ValidationError("Positive integers only.")
+class AffectedCountOut(Schema):
+    affected_count = Integer(required=True)
+
+
+class APIAffectedCountOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = Nested(AffectedCountOut())
