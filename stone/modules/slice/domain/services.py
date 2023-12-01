@@ -177,6 +177,22 @@ class SliceDomainService(object):
             new_slices.append(new_slice)
         return new_slices, pagination, 'filter slices succeed'
 
+    def filter_slice_thumbnails(self, **kwargs) -> Tuple[List[SliceEntity], dict, str]:
+        page = kwargs['page_query']['page']
+        per_page = kwargs['page_query']['per_page']
+        logic = kwargs['filter']['logic']
+        filters = kwargs['filter']['filters']
+        label_ids = kwargs['filter']['label_ids']
+
+        slice_ids = []
+        if label_ids:
+            slice_labels = self.repository.get_slice_labels_by_label_ids(label_ids)
+            slice_ids = [slice_label.slice_id for slice_label in slice_labels]
+
+        slices, pagination = self.repository.filter_slices(page, per_page, logic, filters, set(slice_ids))
+
+        return slices, pagination, 'filter slices succeed'
+
     def filter_labels(self, **kwargs) -> Tuple[List[LabelEntity], dict, str]:
         page = kwargs['page_query']['page']
         per_page = kwargs['page_query']['per_page']

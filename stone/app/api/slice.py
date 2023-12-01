@@ -20,6 +20,16 @@ def filter_slices(query_data, json_data):
     return res.response
 
 
+@slice_blueprint.post('/filter/thumbnails')
+@slice_blueprint.input(SlicePageQuery, location='query')
+@slice_blueprint.input(SliceFilter, location='json')
+@slice_blueprint.output(ListSliceOut)
+@slice_blueprint.doc(summary='切片缩略图列表分页筛选', security='ApiAuth')
+def filter_slice_thumbnails(query_data, json_data):
+    res = AppServiceFactory.slice_service.filter_slice_thumbnails(**{'page_query': query_data, 'filter': json_data})
+    return res.response
+
+
 @slice_blueprint.post('/upload')
 @slice_blueprint.input(SliceUploadIn, location='form_and_files')
 @slice_blueprint.output(SingleSliceUploadOut)

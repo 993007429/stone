@@ -37,6 +37,10 @@ class SliceService(object):
         slices, pagination, message = self.domain_service.filter_slices(**kwargs)
         return AppResponse(message=message, data={'slices': [slice_.dict() for slice_ in slices]}, pagination=pagination)
 
+    def filter_slice_thumbnails(self, **kwargs) -> AppResponse[dict]:
+        slices, pagination, message = self.domain_service.filter_slice_thumbnails(**kwargs)
+        return AppResponse(message=message, data={'slices': [slice_.dict() for slice_ in slices]}, pagination=pagination)
+
     def filter_labels(self, **kwargs) -> AppResponse[dict]:
         labels, pagination, message = self.domain_service.filter_labels(**kwargs)
         return AppResponse(message=message, data={'labels': [label.dict() for label in labels]}, pagination=pagination)
