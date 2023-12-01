@@ -30,7 +30,7 @@ def filter_datasets(query_data, json_data):
 
 @dataset_blueprint.put('/add-slices')
 @dataset_blueprint.input(DataSetAndSliceIdsIn, location='json')
-@dataset_blueprint.output(APIAffectedCountOut())
+@dataset_blueprint.output(APIAffectedCountOut)
 @dataset_blueprint.doc(summary='添加切片', security='ApiAuth')
 def add_slices(json_data):
     res = AppServiceFactory.slice_service.add_slices(**json_data)

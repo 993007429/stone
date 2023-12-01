@@ -48,7 +48,7 @@ def get_slice(slice_id):
 
 @slice_blueprint.delete('')
 @slice_blueprint.input(SliceIdsIn, location='json')
-@slice_blueprint.output(APIAffectedCountOut())
+@slice_blueprint.output(APIAffectedCountOut)
 @slice_blueprint.doc(summary='批量删除切片', security='ApiAuth')
 def delete_slices(json_data):
     res = AppServiceFactory.slice_service.delete_slices(**json_data)
@@ -57,7 +57,7 @@ def delete_slices(json_data):
 
 @slice_blueprint.put('')
 @slice_blueprint.input(SliceUpdateIn, location='json')
-@slice_blueprint.output(APIAffectedCountOut())
+@slice_blueprint.output(APIAffectedCountOut)
 @slice_blueprint.doc(summary='批量更新切片', security='ApiAuth')
 def update_slices(json_data):
     res = AppServiceFactory.slice_service.update_slices(**json_data)
@@ -76,7 +76,7 @@ def get_comparison_slices(query_data, json_data):
 
 @slice_blueprint.put('/add-labels')
 @slice_blueprint.input(SliceAndLabelIdsIn, location='json')
-@slice_blueprint.output(APIAffectedCountOut())
+@slice_blueprint.output(APIAffectedCountOut)
 @slice_blueprint.doc(summary='添加标签', security='ApiAuth')
 def add_labels(json_data):
     res = AppServiceFactory.slice_service.add_labels(**json_data)
