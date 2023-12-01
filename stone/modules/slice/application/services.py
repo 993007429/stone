@@ -97,6 +97,10 @@ class SliceService(object):
         affected_count, message = self.domain_service.add_slices(**kwargs)
         return AppResponse(message=message, data={'affected_count': affected_count})
 
+    def remove_slices(self, **kwargs) -> AppResponse[dict]:
+        affected_count, message = self.domain_service.remove_slices(**kwargs)
+        return AppResponse(message=message, data={'affected_count': affected_count})
+
     def delete_label(self, label_id: int) -> AppResponse[dict]:
         deleted_count, message = self.domain_service.delete_label(label_id)
         return AppResponse(message=message, data={'affected_count': deleted_count})

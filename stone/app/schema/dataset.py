@@ -83,17 +83,16 @@ class ListDataSetOut(Schema):
     pagination = Nested(PaginationSchema())
 
 
-class DataSetAndSliceIdsIn(Schema):
-    dataset_ids = List(Integer(required=True, validate=validate_positive_integers), description='数据集ID列表', required=True)
+class DataSetIdAndSliceIdsIn(Schema):
+    dataset_id = Integer(required=True, validate=validate_positive_integers, description='数据集ID')
     slice_ids = List(Integer(required=True, validate=validate_positive_integers), description='切片ID列表', required=True)
 
     @validates_schema(pass_many=True)
     def validate_value(self, data, **kwargs):
-        dataset_ids = data.get('dataset_ids')
         slice_ids = data.get('slice_ids')
 
-        if not dataset_ids or not slice_ids:
-            raise ValidationError('List cannot be empty.')
+        if not slice_ids:
+            raise ValidationError('Slice list cannot be empty.')
 
 
 class DSSliceIdsIn(Schema):

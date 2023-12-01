@@ -241,16 +241,19 @@ class SliceDomainService(object):
         return affected_count, 'add labels to slices succeed'
 
     def add_slices(self, **kwargs) -> Tuple[int, str]:
-        dataset_ids = kwargs['dataset_ids']
+        dataset_id = kwargs['dataset_id']
         slice_ids = kwargs['slice_ids']
-        for dataset_id in dataset_ids:
-            dataset_slices = self.repository.get_dataset_slices_by_dataset(dataset_id)
-            exist_slice_ids = [dataset_slice.slice_id for dataset_slice in dataset_slices]
-            new_slice_ids = [slice_id for slice_id in slice_ids if slice_id not in exist_slice_ids]
-            success = self.repository.add_slices(dataset_id, new_slice_ids)
-            if not success:
-                return 0, 'add slices to datasets failed'
-        return len(dataset_ids), 'add slices to datasets succeed'
+        dataset_slices = self.repository.get_dataset_slices_by_dataset(dataset_id)
+        exist_slice_ids = [dataset_slice.slice_id for dataset_slice in dataset_slices]
+        new_slice_ids = [slice_id for slice_id in slice_ids if slice_id not in exist_slice_ids]
+        added_count = self.repository.add_slices(dataset_id, new_slice_ids)
+        return added_count, 'add slices to datasets succeed'
+
+    def remove_slices(self, **kwargs) -> Tuple[int, str]:
+        dataset_id = kwargs['dataset_id']
+        slice_ids = kwargs['slice_ids']
+        deleted_count = self.repository.delete_dataset_slices(dataset_id, slice_ids)
+        return deleted_count, 'remove slices from dataset succeed'
 
     def delete_label(self, label_id: int) -> Tuple[int, str]:
         deleted_count = self.repository.delete_label(label_id)

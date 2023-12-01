@@ -115,6 +115,13 @@ class SQLAlchemySliceRepository(SliceRepository):
             {'is_deleted': 1}, synchronize_session=False)
         return deleted_count
 
+    def delete_dataset_slices(self, dataset_id: int, slice_ids: list) -> int:
+        deleted_count = self._session.query(DataSetSlice).filter(
+            DataSetSlice.dataset_id == dataset_id,
+            DataSetSlice.slice_id.in_(slice_ids)).update(
+            {'is_deleted': 1}, synchronize_session=False)
+        return deleted_count
+
     def copy_dataset(self, dataset_id: int) -> Optional[DataSetEntity]:
         deleted_count = self._session.query(DataSet).filter(DataSet.id == dataset_id).update(
             {'is_deleted': 1}, synchronize_session=False)
@@ -157,7 +164,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         self._session.add_all(slice_labels)
         return len(slice_ids)
 
-    def add_slices(self, dataset_id: list, slice_ids: list) -> bool:
+    def add_slices(self, dataset_id: list, slice_ids: list) -> int:
         dataset = self._session.query(DataSet).filter(DataSet.id == dataset_id).first()
         slices = self._session.query(Slice).filter(Slice.id.in_(slice_ids)).all()
 
@@ -166,7 +173,7 @@ class SQLAlchemySliceRepository(SliceRepository):
             dataset_slice = DataSetSlice(dataset_id=dataset.id, slice_id=slice_.id)
             dataset_slices.append(dataset_slice)
         self._session.add_all(dataset_slices)
-        return True
+        return len(slices)
 
     def save_slice(self, entity: SliceEntity) -> Tuple[bool, Optional[SliceEntity]]:
         model = Slice(**entity.dict())
@@ -195,7 +202,8 @@ class SQLAlchemySliceRepository(SliceRepository):
             return False, None
         return True, entity.from_orm(model)
 
-    def filter_slices(self, page: int, per_page: int, logic: str, filters: list, slice_ids: set) -> Tuple[List[SliceEntity], dict]:
+    def filter_slices(self, page: int, per_page: int, logic: str, filters: list, slice_ids: set) -> Tuple[
+        List[SliceEntity], dict]:
         query = self._session.query(Slice).filter(Slice.is_deleted.is_(False))
         total = query.count()
         if slice_ids:
