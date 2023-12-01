@@ -46,21 +46,26 @@ class SingleDataSetOut(Schema):
 
 
 class StatisticsOut(Schema):
-    name = String(required=True)
-    count = Integer(required=True)
-    ratio = Float(required=True)
+    name: String()
+    count: Integer()
+    ratio: Float()
 
 
 class DataSetStatisticsOut(Schema):
-    name = String(required=True)
-    count = Integer(required=True)
-    ratio = Float(required=True)
+    annotations = List(Nested(StatisticsOut()))
+    data_types = List(Nested(StatisticsOut()))
+    label_names = List(Nested(StatisticsOut()))
+
+
+class DataOut(Schema):
+    # dataset_statistics: Nested(DataSetStatisticsOut())
+    dataset_statistics: String()
 
 
 class SingleDataSetStatisticsOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Dict(keys=String(), values=List(Nested(DataSetStatisticsOut())))
+    data = Nested(DataOut())
 
 
 class ListDataSetOut(Schema):

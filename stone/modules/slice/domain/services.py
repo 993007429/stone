@@ -75,11 +75,16 @@ class SliceDomainService(object):
         label_names_statistics = [{'name': key, 'count': count, 'ratio': round(count / total_label_names, 2)}
                                   for key, count in Counter(label_names).items()]
 
-        dataset_statistics = DatasetStatisticsVO.parse_obj({
-            'annotations_count': annotations_count,
-            'data_types_count': data_types_statistics,
-            'label_names_count': label_names_statistics
-        })
+        dataset_statistics = DatasetStatisticsVO.parse_obj(
+            {
+                **dataset.dict(),
+                **{
+                    'annotations': annotations_count,
+                    'data_types': data_types_statistics,
+                    'label_names': label_names_statistics
+                }
+            }
+        )
 
         return dataset_statistics, 'get dataset_statistics succeed'
 

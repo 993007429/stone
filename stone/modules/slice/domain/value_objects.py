@@ -1,3 +1,4 @@
+from stone.modules.slice.domain.entities import DataSetEntity
 from stone.seedwork.domain.value_objects import BaseEnum, BaseValueObject
 
 
@@ -32,8 +33,7 @@ class Condition(BaseEnum):
     not_contain = 'not_contain'
 
 
-class DatasetStatisticsVO(BaseValueObject):
-
-    annotations_count: list
-    data_types_count: list
-    label_names_count: list
+class DatasetStatisticsVO(BaseValueObject, DataSetEntity):
+    annotations: list
+    data_types: list
+    label_names: list
