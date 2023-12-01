@@ -202,8 +202,8 @@ class SQLAlchemySliceRepository(SliceRepository):
             return False, None
         return True, entity.from_orm(model)
 
-    def filter_slices(self, page: int, per_page: int, logic: str, filters: list, slice_ids: set) -> Tuple[
-        List[SliceEntity], dict]:
+    def filter_slices(self, page: int, per_page: int, logic: str, filters: list, slice_ids: set)\
+            -> Tuple[List[SliceEntity], dict]:
         query = self._session.query(Slice).filter(Slice.is_deleted.is_(False))
         total = query.count()
         if slice_ids:
