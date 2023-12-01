@@ -270,6 +270,7 @@ class SQLAlchemySliceRepository(SliceRepository):
 
     def filter_labels(self, page: int, per_page: int, filters: list) -> Tuple[List[LabelEntity], dict]:
         query = self._session.query(Label).filter(Label.is_deleted.is_(False))
+        total = query.count()
         for filter_ in filters:
             field = filter_['field']
             condition = filter_['condition']
@@ -300,7 +301,6 @@ class SQLAlchemySliceRepository(SliceRepository):
                     query = query.filter(and_(not_(getattr(Label, field).is_not(None))))
 
         query = query.order_by(Label.id)
-        total = query.count()
 
         offset = min((page - 1), math.floor(total / per_page)) * per_page
         query = query.offset(offset).limit(per_page)
@@ -320,6 +320,7 @@ class SQLAlchemySliceRepository(SliceRepository):
 
     def filter_datasets(self, page: int, per_page: int, filters: list) -> Tuple[List[DataSetEntity], dict]:
         query = self._session.query(DataSet).filter(DataSet.is_deleted.is_(False))
+        total = query.count()
         for filter_ in filters:
             field = filter_['field']
             condition = filter_['condition']
@@ -350,7 +351,6 @@ class SQLAlchemySliceRepository(SliceRepository):
                     query = query.filter(and_(not_(getattr(DataSet, field).is_not(None))))
 
         query = query.order_by(DataSet.id)
-        total = query.count()
 
         offset = min((page - 1), math.floor(total / per_page)) * per_page
         query = query.offset(offset).limit(per_page)

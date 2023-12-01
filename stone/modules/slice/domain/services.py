@@ -149,14 +149,14 @@ class SliceDomainService(object):
         filters = kwargs['filter']['filters']
         datasets, pagination = self.repository.filter_datasets(page, per_page, filters)
 
-        # new_datasets = []
-        # for label in labels:
-        #     slice_labels = self.repository.get_slice_labels_by_label(label.id)
-        #     label_dict = label.dict()
-        #     label_dict['count'] = len(slice_labels)
-        #     new_label = LabelEntity.parse_obj(label_dict)
-        #     new_labels.append(new_label)
-        return datasets, pagination, 'filter datasets succeed'
+        new_datasets = []
+        for dataset in datasets:
+            dataset_slices = self.repository.get_dataset_slices_by_dataset(dataset.id)
+            dataset_dict = dataset.dict()
+            dataset_dict['count'] = len(dataset_slices)
+            new_dataset = DataSetEntity.parse_obj(dataset_dict)
+            new_datasets.append(new_dataset)
+        return new_datasets, pagination, 'filter datasets succeed'
 
     def get_datasets_with_fuzzy(self, **kwargs) -> Tuple[List[DataSetEntity], str]:
         # userid = request_context.current_user.userid
