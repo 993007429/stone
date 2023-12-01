@@ -1,5 +1,5 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, Dict
+from marshmallow.fields import Integer, String, List, Nested, Dict
 
 
 class FieldCondition(Schema):

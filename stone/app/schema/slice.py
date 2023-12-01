@@ -1,9 +1,9 @@
 from datetime import datetime
 
 from apiflask import Schema
-from apiflask.fields import Integer, String, DateTime, URL, Float, File, Dict, Raw, Boolean, List, Nested
-from apiflask.validators import Length, OneOf
 from marshmallow import ValidationError, validates_schema
+from marshmallow.fields import Integer, String, DateTime, URL, Float, File, Dict, Raw, Boolean, List, Nested
+from marshmallow.validate import Length, OneOf
 
 from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers
 from stone.modules.slice.domain.value_objects import LogicType, Condition

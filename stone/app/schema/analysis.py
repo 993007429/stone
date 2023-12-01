@@ -1,5 +1,5 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, Nested, DateTime
+from marshmallow.fields import Integer, String, Nested, DateTime
 
 from stone.app.base_schema import DurationField, PageQuery, PaginationSchema
 

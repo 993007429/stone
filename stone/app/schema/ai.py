@@ -1,6 +1,5 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, Nested
-from marshmallow.fields import Bool
+from marshmallow.fields import Integer, String, Nested, Bool
 
 
 class StartIn(Schema):

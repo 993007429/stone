@@ -1,6 +1,6 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, List, Nested, DateTime
-from apiflask.validators import Length, OneOf
+from marshmallow.fields import Integer, String, List, Nested, DateTime
+from marshmallow.validate import Length, OneOf
 
 from stone.app.base_schema import PageQuery, PaginationSchema
 from stone.modules.user.domain.value_objects import RoleType
