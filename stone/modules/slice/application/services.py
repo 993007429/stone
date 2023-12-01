@@ -65,11 +65,17 @@ class SliceService(object):
             return AppResponse(message=message, err_code=1)
         return AppResponse(data={'label': label.dict()})
 
-    def get_dataset(self, label_id: int) -> AppResponse[dict]:
-        dataset, message = self.domain_service.get_dataset_by_id(label_id)
+    def get_dataset(self, dataset_id: int) -> AppResponse[dict]:
+        dataset, message = self.domain_service.get_dataset_by_id(dataset_id)
         if not dataset:
             return AppResponse(message=message, err_code=1)
         return AppResponse(data={'dataset': dataset.dict()})
+
+    def get_dataset_statistics(self, dataset_id: int) -> AppResponse[dict]:
+        dataset_statistics, message = self.domain_service.get_dataset_statistics(dataset_id)
+        if not dataset_statistics:
+            return AppResponse(message=message, err_code=1)
+        return AppResponse(data={'dataset_statistics': dataset_statistics.dict()})
 
     def get_slice_fields(self) -> AppResponse[dict]:
         fields = self.domain_service.get_slice_fields()

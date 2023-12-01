@@ -1,6 +1,6 @@
 import math
 from contextvars import ContextVar
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from sqlalchemy import not_, and_, or_
 from sqlalchemy.exc import IntegrityError
@@ -31,7 +31,7 @@ class SQLAlchemySliceRepository(SliceRepository):
             return None
         return SliceEntity(**model.dict)
 
-    def get_slices(self, ids: list) -> List[SliceEntity]:
+    def get_slices(self, ids: Union[list, set]) -> List[SliceEntity]:
         query = self._session.query(Slice).filter(Slice.id.in_(ids), Slice.is_deleted.is_(False))
         models = query.all()
         return [SliceEntity.from_orm(model) for model in models]
@@ -79,6 +79,12 @@ class SQLAlchemySliceRepository(SliceRepository):
         query = self._session.query(SliceLabel).filter(
             SliceLabel.label_id == label_id, SliceLabel.is_deleted.is_(False))
         models = query.order_by(SliceLabel.slice_id).all()
+        return [SliceLabelEntity.from_orm(model) for model in models]
+
+    def get_slice_labels_by_slice_ids(self, slice_ids: Union[list, set]) -> List[SliceLabelEntity]:
+        query = self._session.query(SliceLabel).filter(
+            SliceLabel.slice_id.in_(slice_ids), SliceLabel.is_deleted.is_(False))
+        models = query.order_by(SliceLabel.label_id).all()
         return [SliceLabelEntity.from_orm(model) for model in models]
 
     def get_slice_labels_by_label_ids(self, label_ids: list) -> List[SliceLabelEntity]:

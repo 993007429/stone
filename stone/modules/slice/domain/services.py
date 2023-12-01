@@ -1,6 +1,7 @@
 import logging
 import os
 import uuid
+from collections import Counter
 from typing import Tuple, Optional, List
 
 from werkzeug.utils import secure_filename
@@ -11,6 +12,7 @@ from stone.infra.fs import fs
 from stone.infra.session import transaction
 from stone.libs.heimdall.dispatch import open_slide
 from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity
+from stone.modules.slice.domain.value_objects import DatasetStatisticsVO, DataType
 from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
 
 logger = logging.getLogger(__name__)
@@ -38,6 +40,48 @@ class SliceDomainService(object):
         if not dataset:
             return None, 'no dataset'
         return dataset, 'get dataset succeed'
+
+    def get_dataset_statistics(self, dataset_id: int) -> Tuple[Optional[DatasetStatisticsVO], str]:
+        dataset = self.repository.get_dataset_by_id(dataset_id)
+        if not dataset:
+            return None, 'no dataset'
+
+        dataset_slices = self.repository.get_dataset_slices_by_dataset(dataset_id)
+        slice_ids = [dataset_slice.slice_id for dataset_slice in dataset_slices]
+
+        annotations_count = []
+
+        slices = self.repository.get_slices(set(slice_ids))
+        data_type_values = [slice_.data_type for slice_ in slices]
+        total_data_types = len(data_type_values)
+
+        data_type_names = [DataType.wsi.name, DataType.patch.name, DataType.roi.name, 'other']
+        for data_type_value in data_type_values:
+            if data_type_value == DataType.wsi.value:
+                data_type_names.append(DataType.wsi.name)
+            elif data_type_value == DataType.patch.value:
+                data_type_names.append(DataType.patch.name)
+            elif data_type_value == DataType.roi.value:
+                data_type_names.append(DataType.roi.name)
+            else:
+                data_type_names.append('other')
+
+        data_types_statistics = [{'name': key, 'count': count - 1, 'ratio': round((count - 1) / total_data_types, 2)}
+                                 for key, count in Counter(data_type_names).items()]
+
+        slice_labels = self.repository.get_slice_labels_by_slice_ids(set(slice_ids))
+        label_names = [slice_label.label_name for slice_label in slice_labels]
+        total_label_names = len(label_names)
+        label_names_statistics = [{'name': key, 'count': count, 'ratio': round(count / total_label_names, 2)}
+                                  for key, count in Counter(label_names).items()]
+
+        dataset_statistics = DatasetStatisticsVO.parse_obj({
+            'annotations_count': annotations_count,
+            'data_types_count': data_types_statistics,
+            'label_names_count': label_names_statistics
+        })
+
+        return dataset_statistics, 'get dataset_statistics succeed'
 
     def get_slice_fields(self) -> list:
         fields = self.repository.get_slice_fields()

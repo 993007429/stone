@@ -1,5 +1,5 @@
 from apiflask import Schema
-from marshmallow.fields import Integer, String, List, Nested, DateTime, Raw, Dict
+from marshmallow.fields import Integer, String, List, Nested, DateTime, Raw, Dict, Float
 from marshmallow import validates_schema, ValidationError
 from marshmallow.validate import OneOf
 
@@ -38,17 +38,29 @@ class DataSetOut(Schema):
     last_modified = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     is_deleted = Integer(required=True, description='逻辑删除')
 
-    # wsi_c = Integer(required=False, description='WSI数量')
-    # patch_c = Integer(required=False, description='patch数量')
-    # ROI_c = Integer(required=False, description='ROI数量')
-    # labels_c = List(Nested({'label': Integer(required=True)}), required=False, description='各个标签数量')
-    # anno_c = Integer(required=False, description='标注数量 二期')
-
 
 class SingleDataSetOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Dict(keys=String(), values=Nested(DataSetOut()))
+
+
+class StatisticsOut(Schema):
+    name = String(required=True)
+    count = Integer(required=True)
+    ratio = Float(required=True)
+
+
+class DataSetStatisticsOut(Schema):
+    name = String(required=True)
+    count = Integer(required=True)
+    ratio = Float(required=True)
+
+
+class SingleDataSetStatisticsOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = Dict(keys=String(), values=List(Nested(DataSetStatisticsOut())))
 
 
 class ListDataSetOut(Schema):

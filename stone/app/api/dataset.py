@@ -1,7 +1,8 @@
 from apiflask import APIBlueprint
 
 from stone.app.base_schema import NameFuzzyQuery
-from stone.app.schema.dataset import DataSetPageQuery, DataSetFilter, ListDataSetOut, SingleDataSetOut, DataSetIn, DataSetIdsOut, DataSetAndSliceIdsIn
+from stone.app.schema.dataset import DataSetPageQuery, DataSetFilter, ListDataSetOut, SingleDataSetOut, DataSetIn, \
+    DataSetIdsOut, DataSetAndSliceIdsIn, DataSetStatisticsOut, SingleDataSetStatisticsOut
 from stone.app.service_factory import AppServiceFactory
 
 dataset_blueprint = APIBlueprint('数据集', __name__, url_prefix='/datasets')
@@ -40,6 +41,14 @@ def add_slices(json_data):
 @dataset_blueprint.doc(summary='数据集详情', security='ApiAuth')
 def get_dataset(dataset_id):
     res = AppServiceFactory.slice_service.get_dataset(dataset_id)
+    return res.response
+
+
+@dataset_blueprint.get('/statistics/<int:dataset_id>')
+# @dataset_blueprint.output(SingleDataSetStatisticsOut)
+@dataset_blueprint.doc(summary='数据集统计详情', security='ApiAuth')
+def get_dataset_statistics(dataset_id):
+    res = AppServiceFactory.slice_service.get_dataset_statistics(dataset_id)
     return res.response
 
 

@@ -1,4 +1,4 @@
-from stone.seedwork.domain.value_objects import BaseEnum
+from stone.seedwork.domain.value_objects import BaseEnum, BaseValueObject
 
 
 class LogicType(BaseEnum):
@@ -8,8 +8,8 @@ class LogicType(BaseEnum):
 
 class DataType(BaseEnum):
     wsi = 1  # 全场图
-    roi = 2  # roi
-    patch = 3  # patch
+    patch = 2  # patch
+    roi = 3  # roi
     text = 4,  # 文本
 
 
@@ -30,3 +30,10 @@ class Condition(BaseEnum):
     not_null = 'not_null'
     contain = 'contain'
     not_contain = 'not_contain'
+
+
+class DatasetStatisticsVO(BaseValueObject):
+
+    annotations_count: list
+    data_types_count: list
+    label_names_count: list
