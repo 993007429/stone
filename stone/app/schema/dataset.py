@@ -3,7 +3,7 @@ from marshmallow.fields import Integer, String, List, Nested, DateTime, Raw, Dic
 from marshmallow import validates_schema, ValidationError
 from marshmallow.validate import OneOf
 
-from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers, AffectedCountOut
+from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers
 from stone.modules.slice.domain.value_objects import Condition
 from stone.modules.slice.infrastructure.models import DataSet
 

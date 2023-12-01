@@ -2,8 +2,7 @@ from apiflask import APIBlueprint
 
 from stone.app.base_schema import NameFuzzyQuery, APIAffectedCountOut
 from stone.app.schema.dataset import DataSetPageQuery, DataSetFilter, ListDataSetOut, SingleDataSetOut, DataSetIn, \
-    DataSetAndSliceIdsIn, DataSetStatisticsOut, SingleDataSetStatisticsOut, \
-    APISingleDataSetOut, APISingleDataSetStatisticsOut
+    DataSetAndSliceIdsIn, APISingleDataSetOut, APISingleDataSetStatisticsOut
 from stone.app.service_factory import AppServiceFactory
 
 dataset_blueprint = APIBlueprint('数据集', __name__, url_prefix='/datasets')

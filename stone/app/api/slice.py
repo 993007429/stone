@@ -2,7 +2,7 @@ from apiflask import APIBlueprint, FileSchema
 from flask import send_from_directory
 
 from stone.app.base_schema import APIAffectedCountOut
-from stone.app.schema.slice import ListSliceOut, SlicePageQuery, SingleSliceOut, SliceFilter, SliceIdsOut, SliceIdsIn, \
+from stone.app.schema.slice import ListSliceOut, SlicePageQuery, SingleSliceOut, SliceFilter, SliceIdsIn, \
     WSIIn, SliceId, ROIIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, SliceUploadIn, \
     SingleSliceUploadOut, SliceUpdateIn, SingleSliceFieldOut, SliceAndLabelIdsIn
 from stone.app.service_factory import AppServiceFactory
