@@ -12,7 +12,7 @@ from setting import RANK_AI_TASK
 from stone.app.request_context import request_context
 from stone.consts.her2 import Her2Consts
 from stone.infra.cache import cache
-from stone.libs.algorithms.DNA1.dna_alg import DNA_1020
+from stone.modules.ai.libs.algorithms.DNA1.dna_alg import DNA_1020
 from stone.libs.heimdall.dispatch import open_slide
 from stone.celery.app import app as celery_app
 from celery.exceptions import TimeoutError as CeleryTimeoutError
@@ -102,8 +102,8 @@ class AiDomainService(object):
             return 'AI处理发生异常', {'done': True, 'rank': -1}
 
     def get_model(self, ai_model, model_version, threshold) -> Any:
-        from stone.libs.algorithms.TCTAnalysis_v2_2.tct_alg import AlgBase
-        from stone.libs.algorithms.TCTAnalysis_v3_1.tct_alg import TCT_ALG2
+        from stone.modules.ai.libs.algorithms.TCTAnalysis_v2_2.tct_alg import AlgBase
+        from stone.modules.ai.libs.algorithms.TCTAnalysis_v3_1.tct_alg import TCT_ALG2
 
         yams_path = os.path.join(setting.PROJECT_DIR, 'yams')
         deploy_yaml = load_yaml(os.path.join(yams_path, 'deploy.yaml'))
@@ -223,7 +223,7 @@ class AiDomainService(object):
 
         rois = []
 
-        from stone.libs.algorithms.DNA2.dna_alg import DNA_1020
+        from stone.modules.ai.libs.algorithms.DNA2.dna_alg import DNA_1020
         dna_alg_model = DNA_1020()
 
         slide = open_slide(task_param.slide_path)
@@ -267,7 +267,7 @@ class AiDomainService(object):
 
         rois = [] or [task_param.new_default_roi()]
 
-        from stone.libs.algorithms.Her2New_.detect_all import run_her2_alg, roi_filter
+        from stone.modules.ai.libs.algorithms.Her2New_.detect_all import run_her2_alg, roi_filter
 
         center_coords_np_with_id, cls_labels_np_with_id, summary_dict, lvl, flg = run_her2_alg(
             slide_path=task_param.slide_path, roi_list=rois)

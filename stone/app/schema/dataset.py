@@ -19,7 +19,7 @@ class Filter(Schema):
 
 
 class DataSetFilter(Schema):
-    filters = List(Nested(Filter))
+    name = String(required=True, allow_none=True)
 
 
 class DataSetIn(Schema):

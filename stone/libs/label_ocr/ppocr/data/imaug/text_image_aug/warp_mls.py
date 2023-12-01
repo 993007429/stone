@@ -120,7 +120,7 @@ class WarpMLS:
             i += self.grid_size
 
     def gen_img(self):
-        src_h, src_w = self.stone.shape[:2]
+        src_h, src_w = self.src.shape[:2]
         dst = np.zeros_like(self.src, dtype=np.float32)
 
         for i in np.arange(0, self.dst_h, self.grid_size):
@@ -152,7 +152,7 @@ class WarpMLS:
                 nxi1 = np.array(np.ceil(nx), dtype=np.int32)
                 nyi1 = np.array(np.ceil(ny), dtype=np.int32)
 
-                if len(self.stone.shape) == 3:
+                if len(self.src.shape) == 3:
                     x = np.tile(np.expand_dims(ny - nyi, axis=-1), (1, 1, 3))
                     y = np.tile(np.expand_dims(nx - nxi, axis=-1), (1, 1, 3))
                 else:

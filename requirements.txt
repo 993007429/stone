@@ -5,6 +5,7 @@
 #    pip-compile
 #
 --index-url https://pypi.tuna.tsinghua.edu.cn/simple
+--trusted-host https
 
 addict==2.4.0
     # via
@@ -50,6 +51,8 @@ certifi==2023.7.22
     #   httpx
     #   minio
     #   requests
+cffi==1.16.0
+    # via gevent
 charset-normalizer==2.0.12
     # via
     #   aiohttp
@@ -89,6 +92,8 @@ et-xmlfile==1.1.0
     # via openpyxl
 exceptiongroup==1.1.3
     # via anyio
+flake8==6.1.0
+    # via -r requirements.in
 flask[async]==2.3.2
     # via
     #   -r requirements.in
@@ -110,8 +115,12 @@ frozenlist==1.4.0
     #   aiosignal
 geojson==3.0.1
     # via -r requirements.in
+gevent==23.9.1
+    # via -r requirements.in
 greenlet==3.0.1
-    # via sqlalchemy
+    # via
+    #   gevent
+    #   sqlalchemy
 h11==0.14.0
     # via httpcore
 h5py==3.9.0
@@ -177,6 +186,8 @@ matplotlib==3.5.1
     #   mmdet
     #   pycocotools
     #   seaborn
+mccabe==0.7.0
+    # via flake8
 minio==7.1.14
     # via -r requirements.in
 mmcv==1.4.1
@@ -222,8 +233,6 @@ opencv-python==4.5.5.62
     # via
     #   -r requirements.in
     #   imgaug
-    #   mmcv
-    #   mmcv-full
 openpyxl==3.0.9
     # via -r requirements.in
 opt-einsum==3.3.0
@@ -271,8 +280,14 @@ pyclipper==1.3.0.post2
     # via -r requirements.in
 pycocotools==2.0.7
     # via mmdet
+pycodestyle==2.11.1
+    # via flake8
+pycparser==2.21
+    # via cffi
 pydantic==1.10.7
     # via -r requirements.in
+pyflakes==3.1.0
+    # via flake8
 pyjwt==1.6.4
     # via -r requirements.in
 pymysql==0.10.1
@@ -400,6 +415,10 @@ zipp==3.17.0
     # via
     #   importlib-metadata
     #   importlib-resources
+zope-event==5.0
+    # via gevent
+zope-interface==6.1
+    # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

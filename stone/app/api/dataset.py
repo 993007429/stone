@@ -20,7 +20,7 @@ def get_datasets_with_fuzzy(query_data):
 @dataset_blueprint.input(DataSetPageQuery, location='query')
 @dataset_blueprint.input(DataSetFilter, location='json')
 @dataset_blueprint.output(ListDataSetOut)
-@dataset_blueprint.doc(summary='数据集列表', security='ApiAuth')
+@dataset_blueprint.doc(summary='数据集列表分页筛选', security='ApiAuth')
 def filter_datasets(query_data, json_data):
     res = AppServiceFactory.slice_service.filter_datasets(**{'page_query': query_data, 'filter': json_data})
     return res.response
