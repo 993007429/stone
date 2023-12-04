@@ -1,5 +1,6 @@
+import math
 from contextvars import ContextVar
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -29,35 +30,47 @@ class SQLAlchemyUserRepository(UserRepository):
             return False, 'Duplicate username '
         return True, 'Create user success'
 
-    def update(self, pk: int, entity: UserEntity) -> Tuple[bool, str]:
-        model = self._session.get(User, entity.id)
-        if not model:
-            return False, 'No user'
-        model.set_data(**entity.dict())
-        self._session.add(model)
-        self._session.flush([model])
+    def update_user(self, user_id: int, user_data: dict) -> Tuple[int, str]:
+        updated_count = self._session.query(User).filter(User.id == user_id, User.is_deleted.is_(False)).update(
+            user_data, synchronize_session=False)
+        return updated_count, 'Update user succeed'
 
-        return True, 'Update user success'
+    def get_users(self, page: int, per_page: int, names_to_exclude: Union[list, set]) -> Tuple[List[UserEntity], dict]:
+        query = self._session.query(User).filter(User.username.not_in(names_to_exclude),
+                                                 User.is_deleted.is_(False)).order_by(User.id)
+        total = query.count()
 
-    def gets(self) -> List[UserEntity]:
-        query = self._session.query(User)
-        models = query.all()
-        return [UserEntity(**model.dict) for model in models]
+        offset = min((page - 1), math.floor(total / per_page)) * per_page
+        query = query.offset(offset).limit(per_page)
+
+        pagination = {
+            'total': total,
+            'page': page,
+            'per_page': per_page
+        }
+
+        users = []
+        for model in query.all():
+            entity = UserEntity.from_orm(model)
+            users.append(entity)
+
+        return users, pagination
 
     def get_user_by_name(self, username: str) -> Optional[UserEntity]:
-        query = self._session.query(User).filter_by(username=username)
+        query = self._session.query(User).filter(User.username == username, User.is_deleted.is_(False))
         model = query.first()
         if not model:
             return None
-        return UserEntity(**model.dict)
+        return UserEntity.from_orm(model)
 
     def get_user_by_pk(self, pk: int) -> Optional[UserEntity]:
-        query = self._session.query(User).filter_by(id=pk)
+        query = self._session.query(User).filter(User.id == pk, User.is_deleted.is_(False))
         model = query.first()
         if not model:
             return None
-        return UserEntity(**model.dict)
+        return UserEntity.from_orm(model)
 
-    def delete_user_by_pk(self, pk: int) -> Tuple[bool, str]:
-        self._session.query(User).filter_by(id=pk).delete()
-        return True, 'Delete user success'
+    def delete_user_by_pk(self, pk: int) -> int:
+        deleted_count = self._session.query(User).filter(User.id == pk, User.is_deleted.is_(False)).update(
+            {'is_deleted': 1}, synchronize_session=False)
+        return deleted_count

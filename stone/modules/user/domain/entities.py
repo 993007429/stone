@@ -8,3 +8,6 @@ class UserEntity(BaseEntity):
     password_hash: str
     role: str
     creator: Optional[str]
+
+    class Config:
+        orm_mode = True

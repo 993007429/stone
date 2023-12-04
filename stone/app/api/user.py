@@ -1,5 +1,6 @@
 from apiflask import APIBlueprint
 
+from stone.app.base_schema import APIAffectedCountOut
 from stone.app.permission import permission_required
 from stone.app.schema.user import UserPageQuery, UserIn, LoginIn, SingleUserOut, ListUserOut, ApiLoginOut, \
     ApiSingleUserOut, ApiListUserOut
@@ -34,7 +35,7 @@ def create_user(json_data):
 @user_blueprint.output(ApiListUserOut)
 @user_blueprint.doc(summary='user列表', security='ApiAuth')
 def get_users(query_data):
-    res = AppServiceFactory.user_service.get_users()
+    res = AppServiceFactory.user_service.get_users(**query_data)
     return res.response
 
 
@@ -52,14 +53,14 @@ def get_user(userid):
 @user_blueprint.input(UserIn, location='json')
 @user_blueprint.output(ApiSingleUserOut)
 @user_blueprint.doc(summary='更新user', security='ApiAuth')
-def update_user(userid):
-    res = AppServiceFactory.user_service.update_user(userid)
+def update_user(userid, json_data):
+    res = AppServiceFactory.user_service.update_user(**{'user_id': userid, 'user_data': json_data})
     return res.response
 
 
 @user_blueprint.delete('/<int:userid>')
 @permission_required([IsAdmin])
-@user_blueprint.output(ApiSingleUserOut)
+@user_blueprint.output(APIAffectedCountOut)
 @user_blueprint.doc(summary='删除user', security='ApiAuth')
 def delete_user(userid):
     res = AppServiceFactory.user_service.delete_user(userid)

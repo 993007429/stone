@@ -16,9 +16,9 @@ class UserService(object):
             return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'user': new_user.dict()})
 
-    def get_users(self) -> AppResponse[List[dict]]:
-        users = self.domain_service.get_users()
-        return AppResponse(message='get users success', data={'users': [user.dict() for user in users]})
+    def get_users(self, **kwargs) -> AppResponse[List[dict]]:
+        users, pagination, message = self.domain_service.get_users(**kwargs)
+        return AppResponse(message=message, data={'users': [user.dict() for user in users]})
 
     def get_user(self, userid: int) -> AppResponse[dict]:
         user, message = self.domain_service.get_user(userid)
@@ -26,8 +26,8 @@ class UserService(object):
             return AppResponse(message=message)
         return AppResponse(message=message, data={'user': user.dict()})
 
-    def update_user(self, userid: int) -> AppResponse[dict]:
-        user, message = self.domain_service.update_user(userid)
+    def update_user(self, **kwargs) -> AppResponse[dict]:
+        user, message = self.domain_service.update_user(**kwargs)
         if not user:
             return AppResponse(message=message)
         return AppResponse(message=message, data={'user': user.dict()})
@@ -36,11 +36,10 @@ class UserService(object):
         login_user, message = self.domain_service.login(**kwargs)
         if not login_user:
             return AppResponse(err_code=1, message=message)
+        request_context.token = login_user.token
         request_context.current_user = login_user
         return AppResponse(message=message, data={'login': login_user.dict()})
 
     def delete_user(self, userid: int) -> AppResponse[dict]:
-        user, message = self.domain_service.delete_user(userid)
-        if not user:
-            return AppResponse(message=message)
-        return AppResponse(message=message, data={'user': user.dict()})
+        deleted_count, message = self.domain_service.delete_user(userid)
+        return AppResponse(message=message, data={'affected_count': deleted_count})
