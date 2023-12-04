@@ -59,7 +59,6 @@ class SliceEntity(BaseEntity):
 class LabelEntity(BaseEntity):
     name: Optional[str]
     creator: Optional[str]
-    count: Optional[int]
 
     class Config:
         orm_mode = True
@@ -78,7 +77,6 @@ class DataSetEntity(BaseEntity):
     userid: int
     name: Optional[str]
     remark: Optional[str]
-    count: Optional[int]
     creator: Optional[str]
 
     class Config:

@@ -24,13 +24,13 @@ class SliceService(object):
     def create_label(self, **kwargs) -> AppResponse[dict]:
         label, message = self.domain_service.create_label(**kwargs)
         if not label:
-            return AppResponse(message=message, err_code=1)
+            return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'label': label.dict()})
 
     def create_dataset(self, **kwargs) -> AppResponse[dict]:
         dataset, message = self.domain_service.create_dataset(**kwargs)
         if not dataset:
-            return AppResponse(message=message, err_code=1)
+            return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'dataset': dataset.dict()})
 
     def filter_slices(self, **kwargs) -> AppResponse[dict]:
@@ -60,25 +60,25 @@ class SliceService(object):
     def get_slice(self, slice_id: int) -> AppResponse[dict]:
         slice_, message = self.domain_service.get_slice_by_id(slice_id)
         if not slice_:
-            return AppResponse(message=message, err_code=1)
+            return AppResponse(err_code=1, message=message)
         return AppResponse(data={'slice': slice_.dict()})
 
     def get_label(self, label_id: int) -> AppResponse[dict]:
         label, message = self.domain_service.get_label_by_id(label_id)
         if not label:
-            return AppResponse(message=message, err_code=1)
+            return AppResponse(err_code=1, message=message)
         return AppResponse(data={'label': label.dict()})
 
     def get_dataset(self, dataset_id: int) -> AppResponse[dict]:
         dataset, message = self.domain_service.get_dataset_by_id(dataset_id)
         if not dataset:
-            return AppResponse(message=message, err_code=1)
+            return AppResponse(err_code=1, message=message)
         return AppResponse(data={'dataset': dataset.dict()})
 
     def get_dataset_statistics(self, dataset_id: int) -> AppResponse[dict]:
         dataset_statistics, message = self.domain_service.get_dataset_statistics(dataset_id)
         if not dataset_statistics:
-            return AppResponse(message=message, err_code=1)
+            return AppResponse(err_code=1, message=message)
         return AppResponse(data={'dataset_statistics': dataset_statistics.dict()})
 
     def get_slice_fields(self) -> AppResponse[dict]:
@@ -120,11 +120,11 @@ class SliceService(object):
     def update_label(self, **kwargs) -> AppResponse[dict]:
         label, message = self.domain_service.update_label(**kwargs)
         if not label:
-            return AppResponse(message=message, err_code=1)
+            return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'label': label.dict()})
 
     def update_dataset(self, **kwargs) -> AppResponse[dict]:
         dataset, message = self.domain_service.update_dataset(**kwargs)
         if not dataset:
-            return AppResponse(message=message, err_code=1)
+            return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'dataset': dataset.dict()})

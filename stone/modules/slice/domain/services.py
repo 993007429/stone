@@ -12,7 +12,7 @@ from stone.infra.fs import fs
 from stone.infra.session import transaction
 from stone.libs.heimdall.dispatch import open_slide
 from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity
-from stone.modules.slice.domain.value_objects import DatasetStatisticsVO, DataType
+from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject
 from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
 
 logger = logging.getLogger(__name__)
@@ -26,25 +26,25 @@ class SliceDomainService(object):
     def get_slice_by_id(self, slice_id: int) -> Tuple[Optional[SliceEntity], str]:
         slide = self.repository.get_slice_by_id(slice_id)
         if not slide:
-            return None, 'no slice'
-        return slide, 'get slice succeed'
+            return None, 'No slice'
+        return slide, 'Get slice succeed'
 
     def get_label_by_id(self, label_id: int) -> Tuple[Optional[LabelEntity], str]:
         label = self.repository.get_label_by_id(label_id)
         if not label:
-            return None, 'no label'
-        return label, 'get label succeed'
+            return None, 'No label'
+        return label, 'Get label succeed'
 
     def get_dataset_by_id(self, dataset_id: int) -> Tuple[Optional[DataSetEntity], str]:
         dataset = self.repository.get_dataset_by_id(dataset_id)
         if not dataset:
-            return None, 'no dataset'
-        return dataset, 'get dataset succeed'
+            return None, 'No dataset'
+        return dataset, 'Get dataset succeed'
 
-    def get_dataset_statistics(self, dataset_id: int) -> Tuple[Optional[DatasetStatisticsVO], str]:
+    def get_dataset_statistics(self, dataset_id: int) -> Tuple[Optional[DatasetStatisticsValueObject], str]:
         dataset = self.repository.get_dataset_by_id(dataset_id)
         if not dataset:
-            return None, 'no dataset'
+            return None, 'No dataset'
 
         dataset_slices = self.repository.get_dataset_slices_by_dataset(dataset_id)
         slice_ids = [dataset_slice.slice_id for dataset_slice in dataset_slices]
@@ -75,7 +75,7 @@ class SliceDomainService(object):
         label_names_statistics = [{'name': key, 'count': count, 'ratio': round(count / total_label_names, 2)}
                                   for key, count in Counter(label_names).items()]
 
-        dataset_statistics = DatasetStatisticsVO.parse_obj(
+        dataset_statistics = DatasetStatisticsValueObject.parse_obj(
             {
                 **dataset.dict(),
                 **{
@@ -86,7 +86,7 @@ class SliceDomainService(object):
             }
         )
 
-        return dataset_statistics, 'get dataset_statistics succeed'
+        return dataset_statistics, 'Get dataset_statistics succeed'
 
     def get_slice_fields(self) -> list:
         fields = self.repository.get_slice_fields()
@@ -149,6 +149,7 @@ class SliceDomainService(object):
             kwargs['creator'] = username
 
         dataset = DataSetEntity.parse_obj(kwargs)
+
         succeed, new_data_set = self.repository.save_data_set(dataset)
         if not succeed:
             return None, 'Create data set failed'
@@ -175,7 +176,7 @@ class SliceDomainService(object):
             slice_dict['labels'] = [slice_label.label_name for slice_label in slice_labels]
             new_slice = SliceEntity.parse_obj(slice_dict)
             new_slices.append(new_slice)
-        return new_slices, pagination, 'filter slices succeed'
+        return new_slices, pagination, 'Filter slices succeed'
 
     def filter_slice_thumbnails(self, **kwargs) -> Tuple[List[SliceEntity], dict, str]:
         page = kwargs['page_query']['page']
@@ -191,9 +192,9 @@ class SliceDomainService(object):
 
         slices, pagination = self.repository.filter_slices(page, per_page, logic, filters, set(slice_ids))
 
-        return slices, pagination, 'filter slices succeed'
+        return slices, pagination, 'Filter slices succeed'
 
-    def filter_labels(self, **kwargs) -> Tuple[List[LabelEntity], dict, str]:
+    def filter_labels(self, **kwargs) -> Tuple[List[LabelValueObject], dict, str]:
         page = kwargs['page_query']['page']
         per_page = kwargs['page_query']['per_page']
         filters = kwargs['filter']['filters']
@@ -204,9 +205,9 @@ class SliceDomainService(object):
             slice_labels = self.repository.get_slice_labels_by_label(label.id)
             label_dict = label.dict()
             label_dict['count'] = len(slice_labels)
-            new_label = LabelEntity.parse_obj(label_dict)
+            new_label = LabelValueObject.parse_obj(label_dict)
             new_labels.append(new_label)
-        return new_labels, pagination, 'filter labels succeed'
+        return new_labels, pagination, 'Filter labels succeed'
 
     def filter_datasets(self, **kwargs) -> Tuple[List[DataSetEntity], dict, str]:
         page = kwargs['page_query']['page']
@@ -221,19 +222,19 @@ class SliceDomainService(object):
             dataset_dict['count'] = len(dataset_slices)
             new_dataset = DataSetEntity.parse_obj(dataset_dict)
             new_datasets.append(new_dataset)
-        return new_datasets, pagination, 'filter datasets succeed'
+        return new_datasets, pagination, 'Filter datasets succeed'
 
     def get_datasets_with_fuzzy(self, **kwargs) -> Tuple[List[DataSetEntity], str]:
         # userid = request_context.current_user.userid
         userid = 1
         name = kwargs.get('name')
         datasets = self.repository.get_datasets_with_fuzzy(userid, name)
-        return datasets, 'get datasets succeed'
+        return datasets, 'Get datasets succeed'
 
     def get_labels_with_fuzzy(self, **kwargs) -> Tuple[List[LabelEntity], str]:
         name = kwargs.get('name')
         labels = self.repository.get_labels_with_fuzzy(name)
-        return labels, 'get labels succeed'
+        return labels, 'Get labels succeed'
 
     @transaction
     def delete_slices(self, **kwargs) -> Tuple[int, str]:
@@ -242,19 +243,19 @@ class SliceDomainService(object):
         for slice_ in slices:
             slice_dir = os.path.join(setting.DATA_DIR, slice_.slice_key)
             fs.remove_dir(slice_dir)
-        return deleted_count, 'delete slices succeed'
+        return deleted_count, 'Delete slices succeed'
 
     def update_slices(self, **kwargs) -> Tuple[int, str]:
         ids = kwargs.pop('ids')
         update_data = kwargs
         updated_count = self.repository.update_slices(ids, update_data)
-        return updated_count, 'update slices succeed'
+        return updated_count, 'Update slices succeed'
 
     def add_labels(self, **kwargs) -> Tuple[int, str]:
         slice_ids = kwargs['slice_ids']
         label_ids = kwargs['label_ids']
         affected_count = self.repository.add_labels(slice_ids, label_ids)
-        return affected_count, 'add labels to slices succeed'
+        return affected_count, 'Add labels to slices succeed'
 
     def add_slices(self, **kwargs) -> Tuple[int, str]:
         dataset_id = kwargs['dataset_id']
@@ -263,28 +264,28 @@ class SliceDomainService(object):
         exist_slice_ids = [dataset_slice.slice_id for dataset_slice in dataset_slices]
         new_slice_ids = [slice_id for slice_id in slice_ids if slice_id not in exist_slice_ids]
         added_count = self.repository.add_slices(dataset_id, new_slice_ids)
-        return added_count, 'add slices to datasets succeed'
+        return added_count, 'Add slices to datasets succeed'
 
     def remove_slices(self, **kwargs) -> Tuple[int, str]:
         dataset_id = kwargs['dataset_id']
         slice_ids = kwargs['slice_ids']
         deleted_count = self.repository.delete_dataset_slices(dataset_id, slice_ids)
-        return deleted_count, 'remove slices from dataset succeed'
+        return deleted_count, 'Remove slices from dataset succeed'
 
     def delete_label(self, label_id: int) -> Tuple[int, str]:
         deleted_count = self.repository.delete_label(label_id)
-        return deleted_count, 'delete labels succeed'
+        return deleted_count, 'Delete labels succeed'
 
     @transaction
     def delete_dataset(self, dataset_id: int) -> Tuple[int, str]:
         deleted_count = self.repository.delete_dataset(dataset_id)
-        return deleted_count, 'delete dataset succeed'
+        return deleted_count, 'Delete dataset succeed'
 
     @transaction
     def copy_dataset(self, dataset_id: int) -> Tuple[Optional[DataSetEntity], str]:
         old_dataset = self.repository.get_dataset_by_id(dataset_id)
         if not old_dataset:
-            return None, 'no dataset selected'
+            return None, 'No dataset selected'
 
         success, new_dataset = self.repository.save_data_set(DataSetEntity.parse_obj(old_dataset.dict(exclude={'id'})))
 
@@ -296,7 +297,7 @@ class SliceDomainService(object):
             new_en = DataSetSliceEntity.parse_obj(new)
             news_en.append(new_en)
 
-        return new_dataset, 'copy dataset succeed'
+        return new_dataset, 'Copy dataset succeed'
 
     def update_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:
         label_id = kwargs['label_id']

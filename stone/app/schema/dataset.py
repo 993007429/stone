@@ -4,7 +4,7 @@ from marshmallow import validates_schema, ValidationError
 from marshmallow.validate import OneOf
 
 from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers
-from stone.modules.slice.domain.value_objects import Condition
+from stone.modules.slice.domain.enum import Condition
 from stone.modules.slice.infrastructure.models import DataSet
 
 
@@ -49,6 +49,17 @@ class APISingleDataSetOut(Schema):
     data = Nested(SingleDataSetOut())
 
 
+class ListDataSetOut(Schema):
+    datasets = List(Nested(DataSetOut()))
+
+
+class ApiListDataSetOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = Nested(ListDataSetOut())
+    pagination = Nested(PaginationSchema())
+
+
 class StatisticsOut(Schema):
     name = String()
     count = Integer()
@@ -74,13 +85,6 @@ class APISingleDataSetStatisticsOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Nested(SingleDataSetStatisticsOut())
-
-
-class ListDataSetOut(Schema):
-    code = Integer(required=True)
-    message = String(required=True)
-    data = Dict(keys=String(), values=List(Nested(DataSetOut())))
-    pagination = Nested(PaginationSchema())
 
 
 class DataSetIdAndSliceIdsIn(Schema):

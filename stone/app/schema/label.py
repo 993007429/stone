@@ -6,7 +6,7 @@ from marshmallow.fields import Integer, String, List, Nested, DateTime, Raw, Dic
 from marshmallow.validate import OneOf
 
 from stone.app.base_schema import PageQuery, PaginationSchema
-from stone.modules.slice.domain.value_objects import Condition
+from stone.modules.slice.domain.enum import Condition
 from stone.modules.slice.infrastructure.models import Label
 
 columns_with_types = {column_name: str(column.type) for column_name, column in Label.__table__.columns.items()}
@@ -78,16 +78,24 @@ class LabelOut(Schema):
 
 
 class SingleLabelOut(Schema):
+    label = Nested(LabelOut())
+
+
+class ApiSingleLabelOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Dict(keys=String(), values=Nested(LabelOut))
+    data = Nested(SingleLabelOut())
 
 
 class ListLabelOut(Schema):
+    labels = List(Nested(LabelOut()))
+
+
+class ApiListLabelOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Dict(keys=String(), values=List(Nested(LabelOut)), required=True)
-    pagination = Nested(PaginationSchema)
+    data = Nested(ListLabelOut())
+    pagination = Nested(PaginationSchema())
 
 
 class LabelIdsOut(Schema):

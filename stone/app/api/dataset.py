@@ -2,7 +2,7 @@ from apiflask import APIBlueprint
 
 from stone.app.base_schema import NameFuzzyQuery, APIAffectedCountOut
 from stone.app.schema.dataset import DataSetPageQuery, DataSetFilter, ListDataSetOut, SingleDataSetOut, DataSetIn, \
-    APISingleDataSetOut, APISingleDataSetStatisticsOut, DataSetIdAndSliceIdsIn
+    APISingleDataSetOut, APISingleDataSetStatisticsOut, DataSetIdAndSliceIdsIn, ApiListDataSetOut
 from stone.app.service_factory import AppServiceFactory
 
 dataset_blueprint = APIBlueprint('数据集', __name__, url_prefix='/datasets')
@@ -10,7 +10,7 @@ dataset_blueprint = APIBlueprint('数据集', __name__, url_prefix='/datasets')
 
 @dataset_blueprint.get('')
 @dataset_blueprint.input(NameFuzzyQuery, location='query')
-@dataset_blueprint.output(ListDataSetOut)
+@dataset_blueprint.output(ApiListDataSetOut)
 @dataset_blueprint.doc(summary='数据集模糊筛选', security='ApiAuth')
 def get_datasets_with_fuzzy(query_data):
     res = AppServiceFactory.slice_service.get_datasets_with_fuzzy(**query_data)
@@ -42,6 +42,15 @@ def add_slices(json_data):
 @dataset_blueprint.doc(summary='移除切片', security='ApiAuth')
 def remove_slices(json_data):
     res = AppServiceFactory.slice_service.remove_slices(**json_data)
+    return res.response
+
+
+@dataset_blueprint.post('')
+@dataset_blueprint.input(DataSetIn, location='json')
+@dataset_blueprint.output(APISingleDataSetOut)
+@dataset_blueprint.doc(summary='创建数据集', security='ApiAuth')
+def create_dataset(json_data):
+    res = AppServiceFactory.slice_service.create_dataset(**json_data)
     return res.response
 
 

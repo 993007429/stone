@@ -2,8 +2,7 @@ from apiflask import APIBlueprint
 
 from stone.app.base_schema import APIAffectedCountOut
 from stone.app.permission import permission_required
-from stone.app.schema.user import UserPageQuery, UserIn, LoginIn, SingleUserOut, ListUserOut, ApiLoginOut, \
-    ApiSingleUserOut, ApiListUserOut
+from stone.app.schema.user import UserPageQuery, UserIn, LoginIn, ApiLoginOut, ApiSingleUserOut, ApiListUserOut
 from stone.app.service_factory import AppServiceFactory
 from stone.modules.user.infrastructure.permissions import IsAdmin
 

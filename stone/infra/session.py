@@ -3,6 +3,7 @@ import json
 import logging
 
 from sqlalchemy import create_engine
+from sqlalchemy.exc import PendingRollbackError
 from sqlalchemy.orm import sessionmaker, Session
 
 import setting
@@ -62,7 +63,7 @@ def transaction(f):
         try:
             ret = f(*args, **kwargs)
             session.commit()
-        except Exception as e:
+        except PendingRollbackError as e:
             logger.exception(e)
             session.rollback()
         # request_context.is_in_transaction = False

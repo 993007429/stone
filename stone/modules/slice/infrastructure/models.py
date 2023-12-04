@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, DateTime, BigInteger, Float, Boolean, SmallInteger, text, literal_column, Index
 
-from stone.modules.slice.domain.value_objects import DataType, SliceAnalysisStat
+from stone.modules.slice.domain.enum import DataType, SliceAnalysisStat
 from stone.seedwork.infrastructure.models import Base
 
 
@@ -82,7 +82,7 @@ class Slice(Base):
 class Label(Base):
     __tablename__ = 'label'
 
-    name = Column(String(255), unique=True, nullable=False)
+    name = Column(String(255), nullable=False)
     creator = Column(String(255), nullable=True)
 
 
@@ -95,6 +95,5 @@ class DataSet(Base):
 
     name = Column(String(255), nullable=True)
     remark = Column(String(255), nullable=True)
-    count = Column(Integer, nullable=True)
     creator = Column(String(255), nullable=True)
     userid = Column(BigInteger, nullable=False)

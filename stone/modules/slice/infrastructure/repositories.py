@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity, DataSetEntity, \
     DataSetSliceEntity
 from stone.modules.slice.domain.repositories import SliceRepository
-from stone.modules.slice.domain.value_objects import Condition, LogicType
+from stone.modules.slice.domain.enum import Condition, LogicType
 from stone.modules.slice.infrastructure.models import Slice, Label, SliceLabel, DataSet, DataSetSlice
 
 
