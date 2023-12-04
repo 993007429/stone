@@ -1,6 +1,10 @@
-from typing import Optional
+from typing import Optional, List
 
-from stone.modules.slice.domain.entities import DataSetEntity, LabelEntity
+from stone.modules.slice.domain.entities import DataSetEntity, LabelEntity, SliceEntity
+
+
+class SliceValueObject(SliceEntity):
+    labels: List[str] = None
 
 
 class LabelValueObject(LabelEntity):

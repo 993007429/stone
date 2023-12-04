@@ -12,7 +12,7 @@ from stone.infra.fs import fs
 from stone.infra.session import transaction
 from stone.libs.heimdall.dispatch import open_slide
 from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity
-from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject
+from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject
 from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
 
 logger = logging.getLogger(__name__)
@@ -155,7 +155,7 @@ class SliceDomainService(object):
             return None, 'Create data set failed'
         return new_data_set, 'Create data set succeed'
 
-    def filter_slices(self, **kwargs) -> Tuple[List[SliceEntity], dict, str]:
+    def filter_slices(self, **kwargs) -> Tuple[List[SliceValueObject], dict, str]:
         page = kwargs['page_query']['page']
         per_page = kwargs['page_query']['per_page']
         logic = kwargs['filter']['logic']
@@ -174,7 +174,7 @@ class SliceDomainService(object):
             slice_labels = self.repository.get_slice_labels_by_slice(slice_.id)
             slice_dict = slice_.dict()
             slice_dict['labels'] = [slice_label.label_name for slice_label in slice_labels]
-            new_slice = SliceEntity.parse_obj(slice_dict)
+            new_slice = SliceValueObject.parse_obj(slice_dict)
             new_slices.append(new_slice)
         return new_slices, pagination, 'Filter slices succeed'
 
@@ -290,13 +290,15 @@ class SliceDomainService(object):
         success, new_dataset = self.repository.save_data_set(DataSetEntity.parse_obj(old_dataset.dict(exclude={'id'})))
 
         old_dataset_slices = self.repository.get_dataset_slices_by_dataset(dataset_id)
-        news_en = []
+        new_dataset_slices = []
         for old_dataset_slice in old_dataset_slices:
             new = old_dataset_slice.dict(exclude={'id'})
-            new['dataset_id'] = old_dataset.id
+            new['dataset_id'] = new_dataset.id
             new_en = DataSetSliceEntity.parse_obj(new)
-            news_en.append(new_en)
-
+            new_dataset_slices.append(new_en)
+        success = self.repository.batch_save_dataset_slice(new_dataset_slices)
+        if not success:
+            return None, 'Copy dataset Failed'
         return new_dataset, 'Copy dataset succeed'
 
     def update_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:

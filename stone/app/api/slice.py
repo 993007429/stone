@@ -4,7 +4,8 @@ from flask import send_from_directory
 from stone.app.base_schema import APIAffectedCountOut
 from stone.app.schema.slice import ListSliceOut, SlicePageQuery, SingleSliceOut, SliceFilter, SliceIdsIn, \
     WSIIn, SliceId, ROIIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, SliceUploadIn, \
-    SingleSliceUploadOut, SliceUpdateIn, SingleSliceFieldOut, SliceAndLabelIdsIn
+    SingleSliceUploadOut, SliceUpdateIn, SingleSliceFieldOut, SliceAndLabelIdsIn, ApiSingleSliceOut, \
+    ApiSingleSliceUploadOut, ApiListSliceOut
 from stone.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -13,7 +14,7 @@ slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
 @slice_blueprint.post('/filter')
 @slice_blueprint.input(SlicePageQuery, location='query')
 @slice_blueprint.input(SliceFilter, location='json')
-@slice_blueprint.output(ListSliceOut)
+@slice_blueprint.output(ApiListSliceOut)
 @slice_blueprint.doc(summary='切片列表分页筛选', security='ApiAuth')
 def filter_slices(query_data, json_data):
     res = AppServiceFactory.slice_service.filter_slices(**{'page_query': query_data, 'filter': json_data})
@@ -23,7 +24,7 @@ def filter_slices(query_data, json_data):
 @slice_blueprint.post('/filter/thumbnails')
 @slice_blueprint.input(SlicePageQuery, location='query')
 @slice_blueprint.input(SliceFilter, location='json')
-@slice_blueprint.output(ListSliceOut)
+@slice_blueprint.output(ApiListSliceOut)
 @slice_blueprint.doc(summary='切片缩略图列表分页筛选', security='ApiAuth')
 def filter_slice_thumbnails(query_data, json_data):
     res = AppServiceFactory.slice_service.filter_slice_thumbnails(**{'page_query': query_data, 'filter': json_data})
@@ -32,7 +33,7 @@ def filter_slice_thumbnails(query_data, json_data):
 
 @slice_blueprint.post('/upload')
 @slice_blueprint.input(SliceUploadIn, location='form_and_files')
-@slice_blueprint.output(SingleSliceUploadOut)
+@slice_blueprint.output(ApiSingleSliceUploadOut)
 @slice_blueprint.doc(summary='上传切片文件', security='ApiAuth')
 def upload_slice(form_and_files_data):
     res = AppServiceFactory.slice_service.upload_slice(**form_and_files_data)
@@ -41,7 +42,7 @@ def upload_slice(form_and_files_data):
 
 @slice_blueprint.post('')
 @slice_blueprint.input(SliceIn, location='json')
-@slice_blueprint.output(SingleSliceOut)
+@slice_blueprint.output(ApiSingleSliceOut)
 @slice_blueprint.doc(summary='创建切片', security='ApiAuth')
 def create_slice(json_data):
     res = AppServiceFactory.slice_service.create_slice(**json_data)
@@ -49,7 +50,7 @@ def create_slice(json_data):
 
 
 @slice_blueprint.get('/<int:slice_id>')
-@slice_blueprint.output(SingleSliceOut)
+@slice_blueprint.output(ApiSingleSliceOut)
 @slice_blueprint.doc(summary='切片详情', security='ApiAuth')
 def get_slice(slice_id):
     res = AppServiceFactory.slice_service.get_slice(slice_id)
@@ -115,8 +116,8 @@ def get_roi(query_data):
 @slice_blueprint.input(SliceId, location='query')
 @slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
 @slice_blueprint.doc(summary='切片标签', security='ApiAuth')
-def get_label(query_data):
-    AppServiceFactory.slice_service.get_label(**query_data)
+def get_label_image(query_data):
+    AppServiceFactory.slice_service.get_label_image(**query_data)
     return send_from_directory('IMAGE_FOLDER', 'filename')
 
 

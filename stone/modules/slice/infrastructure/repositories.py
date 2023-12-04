@@ -202,6 +202,15 @@ class SQLAlchemySliceRepository(SliceRepository):
             return False, None
         return True, entity.from_orm(model)
 
+    def batch_save_dataset_slice(self, entities: List[DataSetSliceEntity]) -> bool:
+        models = [DataSetSlice(**entity.dict()) for entity in entities]
+        try:
+            self._session.add_all(models)
+            self._session.flush(models)
+        except IntegrityError:
+            return False
+        return True
+
     def filter_slices(self, page: int, per_page: int, logic: str, filters: list, slice_ids: set)\
             -> Tuple[List[SliceEntity], dict]:
         query = self._session.query(Slice).filter(Slice.is_deleted.is_(False))

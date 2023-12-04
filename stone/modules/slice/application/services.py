@@ -115,7 +115,7 @@ class SliceService(object):
 
     def copy_dataset(self, dataset_id: int) -> AppResponse[dict]:
         new_dataset, message = self.domain_service.copy_dataset(dataset_id)
-        return AppResponse(message=message, data={'new_dataset': new_dataset})
+        return AppResponse(message=message, data={'dataset': new_dataset})
 
     def update_label(self, **kwargs) -> AppResponse[dict]:
         label, message = self.domain_service.update_label(**kwargs)

@@ -46,7 +46,6 @@ class SliceEntity(BaseEntity):
     f_path: Optional[str]
     f_size: Optional[float]
     created_at: Optional[datetime]
-    labels: List[str] = None
 
     class Config:
         orm_mode = True

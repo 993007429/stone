@@ -53,7 +53,7 @@ class ListDataSetOut(Schema):
     datasets = List(Nested(DataSetOut()))
 
 
-class ApiListDataSetOut(Schema):
+class APIListDataSetOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Nested(ListDataSetOut())

@@ -1,8 +1,8 @@
 from apiflask import APIBlueprint
 
 from stone.app.base_schema import NameFuzzyQuery, APIAffectedCountOut
-from stone.app.schema.dataset import DataSetPageQuery, DataSetFilter, ListDataSetOut, SingleDataSetOut, DataSetIn, \
-    APISingleDataSetOut, APISingleDataSetStatisticsOut, DataSetIdAndSliceIdsIn, ApiListDataSetOut
+from stone.app.schema.dataset import DataSetPageQuery, DataSetFilter, ListDataSetOut, DataSetIn, \
+    APISingleDataSetStatisticsOut, DataSetIdAndSliceIdsIn, APIListDataSetOut, APISingleDataSetOut
 from stone.app.service_factory import AppServiceFactory
 
 dataset_blueprint = APIBlueprint('数据集', __name__, url_prefix='/datasets')
@@ -10,7 +10,7 @@ dataset_blueprint = APIBlueprint('数据集', __name__, url_prefix='/datasets')
 
 @dataset_blueprint.get('')
 @dataset_blueprint.input(NameFuzzyQuery, location='query')
-@dataset_blueprint.output(ApiListDataSetOut)
+@dataset_blueprint.output(APIListDataSetOut)
 @dataset_blueprint.doc(summary='数据集模糊筛选', security='ApiAuth')
 def get_datasets_with_fuzzy(query_data):
     res = AppServiceFactory.slice_service.get_datasets_with_fuzzy(**query_data)
@@ -20,7 +20,7 @@ def get_datasets_with_fuzzy(query_data):
 @dataset_blueprint.post('/filter')
 @dataset_blueprint.input(DataSetPageQuery, location='query')
 @dataset_blueprint.input(DataSetFilter, location='json')
-@dataset_blueprint.output(ListDataSetOut)
+@dataset_blueprint.output(APIListDataSetOut)
 @dataset_blueprint.doc(summary='数据集列表分页筛选', security='ApiAuth')
 def filter_datasets(query_data, json_data):
     res = AppServiceFactory.slice_service.filter_datasets(**{'page_query': query_data, 'filter': json_data})
@@ -88,7 +88,7 @@ def delete_dataset(dataset_id):
 
 
 @dataset_blueprint.post('/copy/<int:dataset_id>')
-@dataset_blueprint.output(SingleDataSetOut)
+@dataset_blueprint.output(APISingleDataSetOut)
 @dataset_blueprint.doc(summary='复制数据集', security='ApiAuth')
 def copy_dataset(dataset_id):
     res = AppServiceFactory.slice_service.copy_dataset(dataset_id)
