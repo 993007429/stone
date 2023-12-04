@@ -59,13 +59,13 @@ class UserDomainService(object):
     def login(self, **kwargs) -> Tuple[Optional[LoginUser], str]:
         user = self.repository.get_user_by_name(kwargs['username'])
         if not user:
-            return None, 'no user'
+            return None, 'No user'
 
         if not verify_password(kwargs['password'], user.password_hash):
-            return None, 'wrong password'
+            return None, 'Wrong password'
 
         token = get_token_for_user(user)
         return LoginUser(userid=user.id,
                          username=user.username,
                          role=user.role,
-                         token=token), 'login success'
+                         token=token), 'Login success'

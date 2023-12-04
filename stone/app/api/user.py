@@ -1,8 +1,8 @@
 from apiflask import APIBlueprint
 
-from stone.app.auth import auth_required
 from stone.app.permission import permission_required
-from stone.app.schema.user import UserPageQuery, UserIn, LoginIn, SingleUserOut, ListUserOut, ApiLoginOut
+from stone.app.schema.user import UserPageQuery, UserIn, LoginIn, SingleUserOut, ListUserOut, ApiLoginOut, \
+    ApiSingleUserOut, ApiListUserOut
 from stone.app.service_factory import AppServiceFactory
 from stone.modules.user.infrastructure.permissions import IsAdmin
 
@@ -19,10 +19,9 @@ def login(json_data):
 
 
 @user_blueprint.post('')
-@auth_required()
 @permission_required([IsAdmin])
 @user_blueprint.input(UserIn, location='json')
-@user_blueprint.output(SingleUserOut)
+@user_blueprint.output(ApiSingleUserOut)
 @user_blueprint.doc(summary='创建user', security='ApiAuth')
 def create_user(json_data):
     res = AppServiceFactory.user_service.create_user(**json_data)
@@ -30,10 +29,9 @@ def create_user(json_data):
 
 
 @user_blueprint.get('')
-@auth_required()
 @permission_required([IsAdmin])
 @user_blueprint.input(UserPageQuery, location='query')
-@user_blueprint.output(ListUserOut)
+@user_blueprint.output(ApiListUserOut)
 @user_blueprint.doc(summary='user列表', security='ApiAuth')
 def get_users(query_data):
     res = AppServiceFactory.user_service.get_users()
@@ -41,9 +39,8 @@ def get_users(query_data):
 
 
 @user_blueprint.get('/<int:userid>')
-# @auth_required()
-# @permission_required([IsAdmin])
-@user_blueprint.output(SingleUserOut)
+@permission_required([IsAdmin])
+@user_blueprint.output(ApiSingleUserOut)
 @user_blueprint.doc(summary='user详情', security='ApiAuth')
 def get_user(userid):
     res = AppServiceFactory.user_service.get_user(userid)
@@ -51,10 +48,9 @@ def get_user(userid):
 
 
 @user_blueprint.put('/<int:userid>')
-# @auth_required()
-# @permission_required([IsAdmin])
+@permission_required([IsAdmin])
 @user_blueprint.input(UserIn, location='json')
-@user_blueprint.output(SingleUserOut)
+@user_blueprint.output(ApiSingleUserOut)
 @user_blueprint.doc(summary='更新user', security='ApiAuth')
 def update_user(userid):
     res = AppServiceFactory.user_service.update_user(userid)
@@ -62,9 +58,8 @@ def update_user(userid):
 
 
 @user_blueprint.delete('/<int:userid>')
-# @auth_required()
-# @permission_required([IsAdmin])
-@user_blueprint.output(SingleUserOut)
+@permission_required([IsAdmin])
+@user_blueprint.output(ApiSingleUserOut)
 @user_blueprint.doc(summary='删除user', security='ApiAuth')
 def delete_user(userid):
     res = AppServiceFactory.user_service.delete_user(userid)

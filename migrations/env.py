@@ -12,7 +12,7 @@ from alembic import context
 def batch_import_model_from_modules():
     project_root_dir = os.path.dirname(os.path.dirname(__file__))
     sys.path.append(project_root_dir)
-    for root, dirs, files in os.walk(os.path.join(project_root_dir, 'src', 'modules')):
+    for root, dirs, files in os.walk(os.path.join(project_root_dir, 'stone', 'modules')):
         for name in files:
             if name == 'models.py':
                 module = os.path.join(root, name).replace('.py', '').replace('/', '.')

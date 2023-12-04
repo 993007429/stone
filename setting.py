@@ -41,6 +41,10 @@ LIMIT_URL = [
     'slice/selectTemplate'
 ]
 
+WHITE_LIST = [
+    '/api/users/login'
+]
+
 THUMBNAIL_BOUNDING = 500
 
 BLOCK_SIZE = 1024

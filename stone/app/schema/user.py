@@ -14,7 +14,6 @@ class UserIn(Schema):
     username = String(required=True, validate=[Length(0, 255)])
     password = String(required=True, validate=[Length(8, 32)])
     role = String(required=True, validate=[OneOf([RoleType.admin.value, RoleType.user.value])])
-    creator = String(required=True, validate=[Length(0, 255)])
 
 
 class LoginIn(Schema):
@@ -24,34 +23,46 @@ class LoginIn(Schema):
 
 class UserOut(Schema):
     id = Integer(required=True)
-    username = String(required=True, validate=[Length(0, 255)])
+    username = String(required=True)
     role = String(required=True, validate=[OneOf([RoleType.admin.value, RoleType.user.value])])
-    creator = String(required=True, validate=[Length(0, 255)])
+    creator = String(required=True)
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     last_modified = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
 
 
 class SingleUserOut(Schema):
+    user = Nested(UserOut())
+
+
+class ApiSingleUserOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(UserOut)
+    data = Nested(SingleUserOut())
 
 
 class ListUserOut(Schema):
+    users = List(Nested(UserOut()))
+
+
+class ApiListUserOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = List(Nested(UserOut))
-    pagination = Nested(PaginationSchema)
+    data = Nested(ListUserOut())
+    pagination = Nested(PaginationSchema())
 
 
 class LoginOut(Schema):
     userid = Integer(required=True)
-    username = String(required=True, validate=[Length(0, 255)])
+    username = String(required=True)
     role = String(required=True, validate=[OneOf([RoleType.admin.value, RoleType.user.value])])
     token = String(required=True)
+
+
+class SingleLoginOut(Schema):
+    login = Nested(LoginOut())
 
 
 class ApiLoginOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(LoginOut)
+    data = Nested(SingleLoginOut())
