@@ -147,10 +147,10 @@ class SQLAlchemySliceRepository(SliceRepository):
             {'name': name}, synchronize_session=False)
         return updated_count, 'Update label succeed'
 
-    def update_dataset(self, dataset_id: int, dataset_data: dict) -> Tuple[int, str]:
-        updated_count = self._session.query(DataSet).filter(DataSet.id == dataset_id).update(
-            dataset_data, synchronize_session=False)
-        return updated_count, 'Update label succeed'
+    def update_dataset(self, dataset_id: int, dataset_data: dict) -> int:
+        updated_count = self._session.query(DataSet).filter(
+            DataSet.id == dataset_id, DataSet.is_deleted.is_(False)).update(dataset_data, synchronize_session=False)
+        return updated_count
 
     def add_labels(self, slice_ids: list, label_ids: list) -> int:
         slices = self._session.query(Slice).filter(Slice.id.in_(slice_ids)).all()

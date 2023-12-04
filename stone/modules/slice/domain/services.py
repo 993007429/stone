@@ -12,6 +12,7 @@ from stone.infra.fs import fs
 from stone.infra.session import transaction
 from stone.libs.heimdall.dispatch import open_slide
 from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity
+from stone.modules.slice.domain.enum import DataType
 from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject
 from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
 
@@ -318,8 +319,8 @@ class SliceDomainService(object):
         dataset_id = kwargs['dataset_id']
         dataset_data = kwargs['dataset_data']
 
-        updated_count, message = self.repository.update_dataset(dataset_id, dataset_data)
+        updated_count = self.repository.update_dataset(dataset_id, dataset_data)
         new_dataset = self.repository.get_dataset_by_id(dataset_id)
         if updated_count:
-            return new_dataset, message
-        return None, message
+            return new_dataset, 'Update dataset succeed'
+        return None, 'Update dataset failed'
