@@ -112,13 +112,20 @@ def get_roi(query_data):
     return send_from_directory('IMAGE_FOLDER', 'filename')
 
 
-@slice_blueprint.get('/label')
-@slice_blueprint.input(SliceId, location='query')
-@slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
-@slice_blueprint.doc(summary='切片标签', security='ApiAuth')
-def get_label_image(query_data):
-    AppServiceFactory.slice_service.get_label_image(**query_data)
-    return send_from_directory('IMAGE_FOLDER', 'filename')
+# @slice_blueprint.get('/<int:slice_id>/label')
+# @slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
+# @slice_blueprint.doc(summary='切片标签', security='ApiAuth')
+# def get_label_image(slice_id):
+#     AppServiceFactory.slice_service.get_label_image(slice_id)
+#     return send_from_directory('IMAGE_FOLDER', 'filename')
+#
+#
+# @slice_blueprint.get('/<int:slice_id>/thumbnail')
+# @slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
+# @slice_blueprint.doc(summary='切片缩略图', security='ApiAuth')
+# def get_thumbnail_image(slice_id):
+#     AppServiceFactory.slice_service.get_thumbnail_image(slice_id)
+#     return send_from_directory('IMAGE_FOLDER', 'filename')
 
 
 @slice_blueprint.post('/fields')
