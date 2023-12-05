@@ -1,10 +1,11 @@
 [Credentials]
-project_id=1
-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4NDYzMTY4MjgsInVpZCI6MiwibmFtZSI6ImN1aWNhbiJ9.nRuOjuvyi6JRlqebI_UCnUL4nlFq3WBJefkbcejwbXQ
-endpoint=http://deploy.uat.dipath.cn/api
+project_id=3
+token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjI1NjI0MDI4OTAsInVpZCI6OCwibmFtZSI6ImhlemhlbmZhbiJ9.GKfc03HHGMEKTQMxS38GsExXSF6FaXK1u-dFsXFK9dw
+endpoint=http://deploy.dev.dipath.cn/api
 
 [Deploy]
-backend_include=cyborg,resources,app.py,requirements.txt,local_settings
+backend_include=stone,yams,local_settings,app.py,setting.py,requirements.txt
 fe_dist=
-exclude_dirs=.git,local_settings/.git,__pycache__,tests
+exclude_dirs=.git,__pycache__,tests
 exclude_suffix=.pyc,__pycache__
+webhook=
