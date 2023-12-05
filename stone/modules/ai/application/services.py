@@ -33,6 +33,7 @@ class AiService(object):
         cache.set(self.RANK_AI_TASK, rank)
         return AppResponse(message='Ai start succeed', data={'task_id': task_id})
 
+    @transaction
     def run_ai_task(self, task_param: TaskParam) -> AppResponse:
         start_time = time.time()
         logger.info(f'收到任务1 {task_param.slice_id}')
