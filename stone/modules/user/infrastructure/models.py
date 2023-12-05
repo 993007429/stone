@@ -11,5 +11,3 @@ class User(Base):
     password_hash = Column(String(255), nullable=True)
     role = Column(String(255), nullable=False, server_default=text(f'"{RoleType.user.value}"'))
     creator = Column(String(255), nullable=True, comment='创建者')
-
-

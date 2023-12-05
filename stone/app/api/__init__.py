@@ -1,4 +1,3 @@
-import jwt
 from apiflask import APIBlueprint
 from flask import request
 
@@ -12,8 +11,6 @@ from stone.app.api.slice import slice_blueprint
 from stone.app.api.user import user_blueprint
 from stone.app.auth import auth_token
 from stone.app.request_context import request_context
-from stone.app.service_factory import AppServiceFactory
-from stone.modules.user.domain.value_objects import LoginUser
 
 api_blueprint = APIBlueprint('stone', __name__, url_prefix='/api')
 

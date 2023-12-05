@@ -1,7 +1,7 @@
 from apiflask import APIBlueprint
 
 from stone.app.base_schema import NameFuzzyQuery, APIAffectedCountOut
-from stone.app.schema.dataset import DataSetPageQuery, DataSetFilter, ListDataSetOut, DataSetIn, \
+from stone.app.schema.dataset import DataSetPageQuery, DataSetFilter, DataSetIn, \
     APISingleDataSetStatisticsOut, DataSetIdAndSliceIdsIn, APIListDataSetOut, APISingleDataSetOut
 from stone.app.service_factory import AppServiceFactory
 
