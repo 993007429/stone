@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+stone/libs/heimdall/*/linux_libs
+stone/libs/heimdall/*/win_libs
+stone/libs/heimdall/*/*/linux_libs
+stone/libs/heimdall/*/*/win_libs
+
 # Distribution / packaging
 .Python
 build/
