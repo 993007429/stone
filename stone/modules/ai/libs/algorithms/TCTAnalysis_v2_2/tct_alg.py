@@ -48,10 +48,10 @@ class AlgBase:
         self.model_path = oss.path_join('AI', MODEL_NAME, 'Model')
 
         self.cell_det_net = self.load_celldet_model()
-        self.wsi_net = self.load_wsi_model_768_global(model_name=self.yaml['wsi_net']['model_name'], weights_name=self.yaml['wsi_net']['weights_name'])
-        self.microbe_net = self.load_microbe_cvnxt(model_name=self.yaml['microbe_net']['model_name'], weights_name=self.yaml['microbe_net']['weights_name']) if self.config.is_microbe_detect else None
-        self.cell_net = self.load_cell0921_model(model_name=self.yaml['cell_net']['model_name'], weights_name=self.yaml['cell_net']['weights_name'])
-        self.qc_net1 = self.load_qc_net(model_name=self.yaml['qc_net1']['model_name'], weights_name=self.yaml['qc_net1']['weights_name']) if self.config.is_qc else None
+        self.wsi_net = self.load_wsi_model_768_global(model_name=self.yaml['wsi_net']['model_name'], weights_name=self.yaml['wsi_net']['weights'])
+        self.microbe_net = self.load_microbe_cvnxt(model_name=self.yaml['microbe_net']['model_name'], weights_name=self.yaml['microbe_net']['weights']) if self.config.is_microbe_detect else None
+        self.cell_net = self.load_cell0921_model(model_name=self.yaml['cell_net']['model_name'], weights_name=self.yaml['cell_net']['weights'])
+        self.qc_net1 = self.load_qc_net(model_name=self.yaml['qc_net1']['model_name'], weights_name=self.yaml['qc_net1']['weights']) if self.config.is_qc else None
         self.microbe_qc_net = None
         self.cell_cls_func = detect_mix20x_scale1_qc
         self.cell_det_func = count_cells_slide_thread_noqc

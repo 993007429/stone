@@ -34,4 +34,10 @@ class MarkEntity(BaseEntity):
 
 
 class AnalysisEntity(BaseEntity):
-    pass
+    userid: int
+    username: str
+    slice_id: int
+    ai_model: str
+    model_version: str
+    status: str
+    time_consume: float

@@ -1,7 +1,7 @@
 from apiflask import APIBlueprint
 
 from stone.app.auth import auth_required
-from stone.app.schema.analysis import AnalysesQuery, ListAnalysesOut
+from stone.app.schema.analysis import AnalysesQuery, ListAnalysesOut, APIListAnalysesOut
 from stone.app.service_factory import AppServiceFactory
 
 analysis_blueprint = APIBlueprint('ai处理记录', __name__, url_prefix='/analyses')
@@ -10,7 +10,7 @@ analysis_blueprint = APIBlueprint('ai处理记录', __name__, url_prefix='/analy
 @analysis_blueprint.get('')
 @auth_required()
 @analysis_blueprint.input(AnalysesQuery, location='query')
-@analysis_blueprint.output(ListAnalysesOut)
+@analysis_blueprint.output(APIListAnalysesOut)
 @analysis_blueprint.doc(summary='AI处理记录列表', security='ApiAuth')
 def get_analyses(query_data):
     res = AppServiceFactory.ai_service.get_analyses(**query_data)

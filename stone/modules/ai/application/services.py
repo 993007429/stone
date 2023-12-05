@@ -3,6 +3,7 @@ import time
 
 from setting import RANK_AI_TASK
 from stone.app.request_context import request_context
+from stone.infra.session import transaction
 from stone.modules.ai.domain.services import AiDomainService
 from stone.modules.ai.domain.value_objects import TaskParam, AIType
 from stone.modules.slice.application.services import SliceService
@@ -21,7 +22,7 @@ class AiService(object):
 
     def start_ai_analysis(self, **kwargs) -> AppResponse:
         task_param = TaskParam(**kwargs)
-        task_param.slide_path = 'D:\\data\\123.sdpc'
+        task_param.slide_path = 'D:\\data\\789.svs'
         # task_param.slide_path = self.slice_service.get_slice_path(task_param.slice_id).data
         # result = tasks.run_ai_task(task_param)
         result = self.run_ai_task(task_param)
@@ -30,7 +31,7 @@ class AiService(object):
         rank = cache.get(self.RANK_AI_TASK, [])
         rank.append(task_id := result.task_id)
         cache.set(self.RANK_AI_TASK, rank)
-        return AppResponse(message='ai start succeed', data={'task_id': task_id})
+        return AppResponse(message='Ai start succeed', data={'task_id': task_id})
 
     def run_ai_task(self, task_param: TaskParam) -> AppResponse:
         start_time = time.time()
@@ -40,16 +41,16 @@ class AiService(object):
         groups = []
         group_name_to_id = {group['label']: int(group['id']) for group in groups}
 
-        if task_param.ai_model in [AIType.tct1, AIType.tct2]:
-            result = self.domain_service.run_tct(task_param)
-        elif task_param.ai_model in [AIType.lct1, AIType.lct2]:
-            result = self.domain_service.run_lct(task_param)
-        elif task_param.ai_model == AIType.dna:
-            result = self.domain_service.run_tbs_dna(task_param)
-        elif task_param.ai_model == AIType.dna_ploidy:
-            result = self.domain_service.run_dna_ploidy(task_param)
-        elif task_param.ai_model == AIType.her2:
-            result = self.domain_service.run_her2(task_param, group_name_to_id)
+        # if task_param.ai_model in [AIType.tct1, AIType.tct2]:
+        #     result = self.domain_service.run_tct(task_param)
+        # elif task_param.ai_model in [AIType.lct1, AIType.lct2]:
+        #     result = self.domain_service.run_lct(task_param)
+        # elif task_param.ai_model == AIType.dna:
+        #     result = self.domain_service.run_tbs_dna(task_param)
+        # elif task_param.ai_model == AIType.dna_ploidy:
+        #     result = self.domain_service.run_dna_ploidy(task_param)
+        # elif task_param.ai_model == AIType.her2:
+        #     result = self.domain_service.run_her2(task_param, group_name_to_id)
 
         alg_time = time.time() - start_time
         logger.info(f'任务 {task_param.slice_id} - 算法部分完成,耗时{alg_time}')
@@ -61,21 +62,21 @@ class AiService(object):
                         model_version=task_param.model_version,
                         status='',
                         time_consume=alg_time)
+        aaa = {'userid': 1, 'username': 'sa', 'slice_id': 1, 'ai_model': 'tct1', 'model_version': 'v1', 'status': '', 'time_consume': 44.69143509864807}
+        self.domain_service.create_analysis(**aaa)
 
-        self.domain_service.create_analysis(**analysis)
-
-        self.domain_service.create_ai_marks(
-            ai_model=task_param.ai_model,
-            slide_path=task_param.slide_path,
-            cell_marks=[mark.dict() for mark in result.cell_marks],
-            roi_marks=[mark.dict() for mark in result.roi_marks],
-            skip_mark_to_tile=task_param.ai_model in [AIType.bm]
-        )
+        # self.domain_service.create_ai_marks(
+        #     ai_model=task_param.ai_model,
+        #     slide_path=task_param.slide_path,
+        #     cell_marks=[mark.dict() for mark in result.cell_marks],
+        #     roi_marks=[mark.dict() for mark in result.roi_marks],
+        #     skip_mark_to_tile=task_param.ai_model in [AIType.bm]
+        # )
 
         total_time = time.time() - start_time
         logger.info(f'任务 {task_param.slice_id} - 全部完成,耗时{total_time}')
 
-        return AppResponse(message='ai analysis succeed')
+        return AppResponse(message='Ai analysis succeed')
 
     def polling(self, task_id: str) -> AppResponse:
         err_msg, result = self.domain_service.get_ai_task_result(task_id)

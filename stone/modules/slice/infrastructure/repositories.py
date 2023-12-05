@@ -60,7 +60,7 @@ class SQLAlchemySliceRepository(SliceRepository):
         model = query.first()
         if not model:
             return None
-        return LabelEntity(**model.dict)
+        return LabelEntity.from_orm(model)
 
     def get_slice_fields(self) -> list:
         columns_with_types = {column_name: str(column.type) for column_name, column in Slice.__table__.columns.items()}

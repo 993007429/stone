@@ -1,8 +1,10 @@
 from contextvars import ContextVar
 from typing import List, Optional, Tuple
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from stone.infra.session import transaction
 from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity
 from stone.modules.ai.domain.repositories import AIRepository
 from stone.modules.ai.domain.value_objects import AIType
@@ -87,11 +89,27 @@ class SQLAlchemyAIRepository(AIRepository):
     def get_analyses(self, **kwargs) -> List[AnalysisEntity]:
         query = self._session.query(Analysis).filter_by(**kwargs)
         models = query.all()
-        return [AnalysisEntity(**model.dict) for model in models]
+        return [AnalysisEntity.from_orm(model) for model in models]
 
     def get_analysis_by_pk(self, pk: int) -> Optional[AnalysisEntity]:
         query = self._session.query(Analysis).filter_by(id=pk)
         model = query.first()
         if not model:
             return None
-        return AnalysisEntity(**model.dict)
+        return AnalysisEntity.from_orm(model)
+
+    def save_analysis1(self, entity: AnalysisEntity) -> Tuple[bool, Optional[AnalysisEntity]]:
+        model = Analysis(**entity.dict())
+        try:
+            self._session.add(model)
+            self._session.flush([model])
+            aaa = 111
+        except IntegrityError:
+            return False, None
+        return True, entity.from_orm(model)
+
+    def save_analysis(self, entity: AnalysisEntity) -> Tuple[bool, Optional[AnalysisEntity]]:
+        model = Analysis(**entity.dict())
+        self._session.add(model)
+        self._session.flush([model])
+        return True, entity.from_orm(model)
