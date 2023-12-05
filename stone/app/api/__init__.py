@@ -27,7 +27,7 @@ def api_before_request():
     request_context.connect_db()
     if request.path not in setting.WHITE_LIST:
         token = request.headers.get("Authorization")
-        # return auth_token(token)
+        return auth_token(token)
 
 
 def api_after_request(response):

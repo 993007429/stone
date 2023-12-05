@@ -31,10 +31,8 @@ class SQLAlchemyAIRepository(AIRepository):
 
     def save(self, entity: AnalysisEntity) -> bool:
         model = Analysis(**entity.dict())
-        self._session.begin()
         self._session.add(model)
         self._session.flush([model])
-        self._session.commit()
         entity.from_orm(model)
         return True
 
@@ -58,16 +56,12 @@ class SQLAlchemyAIRepository(AIRepository):
 
     def save_mark(self, entity: MarkEntity) -> Tuple[bool, str]:
         model = self.mark_model_class(**entity.dict())
-        self._slice_db_session.begin()
         self._slice_db_session.add(model)
         self._slice_db_session.flush([model])
-        self._slice_db_session.commit()
         return True, 'Create mark success'
 
     def batch_save_marks(self, entities: List[MarkEntity]) -> bool:
-        self._slice_db_session.begin()
         self._slice_db_session.bulk_insert_mappings(self.mark_model_class, [entity.dict() for entity in entities])
-        self._slice_db_session.commit()
         return True
 
     def create_mark_tables(self, ai_type: AIType):
@@ -91,17 +85,13 @@ class SQLAlchemyAIRepository(AIRepository):
         Base.metadata.create_all(engine, tables=tables)
 
     def get_analyses(self, **kwargs) -> List[AnalysisEntity]:
-        self._session.begin()
         query = self._session.query(Analysis).filter_by(**kwargs)
         models = query.all()
-        self._session.commit()
         return [AnalysisEntity(**model.dict) for model in models]
 
     def get_analysis_by_pk(self, pk: int) -> Optional[AnalysisEntity]:
-        self._session.begin()
         query = self._session.query(Analysis).filter_by(id=pk)
         model = query.first()
-        self._session.commit()
         if not model:
             return None
         return AnalysisEntity(**model.dict)

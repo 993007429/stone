@@ -11,6 +11,8 @@ stone/libs/heimdall/*/win_libs
 stone/libs/heimdall/*/*/linux_libs
 stone/libs/heimdall/*/*/win_libs
 
+ai_models
+
 # Distribution / packaging
 .Python
 build/

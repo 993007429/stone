@@ -12,11 +12,11 @@ from io import BytesIO
 from stone.infra.oss import oss
 from stone.utils.load_yaml import load_yaml
 from .configs import TctBaseConfig
-from .stone.detect_tct_disk import disc_detect
-from .stone.cell_counting import *
-from .stone.cell_cls import *
-from .stone.nms import non_max_suppression
-from .stone.utils import get_testing_feat
+from .src.detect_tct_disk import disc_detect
+from .src.cell_counting import *
+from .src.cell_cls import *
+from .src.nms import non_max_suppression
+from .src.utils import get_testing_feat
 import torch
 import numpy as np
 import traceback

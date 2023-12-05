@@ -10,11 +10,11 @@ from collections import Counter
 import torch
 from stone.infra.oss import oss
 
-from .stone.cell_counting import CellCounter
-from .stone.cell_detection import CellDetector
-from .stone.detect_tct_disk import disc_detect
-from .stone.utils import load_cfg
-from .stone.wsi_cls import WSIClassifier
+from .src.cell_counting import CellCounter
+from .src.cell_detection import CellDetector
+from .src.detect_tct_disk import disc_detect
+from .src.utils import load_cfg
+from .src.wsi_cls import WSIClassifier
 
 model_dir = oss.path_join('AI', 'TCTAnalysis_v3_1', 'Model')
 
