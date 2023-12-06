@@ -74,7 +74,6 @@ class LabelOut(Schema):
     creator = String(required=False)
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     last_modified = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
-    is_deleted = Integer(required=True)
 
 
 class SingleLabelOut(Schema):

@@ -36,7 +36,6 @@ class DataSetOut(Schema):
     remark = String(required=True, description='备注')
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     last_modified = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
-    is_deleted = Integer(required=True, description='逻辑删除')
 
 
 class SingleDataSetOut(Schema):

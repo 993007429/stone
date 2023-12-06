@@ -9,7 +9,6 @@ class _Base:
     id = Column(BigInteger, primary_key=True)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     last_modified = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
-    is_deleted = Column(Boolean, nullable=False, server_default=literal_column('0'))
 
     @property
     def dict(self) -> dict:
