@@ -1,6 +1,6 @@
 from apiflask import Schema
-from marshmallow.fields import Integer, String, DateTime, Float, Dict, Raw, Boolean, List, Nested
-from marshmallow.validate import Length, OneOf
+from marshmallow.fields import Integer, String, DateTime, List, Nested
+from marshmallow.validate import OneOf
 
 from stone.app.base_schema import DurationField, PageQuery, PaginationSchema
 from stone.modules.ai.domain.enum import AnalysisStatus

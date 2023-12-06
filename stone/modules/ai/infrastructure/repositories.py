@@ -4,7 +4,6 @@ from typing import List, Optional, Tuple
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from stone.infra.session import transaction
 from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity
 from stone.modules.ai.domain.repositories import AIRepository
 from stone.modules.ai.domain.value_objects import AIType
@@ -103,7 +102,6 @@ class SQLAlchemyAIRepository(AIRepository):
         try:
             self._session.add(model)
             self._session.flush([model])
-            aaa = 111
         except IntegrityError:
             return False, None
         return True, entity.from_orm(model)

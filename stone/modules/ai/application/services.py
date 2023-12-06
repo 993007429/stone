@@ -3,9 +3,8 @@ import time
 
 from setting import RANK_AI_TASK
 from stone.app.request_context import request_context
-from stone.infra.session import transaction
 from stone.modules.ai.domain.services import AiDomainService
-from stone.modules.ai.domain.value_objects import TaskParam, AIType
+from stone.modules.ai.domain.value_objects import TaskParam
 from stone.modules.slice.application.services import SliceService
 from stone.seedwork.application.responses import AppResponse
 from stone.infra.cache import cache
@@ -33,7 +32,6 @@ class AiService(object):
         cache.set(self.RANK_AI_TASK, rank)
         return AppResponse(message='Ai start succeed', data={'task_id': task_id})
 
-    @transaction
     def run_ai_task(self, task_param: TaskParam) -> AppResponse:
         start_time = time.time()
         logger.info(f'收到任务1 {task_param.slice_id}')

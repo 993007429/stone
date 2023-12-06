@@ -9,7 +9,6 @@ from werkzeug.utils import secure_filename
 import setting
 from stone.app.request_context import request_context
 from stone.infra.fs import fs
-from stone.infra.session import transaction
 from stone.libs.heimdall.dispatch import open_slide
 from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity
 from stone.modules.slice.domain.enum import DataType
@@ -124,7 +123,6 @@ class SliceDomainService(object):
             return None, 'Duplicate slice'
         return new_slice, 'Create slice succeed'
 
-    @transaction
     def create_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:
         label_exist = self.repository.get_label_by_name(kwargs['name'])
         if label_exist:
@@ -140,7 +138,6 @@ class SliceDomainService(object):
             return None, 'Duplicate label'
         return new_label, 'Create label succeed'
 
-    @transaction
     def create_dataset(self, **kwargs) -> Tuple[Optional[DataSetEntity], str]:
         kwargs['userid'] = 1
         if current_user := request_context.current_user:
@@ -237,7 +234,6 @@ class SliceDomainService(object):
         labels = self.repository.get_labels_with_fuzzy(name)
         return labels, 'Get labels succeed'
 
-    @transaction
     def delete_slices(self, **kwargs) -> Tuple[int, str]:
         slices = self.repository.get_slices(kwargs['ids'])
         deleted_count = self.repository.delete_slices(kwargs['ids'])
@@ -277,12 +273,10 @@ class SliceDomainService(object):
         deleted_count = self.repository.delete_label(label_id)
         return deleted_count, 'Delete labels succeed'
 
-    @transaction
     def delete_dataset(self, dataset_id: int) -> Tuple[int, str]:
         deleted_count = self.repository.delete_dataset(dataset_id)
         return deleted_count, 'Delete dataset succeed'
 
-    @transaction
     def copy_dataset(self, dataset_id: int) -> Tuple[Optional[DataSetEntity], str]:
         old_dataset = self.repository.get_dataset_by_id(dataset_id)
         if not old_dataset:
