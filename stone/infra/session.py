@@ -1,9 +1,7 @@
-import functools
 import json
 import logging
 
 from sqlalchemy import create_engine
-from sqlalchemy.exc import PendingRollbackError
 from sqlalchemy.orm import sessionmaker, Session
 
 import setting
@@ -44,29 +42,3 @@ def get_session_by_db_uri(uri: str):
     engine = create_engine(
         uri, json_serializer=json_serializer, json_deserializer=json_deserializer, pool_recycle=300, echo=False)
     return Session(autocommit=False, autoflush=True, expire_on_commit=False, bind=engine)
-
-
-def transaction(f):
-
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs):
-        from stone.app.request_context import request_context
-        session: Session = request_context.db_session.get()
-        assert session is not None
-
-        # if request_context.is_in_transaction:
-        #     return f(*args, **kwargs)
-        # else:
-        #     request_context.is_in_transaction = True
-
-        ret = None
-        try:
-            ret = f(*args, **kwargs)
-            session.commit()
-        except PendingRollbackError as e:
-            logger.exception(e)
-            session.rollback()
-        # request_context.is_in_transaction = False
-        return ret
-
-    return wrapper

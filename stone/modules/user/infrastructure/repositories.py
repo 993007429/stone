@@ -30,10 +30,19 @@ class SQLAlchemyUserRepository(UserRepository):
             return False, 'Duplicate username '
         return True, 'Create user success'
 
-    def update_user(self, user_id: int, user_data: dict) -> Tuple[int, str]:
-        updated_count = self._session.query(User).filter(User.id == user_id).update(
-            user_data, synchronize_session=False)
-        return updated_count, 'Update user succeed'
+    def get_user_by_pk(self, pk: int) -> Optional[UserEntity]:
+        query = self._session.query(User).filter(User.id == pk)
+        model = query.first()
+        if not model:
+            return None
+        return UserEntity.from_orm(model)
+
+    def get_user_by_name(self, username: str) -> Optional[UserEntity]:
+        query = self._session.query(User).filter(User.username == username)
+        model = query.first()
+        if not model:
+            return None
+        return UserEntity.from_orm(model)
 
     def get_users(self, page: int, per_page: int, names_to_exclude: Union[list, set]) -> Tuple[List[UserEntity], dict]:
         query = self._session.query(User).filter(User.username.not_in(names_to_exclude)).order_by(User.id)
@@ -55,19 +64,9 @@ class SQLAlchemyUserRepository(UserRepository):
 
         return users, pagination
 
-    def get_user_by_name(self, username: str) -> Optional[UserEntity]:
-        query = self._session.query(User).filter(User.username == username)
-        model = query.first()
-        if not model:
-            return None
-        return UserEntity.from_orm(model)
-
-    def get_user_by_pk(self, pk: int) -> Optional[UserEntity]:
-        query = self._session.query(User).filter(User.id == pk)
-        model = query.first()
-        if not model:
-            return None
-        return UserEntity.from_orm(model)
+    def update_user(self, user_id: int, user_data: dict) -> Tuple[int, str]:
+        updated_count = self._session.query(User).filter(User.id == user_id).update(user_data, synchronize_session=False)
+        return updated_count, 'Update user succeed'
 
     def delete_user_by_pk(self, pk: int) -> int:
         deleted_count = self._session.query(User).filter(User.id == pk).delete(synchronize_session=False)

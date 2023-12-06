@@ -31,9 +31,9 @@ def api_before_request():
 
 
 def api_after_request(response):
-    request_context.close_db(commit=True)
+    request_context.close_db()
     return response
 
 
 api_blueprint.before_request(api_before_request)
-# api_blueprint.after_request(api_after_request)
+api_blueprint.after_request(api_after_request)
