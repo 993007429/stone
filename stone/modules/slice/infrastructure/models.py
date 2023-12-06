@@ -82,7 +82,7 @@ class Slice(Base):
 class Label(Base):
     __tablename__ = 'label'
 
-    name = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False, unique=True)
     creator = Column(String(255), nullable=True)
 
 
@@ -93,7 +93,7 @@ class DataSet(Base):
         Index('idx_userid', 'userid'),
     )
 
-    name = Column(String(255), nullable=True)
+    name = Column(String(255), nullable=True, unique=True)
     remark = Column(String(255), nullable=True)
     creator = Column(String(255), nullable=True)
     userid = Column(BigInteger, nullable=False)
