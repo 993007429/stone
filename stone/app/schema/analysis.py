@@ -7,7 +7,8 @@ from stone.modules.ai.domain.enum import AnalysisStat
 
 
 class AnalysesQuery(PageQuery):
-    userid = Integer(required=True)
+    slice_id = Integer(required=True)
+    userid = Integer(required=False)
 
 
 class AnalysisOut(Schema):

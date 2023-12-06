@@ -371,9 +371,13 @@ class AiDomainService(object):
 
         return True, cell_mark_entities + roi_mark_entities
 
-    def get_analyses(self, **kwargs) -> Tuple[List[AnalysisEntity], str]:
-        analyses = self.repository.get_analyses(**kwargs)
-        return [analysis for analysis in analyses], 'get analyses success'
+    def get_analyses(self, **kwargs) -> Tuple[List[AnalysisEntity], dict, str]:
+        page = kwargs['page']
+        per_page = kwargs['per_page']
+        slice_id = kwargs['slice_id']
+        userid = kwargs.get('userid')
+        analyses, pagination = self.repository.get_analyses(page, per_page, slice_id, userid)
+        return analyses, pagination, 'Get analyses success'
 
     def get_analysis(self, analysis_id: int) -> Tuple[Optional[AnalysisEntity], str]:
         analysis = self.repository.get_analysis_by_pk(analysis_id)
