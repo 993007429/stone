@@ -19,7 +19,7 @@ from celery.exceptions import TimeoutError as CeleryTimeoutError
 
 from stone.modules.ai.domain.consts import AI_TYPE_MANUAL_MARK_TABLE_MAPPING
 from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity
-from stone.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam, AIType
+from stone.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam, AIModel
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
 from stone.utils.id_worker import IdWorker
@@ -49,7 +49,7 @@ def connect_slice_db():
 
             if ai_model:
                 #     template_id = 0
-                #     if ai_type == AIType.label:
+                #     if ai_type == AIModel.label:
                 #         slice_info = _self.slice_service.get_slice_info(case_id=case_id, file_id=file_id).data
                 #         template_id = slice_info['templateId'] if slice_info else 0
                 #         func_args = getfullargspec(f)[0]
@@ -101,7 +101,7 @@ class AiDomainService(object):
             logger.exception(e)
             return 'AI处理发生异常', {'done': True, 'rank': -1}
 
-    def get_model(self, ai_model, model_version, threshold) -> Any:
+    def get_model(self, ai_model: str, model_version: str, threshold: float) -> Any:
         from stone.modules.ai.libs.algorithms.TCTAnalysis_v2_2.tct_alg import AlgBase
         from stone.modules.ai.libs.algorithms.TCTAnalysis_v3_1.tct_alg import TCT_ALG2
 
@@ -112,10 +112,10 @@ class AiDomainService(object):
         except KeyError:
             return None
 
-        if ai_model == AIType.tct1:
+        if ai_model == AIModel.tct1:
             config_path = os.path.join(yams_path, 'tct1', yaml_file)
             return AlgBase(config_path=config_path, threshold=threshold)
-        elif ai_model == AIType.tct2:
+        elif ai_model == AIModel.tct2:
             config_path = os.path.join(yams_path, 'tct2', yaml_file)
             return TCT_ALG2(config_path=config_path, threshold=threshold)
 
@@ -137,7 +137,7 @@ class AiDomainService(object):
         for idx, roi in enumerate(rois or [task_param.new_default_roi()]):
             result = alg_model.cal_tct(slide)
 
-            if ai_model == 'tct2':
+            if ai_model == AIModel.tct2:
                 from stone.modules.ai.utils.tct import generate_ai_result2
                 ai_result = generate_ai_result2(result=result, roiid=roi['id'])
             else:

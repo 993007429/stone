@@ -1,10 +1,13 @@
 from apiflask import Schema
 from marshmallow.fields import Integer, String, Nested, Bool
+from marshmallow.validate import OneOf
+
+from stone.modules.ai.domain.value_objects import AIModel
 
 
 class StartIn(Schema):
     slice_id = Integer(required=True)
-    ai_model = String(required=True)
+    ai_model = String(required=True, validate=[OneOf([member.value for member in AIModel])])
     model_version = String(required=True)
 
 

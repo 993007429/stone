@@ -4,7 +4,7 @@ import time
 from setting import RANK_AI_TASK
 from stone.app.request_context import request_context
 from stone.modules.ai.domain.services import AiDomainService
-from stone.modules.ai.domain.value_objects import TaskParam
+from stone.modules.ai.domain.value_objects import TaskParam, AIType
 from stone.modules.slice.application.services import SliceService
 from stone.seedwork.application.responses import AppResponse
 from stone.infra.cache import cache
@@ -40,37 +40,39 @@ class AiService(object):
         groups = []
         group_name_to_id = {group['label']: int(group['id']) for group in groups}
 
-        # if task_param.ai_model in [AIType.tct1, AIType.tct2]:
-        #     result = self.domain_service.run_tct(task_param)
-        # elif task_param.ai_model in [AIType.lct1, AIType.lct2]:
-        #     result = self.domain_service.run_lct(task_param)
-        # elif task_param.ai_model == AIType.dna:
-        #     result = self.domain_service.run_tbs_dna(task_param)
-        # elif task_param.ai_model == AIType.dna_ploidy:
-        #     result = self.domain_service.run_dna_ploidy(task_param)
-        # elif task_param.ai_model == AIType.her2:
-        #     result = self.domain_service.run_her2(task_param, group_name_to_id)
+        if task_param.ai_model in [AIType.tct1, AIType.tct2]:
+            result = self.domain_service.run_tct(task_param)
+        elif task_param.ai_model in [AIType.lct1, AIType.lct2]:
+            result = self.domain_service.run_lct(task_param)
+        elif task_param.ai_model == AIType.dna:
+            result = self.domain_service.run_tbs_dna(task_param)
+        elif task_param.ai_model == AIType.dna_ploidy:
+            result = self.domain_service.run_dna_ploidy(task_param)
+        elif task_param.ai_model == AIType.her2:
+            result = self.domain_service.run_her2(task_param, group_name_to_id)
 
         alg_time = time.time() - start_time
         logger.info(f'任务 {task_param.slice_id} - 算法部分完成,耗时{alg_time}')
 
-        analysis = dict(userid=request_context.current_user.userid,
-                        username=request_context.current_user.username,
-                        slice_id=task_param.slice_id,
-                        ai_model=task_param.ai_model,
-                        model_version=task_param.model_version,
-                        status='',
-                        time_consume=alg_time)
-        aaa = {'userid': 1, 'username': 'sa', 'slice_id': 1, 'ai_model': 'tct1', 'model_version': 'v1', 'status': '', 'time_consume': 44.69143509864807}
-        self.domain_service.create_analysis(**aaa)
+        analysis = dict(
+            userid=request_context.current_user.userid,
+            username=request_context.current_user.username,
+            slice_id=task_param.slice_id,
+            ai_model=task_param.ai_model,
+            model_version=task_param.model_version,
+            status='',
+            time_consume=alg_time
+        )
 
-        # self.domain_service.create_ai_marks(
-        #     ai_model=task_param.ai_model,
-        #     slide_path=task_param.slide_path,
-        #     cell_marks=[mark.dict() for mark in result.cell_marks],
-        #     roi_marks=[mark.dict() for mark in result.roi_marks],
-        #     skip_mark_to_tile=task_param.ai_model in [AIType.bm]
-        # )
+        self.domain_service.create_analysis(**analysis)
+
+        self.domain_service.create_ai_marks(
+            ai_model=task_param.ai_model,
+            slide_path=task_param.slide_path,
+            cell_marks=[mark.dict() for mark in result.cell_marks],
+            roi_marks=[mark.dict() for mark in result.roi_marks],
+            skip_mark_to_tile=task_param.ai_model in [AIType.bm]
+        )
 
         total_time = time.time() - start_time
         logger.info(f'任务 {task_param.slice_id} - 全部完成,耗时{total_time}')

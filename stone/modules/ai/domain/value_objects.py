@@ -28,6 +28,30 @@ class AIFolder(BaseEnum):
 
 
 @enum.unique
+class AIModel(BaseEnum):
+    np = 'np'
+    er = 'er'
+    pr = 'pr'
+    bm = 'bm'
+    tct1 = 'tct1'
+    tct2 = 'tct2'
+    lct1 = 'lct1'
+    lct2 = 'lct2'
+    dna = 'dna'
+    dna_ploidy = 'dna_ploidy'
+    her2 = 'her2'
+    ki67 = 'ki67'
+    pdl1 = 'pdl1'
+    cd30 = 'cd30'
+    ki67hot = 'ki67hot'
+    celldet = 'celldet'
+    cellseg = 'cellseg'
+    fish_tissue = 'fishTissue'
+    model_calibrate_tct = 'model_calibrate_tct'
+    model_calibrate_lct = 'model_calibrate_lct'
+
+
+@enum.unique
 class AIType(BaseEnum):
 
     @classmethod
