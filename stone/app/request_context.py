@@ -38,13 +38,10 @@ class RequestContext:
         session.begin()
         self.slice_db_session.set(session)
 
-    def close_slice_db(self, commit=True):
+    def close_slice_db(self):
         session = self.slice_db_session.get()
-        if session:
-            if commit:
-                session.commit()
-            else:
-                session.rollback()
+        if session and session.is_active:
+            session.commit()
             session.close()
 
     @property

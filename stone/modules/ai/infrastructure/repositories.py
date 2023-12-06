@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity
 from stone.modules.ai.domain.repositories import AIRepository
-from stone.modules.ai.domain.value_objects import AIType
+from stone.modules.ai.domain.enum import AIModel
 from stone.modules.ai.infrastructure.mark_models import get_ai_mark_model, get_ai_mark_to_tile_model, NPCountModel, Pdl1sCountModel, MarkGroupModel, ChangeRecordModel
 from stone.modules.ai.infrastructure.models import Analysis
 from stone.seedwork.infrastructure.models import Base
@@ -65,23 +65,19 @@ class SQLAlchemyAIRepository(AIRepository):
         self._slice_db_session.bulk_insert_mappings(self.mark_model_class, [entity.dict() for entity in entities])
         return True
 
-    def create_mark_tables(self, ai_type: AIType):
+    def create_mark_tables(self, ai_model: str):
         if not self.mark_table_suffix:
             return
 
         engine = self._slice_db_session.get_bind()
-        tables = [
-            get_ai_mark_model(self.mark_table_suffix).__table__,
-            get_ai_mark_to_tile_model(self.mark_table_suffix).__table__,
-        ]
+        tables = [get_ai_mark_model(self.mark_table_suffix).__table__]
 
-        if ai_type == AIType.np:
+        if ai_model not in [AIModel.tct1, AIModel.tct2, AIModel.lct1, AIModel.lct2, AIModel.dna, AIModel.dna_ploidy]:
+            tables.append(get_ai_mark_to_tile_model(self.mark_table_suffix).__table__)
+        if ai_model == AIModel.np:
             tables.append(NPCountModel.__table__)
-        elif ai_type == AIType.pdl1:
+        if ai_model == AIModel.pdl1:
             tables.append(Pdl1sCountModel.__table__)
-
-        tables.append(MarkGroupModel.__table__)
-        tables.append(ChangeRecordModel.__table__)
 
         Base.metadata.create_all(engine, tables=tables)
 

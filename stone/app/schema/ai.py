@@ -2,7 +2,7 @@ from apiflask import Schema
 from marshmallow.fields import Integer, String, Nested, Bool
 from marshmallow.validate import OneOf
 
-from stone.modules.ai.domain.value_objects import AIModel
+from stone.modules.ai.domain.enum import AIModel
 
 
 class StartIn(Schema):
@@ -18,7 +18,7 @@ class StartOut(Schema):
 class SingleStartOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(StartOut)
+    data = Nested(StartOut())
 
 
 class PollingIn(Schema):

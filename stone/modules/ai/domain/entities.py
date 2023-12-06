@@ -39,5 +39,5 @@ class AnalysisEntity(BaseEntity):
     slice_id: int
     ai_model: str
     model_version: str
-    status: str
+    status: int
     time_consume: float

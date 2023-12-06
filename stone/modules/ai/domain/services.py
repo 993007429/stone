@@ -12,6 +12,7 @@ from setting import RANK_AI_TASK
 from stone.app.request_context import request_context
 from stone.consts.her2 import Her2Consts
 from stone.infra.cache import cache
+from stone.modules.ai.domain.enum import AIModel
 from stone.modules.ai.libs.algorithms.DNA1.dna_alg import DNA_1020
 from stone.libs.heimdall.dispatch import open_slide
 from stone.celery.app import app as celery_app
@@ -19,7 +20,7 @@ from celery.exceptions import TimeoutError as CeleryTimeoutError
 
 from stone.modules.ai.domain.consts import AI_TYPE_MANUAL_MARK_TABLE_MAPPING
 from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity
-from stone.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam, AIModel
+from stone.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
 from stone.utils.id_worker import IdWorker
@@ -36,35 +37,32 @@ def connect_slice_db():
         def wrapped(*args, **kwargs):
             _self: AiDomainService = args[0]
 
-            # db_doc_path = kwargs['slide_path']
-            db_doc_path = 'D:\\data\\slice.db'
+            analysis_id = kwargs['analysis_id']
+            ai_model = kwargs['ai_model']
+            model_version = kwargs['model_version']
+            slide_path = kwargs['slide_path']
+            db_path = os.path.join(os.path.dirname(slide_path), 'analyses', str(analysis_id), 'slice.db')
+
             db_template_path = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources', 'slice.db')
-            if not os.path.exists(db_doc_path):
-                shutil.copyfile(db_template_path, db_doc_path)
+            if not os.path.exists(db_path):
+                os.makedirs(os.path.dirname(db_path), exist_ok=True)
+                shutil.copyfile(db_template_path, db_path)
 
-            request_context.connect_slice_db(db_doc_path)
+            request_context.connect_slice_db(db_path)
 
-            ai_model = kwargs['ai_model']
+            #     template_id = 0
+            #     if ai_type == AIModel.label:
+            #         slice_info = _self.slice_service.get_slice_info(case_id=case_id, file_id=file_id).data
+            #         template_id = slice_info['templateId'] if slice_info else 0
+            #         func_args = getfullargspec(f)[0]
+            #         if 'template_id' in func_args and not kwargs.get('template_id'):
+            #             kwargs['template_id'] = template_id
 
-            if ai_model:
-                #     template_id = 0
-                #     if ai_type == AIModel.label:
-                #         slice_info = _self.slice_service.get_slice_info(case_id=case_id, file_id=file_id).data
-                #         template_id = slice_info['templateId'] if slice_info else 0
-                #         func_args = getfullargspec(f)[0]
-                #         if 'template_id' in func_args and not kwargs.get('template_id'):
-                #             kwargs['template_id'] = template_id
+            # mark_table_suffix = _self.repository.get_mark_table_suffix(ai_type=ai_type, template_id=template_id)
 
-                # mark_table_suffix = _self.repository.get_mark_table_suffix(ai_type=ai_type, template_id=template_id)
-                # mark_table_suffix = ai_model.value
-                mark_table_suffix = 'tct2'
-                _self.repository.mark_table_suffix = mark_table_suffix
-                _self.repository.create_mark_tables(ai_type=ai_model)
-
-            manual_table_suffix = AI_TYPE_MANUAL_MARK_TABLE_MAPPING.get(ai_model, 'human')
-            _self.repository.manual.mark_table_suffix = manual_table_suffix
-            _self.repository.manual.create_mark_tables(ai_type=ai_model)
+            _self.repository.mark_table_suffix = f'{ai_model}_{model_version}'
+            _self.repository.create_mark_tables(ai_model)
 
             r = f(*args, **kwargs)
 
@@ -332,11 +330,13 @@ class AiDomainService(object):
     @connect_slice_db()
     def create_ai_marks(
             self,
-            # ai_model: str,
-            # slide_path: str,
+            analysis_id: int,
+            ai_model: str,
+            model_version: str,
+            slide_path: str,
             cell_marks: List[dict],
             roi_marks: List[dict],
-            # skip_mark_to_tile: bool = False
+            skip_mark_to_tile: bool = False
     ) -> Tuple[str, Optional[List[MarkEntity]]]:
         cell_mark_entities, roi_mark_entities = [], []
         # group_ids = set()
@@ -363,8 +363,8 @@ class AiDomainService(object):
             else:
                 cell_mark_entities.append(new_mark)
 
-        saved = self.repository.batch_save_marks(
-            roi_mark_entities) and self.repository.batch_save_marks(cell_mark_entities)
+        saved = self.repository.batch_save_marks(roi_mark_entities) and self.repository.batch_save_marks(
+            cell_mark_entities)
 
         if not saved:
             return 'create ai marks tailed', None
@@ -380,8 +380,7 @@ class AiDomainService(object):
         return analysis, 'get analysis success'
 
     def create_analysis(self, **kwargs) -> Tuple[Optional[AnalysisEntity], str]:
-        new_analysis = AnalysisEntity.parse_obj(kwargs)
-        success = self.repository.save_analysis(new_analysis)
+        success, new_analysis = self.repository.save_analysis(AnalysisEntity.parse_obj(kwargs))
         if success:
             return new_analysis, 'create analysis success'
         return None, 'create analysis failed'

@@ -3,7 +3,7 @@ from marshmallow.fields import Integer, String, DateTime, List, Nested
 from marshmallow.validate import OneOf
 
 from stone.app.base_schema import DurationField, PageQuery, PaginationSchema
-from stone.modules.ai.domain.enum import AnalysisStatus
+from stone.modules.ai.domain.enum import AnalysisStat
 
 
 class AnalysesQuery(PageQuery):
@@ -17,7 +17,7 @@ class AnalysisOut(Schema):
     slice_id = Integer(required=True)
     ai_model = String(required=True)
     model_version = String(required=True)
-    status = String(required=True, validate=[OneOf([AnalysisStatus.success.name, AnalysisStatus.failed.name])])
+    status = String(required=True, validate=[OneOf([AnalysisStat.success.name, AnalysisStat.failed.name])])
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     time_consume = DurationField(required=True)
 
