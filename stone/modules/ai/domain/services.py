@@ -396,11 +396,9 @@ class AiDomainService(object):
     @exc_rollback
     def delete_analysis(self, analysis_id: int) -> Tuple[int, str]:
         analysis = self.repository.get_analysis_by_pk(analysis_id)
-        file_path = analysis.file_path
 
         deleted_count = self.repository.delete_analysis_by_pk(analysis_id)
         if deleted_count:
-            analysis_dir = os.path.join(setting.DATA_DIR, file_path, 'analyses', str(analysis.id))
-            fs.remove_dir(analysis_dir)
+            fs.remove_dir(analysis.file_dir)
             return deleted_count, 'Deleted analysis succeed'
         return deleted_count, 'Deleted analysis failed'

@@ -62,7 +62,7 @@ class AiService(object):
             userid=request_context.current_user.userid if request_context.current_user else 1,
             username=request_context.current_user.username if request_context.current_user else 'sa',
             slice_id=task_param.slice_id,
-            file_path=task_param.slice_path,
+            file_dir=os.path.dirname(task_param.slice_path),
             ai_model=task_param.ai_model,
             model_version=task_param.model_version,
             status=AnalysisStat.success.value,

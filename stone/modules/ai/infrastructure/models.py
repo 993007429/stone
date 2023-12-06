@@ -10,7 +10,7 @@ class Analysis(Base):
     userid = Column(Integer, nullable=False, comment='执行用户ID')
     username = Column(String(255), nullable=False, comment='执行用户名')
     slice_id = Column(Integer, nullable=False, comment='切片名')
-    file_path = Column(String(255), nullable=False, comment='分析文件存储路径')
+    file_dir = Column(String(255), nullable=False, comment='分析文件存储文件夹')
     ai_model = Column(String(255), nullable=False, comment='模型')
     model_version = Column(String(255), nullable=False, comment='模型版本')
     status = Column(String(255), nullable=False, comment='运算状态')

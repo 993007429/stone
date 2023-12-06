@@ -54,13 +54,11 @@ def exc_rollback(f):
         session: Session = request_context.db_session.get()
         assert session is not None
 
-        ret = None
         try:
-            ret = f(*args, **kwargs)
+            return f(*args, **kwargs)
         except Exception as e:
-            print(e)
-            traceback.print_exc()
             session.rollback()
-        return ret
+            traceback_str = traceback.format_exc()
+            raise RuntimeError(f"An error occurred: {e}\n{traceback_str}")
 
     return wrapper
