@@ -128,11 +128,11 @@ def detect(slice_path='', opt=None):
         for xy in combine_patch_xy:
             final_xy.extend(xy)
 
-    result_to_json(final_coords, final_labels, final_xy, slide_path=slice_path)
+    result_to_json(final_coords, final_labels, final_xy, slice_path=slice_path)
     logger.info('Cell Detection Finished')
 
 
-def result_to_json(points, labels, stps, slide_path):
+def result_to_json(points, labels, stps, slice_path):
     points = np.array(points)
     labels = np.array(labels)
     stps = np.array(stps)
@@ -141,7 +141,7 @@ def result_to_json(points, labels, stps, slide_path):
     stp = [pp.tolist() for pp in stps]
     dict2 = {'class': labels.tolist()}
     dict1 = {'x': x_coords, 'y': y_coords, 'stxy': stp}
-    result_root = os.path.dirname(slide_path)
+    result_root = os.path.dirname(slice_path)
     coord_json_name = 'her2_coords_wsi.json'
     label_json_name = 'her2_label_wsi.json'
     with open(os.path.join(str(result_root), coord_json_name), 'w', encoding="utf-8") as result_file:

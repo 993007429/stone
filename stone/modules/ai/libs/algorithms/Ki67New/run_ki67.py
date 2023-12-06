@@ -72,9 +72,9 @@ def load_model(default_device):
         print('{} are using GPU - {}'.format(os.getpid(), default_device))
     return net, mean_std
 
-def cal_ki67(slide_path, x_coords=[], y_coords=[]):
-    result_root = os.path.dirname(slide_path)
-    slide_path = '"' + slide_path + '"'
+def cal_ki67(slice_path, x_coords=[], y_coords=[]):
+    result_root = os.path.dirname(slice_path)
+    slice_path = '"' + slice_path + '"'
     coord_json_name = 'ki67_coords_wsi.json'
     label_json_name = 'ki67_label_wsi.json'
     prob_json_name = 'ki67_prob_wsi.json'
@@ -85,13 +85,13 @@ def cal_ki67(slide_path, x_coords=[], y_coords=[]):
     command = ['mpiexec', '-np', str(gpu_num * num_process_per_gpu), sys.executable, '-m',
                'algorithms.Ki67New.run_ki67']
     command.insert(1, '--allow-run-as-root')
-    command.append('--slide_path {}'.format(slide_path))
+    command.append('--slice_path {}'.format(slice_path))
     command.append('--roi_coords')
     command.append(json.dumps(x_coords, separators=(',', ':')))
     command.append(json.dumps(y_coords, separators=(',', ':')))
     command_str = ' '.join(command)
 
-    bat_name = 'run_{}.sh'.format(os.path.splitext(os.path.basename(slide_path))[0])
+    bat_name = 'run_{}.sh'.format(os.path.splitext(os.path.basename(slice_path))[0])
     bat_name = bat_name.replace(' ', '_')
     with open(os.path.join(current_dir, bat_name), 'w', encoding='utf-8') as f:
         f.write(command_str)
@@ -122,7 +122,7 @@ def cal_ki67(slide_path, x_coords=[], y_coords=[]):
     return center_coords_np, cls_labels_np, probs_np
 
 
-def compute_process(slide_path, x_coords=[], y_coords=[], patch_size=1024):
+def compute_process(slice_path, x_coords=[], y_coords=[], patch_size=1024):
     comm = MPI.COMM_WORLD
     comm_rank, comm_size = comm.Get_rank(), comm.Get_size()
     gpu_num = torch.cuda.device_count()
@@ -130,8 +130,8 @@ def compute_process(slide_path, x_coords=[], y_coords=[], patch_size=1024):
     net, mean_std = load_model(int_device)
     mean, std = mean_std
 
-    print(slide_path)
-    slide = open_slide(slide_path)
+    print(slice_path)
+    slide = open_slide(slice_path)
     slide_mpp = slide.mpp
     standard_mpp = 0.5
     if slide_mpp is not None:
@@ -141,7 +141,7 @@ def compute_process(slide_path, x_coords=[], y_coords=[], patch_size=1024):
     #resize_ratio = 1
     patch_suffix = ['png','jpg','jpeg','bmp']
     if comm_rank == 0:
-        suffix = slide_path.split('.')[-1]
+        suffix = slice_path.split('.')[-1]
         if len(x_coords) > 0:
             contours = [np.expand_dims(np.stack([x_coords, y_coords], axis=1), axis=1)]
             region_info_dict = split_patches(slide, patch_size=int(patch_size/resize_ratio), contours=contours)
@@ -203,7 +203,7 @@ def compute_process(slide_path, x_coords=[], y_coords=[], patch_size=1024):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='manual to this script')
-    parser.add_argument('--slide_path', type=str, default="/data1/Caijt/PDL1_Parallel/A080 PD-L1 V+.kfb",
+    parser.add_argument('--slice_path', type=str, default="/data1/Caijt/PDL1_Parallel/A080 PD-L1 V+.kfb",
                         help='Slide Path')
     parser.add_argument('--roi_coords', type=str, nargs=2, default=None)
 
@@ -228,7 +228,7 @@ if __name__ == '__main__':
     parser.add_argument('--col', default=2, type=int, help="number of anchor points per column")
     parser.add_argument('--space',default=16,type=int)
     args = parser.parse_args()
-    slide_path = args.slide_path
+    slice_path = args.slice_path
 
     roi_coords = args.roi_coords
     if roi_coords is not None:
@@ -236,10 +236,10 @@ if __name__ == '__main__':
     else:
         x_coords, y_coords = None, None
 
-    # slide_path = r'D:\data\company1\data\2022_08_04_13_04_12_753492\slices\3477816\2022-07-27-185633.svs'
+    # slice_path = r'D:\data\company1\data\2022_08_04_13_04_12_753492\slices\3477816\2022-07-27-185633.svs'
     # x_coords, y_coords = [], []
-    center_coords_ls, label_ls, probs_ls = compute_process(slide_path, x_coords=x_coords, y_coords=y_coords)
+    center_coords_ls, label_ls, probs_ls = compute_process(slice_path, x_coords=x_coords, y_coords=y_coords)
     center_coords_all, labels_all, prob_all = map_results(center_coords_ls, label_ls, probs_ls)
     center_coords_all, labels_all, prob_all = roi_filter(center_coords_all, labels_all, prob_all, x_coords=x_coords,
                                                          y_coords=y_coords)
-    dump_results(slide_path, center_coords_all, labels_all, prob_all)
+    dump_results(slice_path, center_coords_all, labels_all, prob_all)

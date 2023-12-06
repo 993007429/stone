@@ -104,13 +104,13 @@ def load_model(model, weight_path='R_net_seg.pth.tar'):
     return model
 
 
-def get_level_dim_dict(slide_path):
+def get_level_dim_dict(slice_path):
     level_dim_dict = {}
-    ext = os.path.splitext(slide_path)[1][1:].lower()
+    ext = os.path.splitext(slice_path)[1][1:].lower()
     if ext == 'kfb' or ext == 'ndpi':
-        slide = open_slide(slide_path)
+        slide = open_slide(slice_path)
     else:
-        slide = open_slide(slide_path)
+        slide = open_slide(slice_path)
     h = slide.height
     w = slide.width
     maxlvl = slide.maxlvl
@@ -371,7 +371,7 @@ def cal_cell(o_slide_path, roi_list, opt):
         name = os.path.splitext(os.path.basename(o_slide_path))[0]
         mask, mask_path = region_process(o_slide_path, opt, name, x_coords, y_coords)
         result_root = os.path.dirname(o_slide_path)
-        slide_path = '"' + o_slide_path + '"'
+        slice_path = '"' + o_slide_path + '"'
         mask_path = '"' + mask_path + '"'
         coord_json_name = 'her2_coords_wsi.json'
         label_json_name = 'her2_label_wsi.json'
@@ -388,7 +388,7 @@ def cal_cell(o_slide_path, roi_list, opt):
                    '-m', 'main']
         command.insert(1, '--allow-run-as-root')
         command.append('--ppid {}'.format(pid))
-        command.append('--slide {}'.format(slide_path))
+        command.append('--slide {}'.format(slice_path))
         command.append('--mask {}'.format(mask_path))
         command.append('--roi')
         command.append(json.dumps(x_coords, separators=(',', ':')))
@@ -404,7 +404,7 @@ def cal_cell(o_slide_path, roi_list, opt):
         #     f.write(command_str)
         # os.chmod(os.path.join(current_root, bat_name), stat.S_IRWXU)
 
-        bat_name = os.path.splitext(os.path.basename(slide_path))[0]
+        bat_name = os.path.splitext(os.path.basename(slice_path))[0]
         bat_name = re.sub('[’!"#$%&\'()*+,-./:;<=>?@，。?★、…【】《》？“”‘’！[\\]^_`{|}~\s]+', "", bat_name)
 
         if sys.platform == 'win32':
@@ -493,9 +493,9 @@ class Her2Args(BaseValueObject):
 
 
 # best
-def run_her2_alg(slide_path, roi_list):
+def run_her2_alg(slice_path, roi_list):
     args = Her2Args()
-    center_coords_np_with_id, cls_labels_np_with_id = cal_cell(slide_path, roi_list=roi_list, opt=args)
+    center_coords_np_with_id, cls_labels_np_with_id = cal_cell(slice_path, roi_list=roi_list, opt=args)
     cls_labels_np_wsi = []
     for k in cls_labels_np_with_id:
         # extend

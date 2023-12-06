@@ -27,15 +27,15 @@ def predict(img_path):
 
 
 
-def label_ocr(slide_path):
+def label_ocr(slice_path):
     '''
     :param label_image_path:
     :param save_path:  save cropped text area image
     :return:  list of text detected from label
     '''
-    slide = openSlide(slide_path)
+    slide = openSlide(slice_path)
 
-    label_image_path = os.path.join('../temp1', os.path.splitext(os.path.basename(slide_path))[0]+'.png')
+    label_image_path = os.path.join('../temp1', os.path.splitext(os.path.basename(slice_path))[0]+'.png')
     # print(os.path.abspath(label_image_path))
     # import pdb; pdb.set_trace()
     os.makedirs(os.path.dirname(label_image_path), exist_ok=True)
@@ -66,7 +66,7 @@ def label_ocr(slide_path):
 
         if len(valid_text)>6:
             del slide
-            os.rename(slide_path, os.path.join(os.path.dirname(slide_path), valid_text+'.sdpc'))
+            os.rename(slice_path, os.path.join(os.path.dirname(slice_path), valid_text+'.sdpc'))
             os.rename(label_image_path, os.path.join(os.path.dirname(label_image_path), valid_text+'.png'))
 
     except:
@@ -75,8 +75,8 @@ def label_ocr(slide_path):
 
 def run(slide_dir):
     img_list= walk_dir(slide_dir, supported_wsi_format)
-    for slide_path in img_list:
-        label_ocr(slide_path)
+    for slice_path in img_list:
+        label_ocr(slice_path)
 
 if __name__ == '__main__':
     run("T:\适配医院数据\千麦")

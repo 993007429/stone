@@ -34,7 +34,7 @@ def map_results(center_coords_ls, label_ls, prob_ls):
     return center_coords_all, labels_all, prob_all
 
 
-def dump_results(slide_path, center_coords_all, labels_all,prob_all):
+def dump_results(slice_path, center_coords_all, labels_all,prob_all):
     if labels_all is not None:
         center_x_coords = [float(coord[0]) for coord in center_coords_all]
         center_y_coords = [float(coord[1]) for coord in center_coords_all]
@@ -50,7 +50,7 @@ def dump_results(slide_path, center_coords_all, labels_all,prob_all):
     coords_dict["x_coords"] = center_x_coords
     coords_dict["y_coords"] = center_y_coords
 
-    result_root = os.path.dirname(slide_path)
+    result_root = os.path.dirname(slice_path)
 
     os.makedirs(result_root, exist_ok=True)
     with open(os.path.join(str(result_root), 'pdl1_coords_wsi.json'), 'w', encoding="utf-8") as result_file:

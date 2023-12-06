@@ -37,6 +37,7 @@ class AnalysisEntity(BaseEntity):
     userid: int
     username: str
     slice_id: int
+    file_path: str
     ai_model: str
     model_version: str
     status: int

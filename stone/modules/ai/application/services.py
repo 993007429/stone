@@ -1,8 +1,11 @@
 import logging
+import os
 import time
 
+import setting
 from setting import RANK_AI_TASK
 from stone.app.request_context import request_context
+from stone.infra.fs import fs
 from stone.modules.ai.domain.enum import AnalysisStat, AIModel
 from stone.modules.ai.domain.services import AiDomainService
 from stone.modules.ai.domain.value_objects import TaskParam, ALGResult, Mark
@@ -22,8 +25,8 @@ class AiService(object):
 
     def start_ai_analysis(self, **kwargs) -> AppResponse:
         task_param = TaskParam(**kwargs)
-        task_param.slide_path = 'D:\\data\\789.svs'
-        # task_param.slide_path = self.slice_service.get_slice_path(task_param.slice_id).data
+        task_param.slice_path = 'D:\\data\\789.svs'
+        # task_param.slice_path = self.slice_service.get_slice_path(task_param.slice_id).data
         # result = tasks.run_ai_task(task_param)
         result = self.run_ai_task(task_param)
 
@@ -55,17 +58,18 @@ class AiService(object):
         alg_time = time.time() - start_time
         logger.info(f'任务 {task_param.slice_id} - 算法部分完成,耗时{alg_time}')
 
-        # analysis_data = dict(
-        #     userid=request_context.current_user.userid if request_context.current_user else 1,
-        #     username=request_context.current_user.username if request_context.current_user else 'sa',
-        #     slice_id=task_param.slice_id,
-        #     ai_model=task_param.ai_model,
-        #     model_version=task_param.model_version,
-        #     status=AnalysisStat.success.value,
-        #     time_consume=alg_time
-        # )
-        analysis_data = {'userid': 1, 'username': 'sa', 'slice_id': 0, 'ai_model': 'tct1', 'model_version': 'v2',
-                    'status': 1, 'time_consume': 49.704445362091064}
+        analysis_data = dict(
+            userid=request_context.current_user.userid if request_context.current_user else 1,
+            username=request_context.current_user.username if request_context.current_user else 'sa',
+            slice_id=task_param.slice_id,
+            file_path=task_param.slice_path,
+            ai_model=task_param.ai_model,
+            model_version=task_param.model_version,
+            status=AnalysisStat.success.value,
+            time_consume=alg_time
+        )
+        # analysis_data = {'userid': 1, 'username': 'sa', 'slice_id': 0, 'ai_model': 'tct1', 'model_version': 'v2',
+        #             'status': 1, 'time_consume': 49.704445362091064}
         result = ALGResult(ai_suggest='阴性 -样本不满意 ', cell_marks=[], roi_marks=[
             Mark(id=1732284570046439424, position={'x': [], 'y': []},
                  ai_result={'cell_num': 5118, 'clarity': 1.0, 'slide_quality': 0, 'diagnosis': ['阴性', '-样本不满意'],
@@ -171,7 +175,7 @@ class AiService(object):
             analysis_id=analysis.id,
             ai_model=task_param.ai_model,
             model_version=task_param.model_version,
-            slide_path=task_param.slide_path,
+            slice_path=task_param.slice_path,
             cell_marks=[mark.dict() for mark in result.cell_marks],
             roi_marks=[mark.dict() for mark in result.roi_marks],
             skip_mark_to_tile=task_param.ai_model in [AIModel.bm]
@@ -196,3 +200,7 @@ class AiService(object):
     def get_analysis(self, analysis_id: int) -> AppResponse:
         self.domain_service.get_analysis(analysis_id)
         return AppResponse()
+
+    def delete_analysis(self, analysis_id: int) -> AppResponse[dict]:
+        deleted_count, message = self.domain_service.delete_analysis(analysis_id)
+        return AppResponse(message=message, data={'affected_count': deleted_count})

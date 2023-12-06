@@ -68,7 +68,7 @@ class TaskParam(BaseValueObject):
     slice_id: int
     ai_model: str
     model_version: str
-    slide_path: Optional[str] = None
+    slice_path: Optional[str] = None
 
     @classmethod
     def new_default_roi(cls) -> dict:

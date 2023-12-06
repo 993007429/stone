@@ -206,7 +206,7 @@ def fitting_target_tps_update(excel_path: str = None, smooth_value: Optional[flo
         return None
 
 
-def compute_pdl1_s(slide_path=None, x_coords=None, y_coords=None, fitting_model=None, smooth=None):
+def compute_pdl1_s(slice_path=None, x_coords=None, y_coords=None, fitting_model=None, smooth=None):
     count_summary_dict = {'neg_norm': 0, 'neg_tumor': 0, 'pos_norm': 0, 'pos_tumor': 0, 'total': 0, 'tps': 0}
     roi_center = []
     cls_labels = []
@@ -216,7 +216,7 @@ def compute_pdl1_s(slide_path=None, x_coords=None, y_coords=None, fitting_model=
 
     try:
         center_coords_np, cls_labels_np, probs_np = cal_pdl1(
-            slide_path, x_coords=x_coords or [], y_coords=y_coords or [])
+            slice_path, x_coords=x_coords or [], y_coords=y_coords or [])
 
         if fitting_model and smooth:
             changed_cls_labels = refine_tps(combine_test_labels=copy.deepcopy(cls_labels_np.tolist()),

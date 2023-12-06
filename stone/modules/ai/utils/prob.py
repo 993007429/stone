@@ -1,7 +1,7 @@
 import os
 
 
-def save_prob_to_file(slide_path: str, result: dict):
+def save_prob_to_file(slice_path: str, result: dict):
     if 'slide_pos_prob' in result:
         if result['slide_pos_prob'].shape == (6,):
             slide_pos_prob = result['slide_pos_prob']
@@ -11,8 +11,8 @@ def save_prob_to_file(slide_path: str, result: dict):
         tbs_label = result['tbs_label']
 
         save_dict = {
-            'slide_path': slide_path,
-            'filename': os.path.basename(slide_path),
+            'slice_path': slice_path,
+            'filename': os.path.basename(slice_path),
             'NILM': round(float(slide_pos_prob[0]), 5),
             'ASC-US': round(float(slide_pos_prob[1]), 5),
             'LSIL': round(float(slide_pos_prob[2]), 5),

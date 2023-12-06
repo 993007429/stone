@@ -22,13 +22,13 @@ label_dict = {
 }
 
 
-def get_level_dim_dict(slide_path):
+def get_level_dim_dict(slice_path):
     level_dim_dict = {}
-    ext = os.path.splitext(slide_path)[1][1:].lower()
+    ext = os.path.splitext(slice_path)[1][1:].lower()
     if ext == 'kfb' or ext == 'ndpi':
-        slide = open_slide(slide_path)
+        slide = open_slide(slice_path)
     else:
-        slide = open_slide(slide_path)
+        slide = open_slide(slice_path)
     h = slide.height
     w = slide.width
     maxlvl = slide.maxlvl

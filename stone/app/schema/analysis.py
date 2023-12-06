@@ -18,13 +18,13 @@ class AnalysisOut(Schema):
     slice_id = Integer(required=True)
     ai_model = String(required=True)
     model_version = String(required=True)
-    status = String(required=True, validate=[OneOf([AnalysisStat.success.name, AnalysisStat.failed.name])])
+    status = String(required=True, validate=[OneOf([AnalysisStat.success.value, AnalysisStat.failed.value])])
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     time_consume = DurationField(required=True)
 
 
 class ListAnalysesOut(Schema):
-    analyses: List(Nested(AnalysisOut()))
+    analyses = List(Nested(AnalysisOut()))
 
 
 class APIListAnalysesOut(Schema):

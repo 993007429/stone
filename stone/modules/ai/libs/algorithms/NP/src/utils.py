@@ -34,8 +34,8 @@ def map_results(center_coords_ls, label_ls, prob_ls):
     return center_coords_all, labels_all, prob_all
 
 
-def dump_results(slide_path, result):
-    result_root = os.path.dirname(slide_path)
+def dump_results(slice_path, result):
+    result_root = os.path.dirname(slice_path)
     os.makedirs(result_root, exist_ok=True)
     with open(os.path.join(str(result_root), 'result_file.json'), 'w', encoding="utf-8") as result_file:
         json.dump(result, result_file)

@@ -9,9 +9,12 @@ from celery.result import AsyncResult
 
 import setting
 from setting import RANK_AI_TASK
+from stone.app.permission import permission_required
 from stone.app.request_context import request_context
 from stone.consts.her2 import Her2Consts
 from stone.infra.cache import cache
+from stone.infra.fs import fs
+from stone.infra.session import exc_rollback
 from stone.modules.ai.domain.enum import AIModel
 from stone.modules.ai.libs.algorithms.DNA1.dna_alg import DNA_1020
 from stone.libs.heimdall.dispatch import open_slide
@@ -23,6 +26,7 @@ from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity
 from stone.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
+from stone.modules.user.infrastructure.permissions import DeleteAnalysisPermission
 from stone.utils.id_worker import IdWorker
 
 from stone.utils.load_yaml import load_yaml
@@ -40,8 +44,8 @@ def connect_slice_db():
             analysis_id = kwargs['analysis_id']
             ai_model = kwargs['ai_model']
             model_version = kwargs['model_version']
-            slide_path = kwargs['slide_path']
-            db_path = os.path.join(os.path.dirname(slide_path), 'analyses', str(analysis_id), 'slice.db')
+            slice_path = kwargs['slice_path']
+            db_path = os.path.join(os.path.dirname(slice_path), 'analyses', str(analysis_id), 'slice.db')
 
             db_template_path = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources', 'slice.db')
@@ -120,7 +124,7 @@ class AiDomainService(object):
     def run_tct(self, task_param: TaskParam) -> ALGResult:
         ai_model = task_param.ai_model
         model_version = task_param.model_version
-        slide_path = task_param.slide_path
+        slice_path = task_param.slice_path
 
         threshold = 1
 
@@ -128,7 +132,7 @@ class AiDomainService(object):
 
         alg_model = self.get_model(ai_model, model_version, threshold)
 
-        slide = open_slide(slide_path)
+        slide = open_slide(slice_path)
 
         roi_marks = []
         prob_dict = None
@@ -143,7 +147,7 @@ class AiDomainService(object):
                 ai_result = generate_ai_result(result=result, roiid=roi['id'])
 
             from stone.modules.ai.utils.prob import save_prob_to_file
-            prob_dict = save_prob_to_file(slide_path=slide_path, result=result)
+            prob_dict = save_prob_to_file(slice_path=slice_path, result=result)
 
             roi_marks.append(Mark(
                 id=roi['id'],
@@ -172,7 +176,7 @@ class AiDomainService(object):
     def run_tbs_dna(self, task_param: TaskParam) -> ALGResult:
         ai_model = task_param.ai_model
         model_version = task_param.model_version
-        slide_path = task_param.slide_path
+        slice_path = task_param.slice_path
 
         dna_alg_model = DNA_1020()
 
@@ -181,7 +185,7 @@ class AiDomainService(object):
 
         alg_model = self.get_model(ai_model, model_version, threshold)
 
-        slide = open_slide(slide_path)
+        slide = open_slide(slice_path)
 
         roi_marks = []
         prob_dict = None
@@ -191,7 +195,7 @@ class AiDomainService(object):
             dna_result = dna_alg_model.dna_test(slide)
 
             from stone.modules.ai.utils.prob import save_prob_to_file
-            prob_dict = save_prob_to_file(slide_path=task_param.slide_path, result=tbs_result)
+            prob_dict = save_prob_to_file(slice_path=task_param.slice_path, result=tbs_result)
             ai_result = generate_ai_result(result=tbs_result, roiid=roi['id'])
             ai_result.update(generate_dna_ai_result(result=dna_result, roiid=roi['id']))
 
@@ -224,7 +228,7 @@ class AiDomainService(object):
         from stone.modules.ai.libs.algorithms.DNA2.dna_alg import DNA_1020
         dna_alg_model = DNA_1020()
 
-        slide = open_slide(task_param.slide_path)
+        slide = open_slide(task_param.slice_path)
 
         roi_marks = []
         prob_dict = None
@@ -260,7 +264,7 @@ class AiDomainService(object):
         roi_marks = []
         ai_result = {}
 
-        slide = open_slide(task_param.slide_path)
+        slide = open_slide(task_param.slice_path)
         mpp = slide.mpp or 0.242042
 
         rois = [] or [task_param.new_default_roi()]
@@ -268,7 +272,7 @@ class AiDomainService(object):
         from stone.modules.ai.libs.algorithms.Her2New_.detect_all import run_her2_alg, roi_filter
 
         center_coords_np_with_id, cls_labels_np_with_id, summary_dict, lvl, flg = run_her2_alg(
-            slide_path=task_param.slide_path, roi_list=rois)
+            slice_path=task_param.slice_path, roi_list=rois)
 
         for roi in rois:
             roi_id, x_coords, y_coords = roi['id'], roi['x'], roi['y']
@@ -333,7 +337,7 @@ class AiDomainService(object):
             analysis_id: int,
             ai_model: str,
             model_version: str,
-            slide_path: str,
+            slice_path: str,
             cell_marks: List[dict],
             roi_marks: List[dict],
             skip_mark_to_tile: bool = False
@@ -388,3 +392,15 @@ class AiDomainService(object):
         if success:
             return new_analysis, 'create analysis success'
         return None, 'create analysis failed'
+
+    @exc_rollback
+    def delete_analysis(self, analysis_id: int) -> Tuple[int, str]:
+        analysis = self.repository.get_analysis_by_pk(analysis_id)
+        file_path = analysis.file_path
+
+        deleted_count = self.repository.delete_analysis_by_pk(analysis_id)
+        if deleted_count:
+            analysis_dir = os.path.join(setting.DATA_DIR, file_path, 'analyses', str(analysis.id))
+            fs.remove_dir(analysis_dir)
+            return deleted_count, 'Deleted analysis succeed'
+        return deleted_count, 'Deleted analysis failed'

@@ -104,7 +104,7 @@ class SQLAlchemyAIRepository(AIRepository):
             return None
         return AnalysisEntity.from_orm(model)
 
-    def save_analysis1(self, entity: AnalysisEntity) -> Tuple[bool, Optional[AnalysisEntity]]:
+    def save_analysis(self, entity: AnalysisEntity) -> Tuple[bool, Optional[AnalysisEntity]]:
         model = Analysis(**entity.dict())
         try:
             self._session.add(model)
@@ -113,8 +113,6 @@ class SQLAlchemyAIRepository(AIRepository):
             return False, None
         return True, entity.from_orm(model)
 
-    def save_analysis(self, entity: AnalysisEntity) -> Tuple[bool, Optional[AnalysisEntity]]:
-        model = Analysis(**entity.dict())
-        self._session.add(model)
-        self._session.flush([model])
-        return True, entity.from_orm(model)
+    def delete_analysis_by_pk(self, pk: int) -> int:
+        deleted_count = self._session.query(Analysis).filter(Analysis.id == pk).delete(synchronize_session=False)
+        return deleted_count

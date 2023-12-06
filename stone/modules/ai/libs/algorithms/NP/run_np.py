@@ -68,9 +68,9 @@ def load_model(default_device, slide_mpp):
     return c_net, r_net
 
 
-def cal_np(slide_path: str, x_coords: List[float], y_coords: List[float]):
-    result_root = os.path.dirname(slide_path)
-    slide_path = '"' + slide_path + '"'
+def cal_np(slice_path: str, x_coords: List[float], y_coords: List[float]):
+    result_root = os.path.dirname(slice_path)
+    slice_path = '"' + slice_path + '"'
     result_file = 'np_result.json'
 
     delete_prev_json(result_root, result_file)
@@ -78,17 +78,17 @@ def cal_np(slide_path: str, x_coords: List[float], y_coords: List[float]):
     num_process_per_gpu = 1
     command = ['mpiexec', '-np', str(gpu_num * num_process_per_gpu), sys.executable, '-m', 'algorithms.NP.run_np']
     command.insert(1, '--allow-run-as-root')
-    command.append('--slide_path {}'.format(slide_path))
+    command.append('--slice_path {}'.format(slice_path))
     command.append('--roi_coords')
     command.append(json.dumps(x_coords, separators=(',', ':')))
     command.append(json.dumps(y_coords, separators=(',', ':')))
     command_str = ' '.join(command)
     if sys.platform == 'win32':
-        bat_name = 'run_{}.bat'.format(os.path.splitext(os.path.basename(slide_path))[0])
+        bat_name = 'run_{}.bat'.format(os.path.splitext(os.path.basename(slice_path))[0])
         with open(os.path.join(current_dir, bat_name), 'w', encoding='gbk') as f:
             f.write(command_str)
     else:
-        bat_name = 'run_{}.sh'.format(os.path.splitext(os.path.basename(slide_path))[0])
+        bat_name = 'run_{}.sh'.format(os.path.splitext(os.path.basename(slice_path))[0])
         bat_name = bat_name.replace(' ', '_')
         with open(os.path.join(current_dir, bat_name), 'w', encoding='utf-8') as f:
             f.write(command_str)
@@ -127,13 +127,13 @@ def cal_np(slide_path: str, x_coords: List[float], y_coords: List[float]):
 
 
 def compute_process(
-        slide_path: str, x_coords: List[float], y_coords: List[float], patch_size: Tuple[int, int] = (1920, 1080)):
+        slice_path: str, x_coords: List[float], y_coords: List[float], patch_size: Tuple[int, int] = (1920, 1080)):
     comm = MPI.COMM_WORLD
     comm_rank, comm_size = comm.Get_rank(), comm.Get_size()
     gpu_num = torch.cuda.device_count() or 1
     int_device = int(comm_rank % gpu_num)
 
-    slide = open_slide(slide_path)
+    slide = open_slide(slice_path)
     slide_mpp = slide.mpp
     standard_cell_mpp = 0.25
     standard_region_mpp = 0.5
@@ -375,7 +375,7 @@ def compute_process(
             'total_area': total_area
         }
 
-        result_root = os.path.dirname(slide_path)
+        result_root = os.path.dirname(slice_path)
         os.makedirs(result_root, exist_ok=True)
         with open(os.path.join(str(result_root), 'np_result.json'), 'w', encoding="utf-8") as result_file:
             json.dump(result, result_file)
@@ -383,7 +383,7 @@ def compute_process(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='manual to this script')
-    parser.add_argument('--slide_path', type=str, default="/data1/Caijt/PDL1_Parallel/A080 PD-L1 V+.kfb",
+    parser.add_argument('--slice_path', type=str, default="/data1/Caijt/PDL1_Parallel/A080 PD-L1 V+.kfb",
                         help='Slide Path')
     parser.add_argument('--roi_coords', type=str, nargs=2, default=None)
     # * Model
@@ -408,7 +408,7 @@ if __name__ == '__main__':
     parser.add_argument('--col', default=2, type=int, help="number of anchor points per column")
 
     args = parser.parse_args()
-    slide_path = args.slide_path
+    slice_path = args.slice_path
 
     roi_coords = args.roi_coords
     if roi_coords is not None:
@@ -416,4 +416,4 @@ if __name__ == '__main__':
     else:
         x_coords, y_coords = [], []
 
-    compute_process(slide_path, x_coords=x_coords, y_coords=y_coords)
+    compute_process(slice_path, x_coords=x_coords, y_coords=y_coords)
