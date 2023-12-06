@@ -27,10 +27,10 @@ class AiService(object):
         # result = tasks.run_ai_task(task_param)
         result = self.run_ai_task(task_param)
 
-        result.task_id = 1
-        rank = cache.get(self.RANK_AI_TASK, [])
-        rank.append(task_id := result.task_id)
-        cache.set(self.RANK_AI_TASK, rank)
+        task_id = 1
+        # rank = cache.get(self.RANK_AI_TASK, [])
+        # rank.append(task_id := result.task_id)
+        # cache.set(self.RANK_AI_TASK, rank)
         return AppResponse(message='Ai start succeed', data={'task_id': task_id})
 
     def run_ai_task(self, task_param: TaskParam) -> AppResponse:
@@ -165,9 +165,9 @@ class AiService(object):
 
         analysis, _ = self.domain_service.create_analysis(**analysis_data)
         if not analysis or not analysis.id:
-            return AppResponse(message='Ai analysis failed')
+            return AppResponse(message='Ai analysis failed at creating analysis')
 
-        self.domain_service.create_ai_marks(
+        success = self.domain_service.create_ai_marks(
             analysis_id=analysis.id,
             ai_model=task_param.ai_model,
             model_version=task_param.model_version,
@@ -176,6 +176,9 @@ class AiService(object):
             roi_marks=[mark.dict() for mark in result.roi_marks],
             skip_mark_to_tile=task_param.ai_model in [AIModel.bm]
         )
+
+        if not success:
+            return AppResponse(message='Ai analysis failed at creating marks')
 
         total_time = time.time() - start_time
         logger.info(f'任务 {task_param.slice_id} - 全部完成,耗时{total_time}')

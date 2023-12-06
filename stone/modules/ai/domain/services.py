@@ -337,7 +337,7 @@ class AiDomainService(object):
             cell_marks: List[dict],
             roi_marks: List[dict],
             skip_mark_to_tile: bool = False
-    ) -> Tuple[str, Optional[List[MarkEntity]]]:
+    ) -> Tuple[bool, Optional[List[MarkEntity]]]:
         cell_mark_entities, roi_mark_entities = [], []
         # group_ids = set()
 
@@ -367,9 +367,9 @@ class AiDomainService(object):
             cell_mark_entities)
 
         if not saved:
-            return 'create ai marks tailed', None
+            return False, None
 
-        return '', cell_mark_entities + roi_mark_entities
+        return True, cell_mark_entities + roi_mark_entities
 
     def get_analyses(self, **kwargs) -> Tuple[List[AnalysisEntity], str]:
         analyses = self.repository.get_analyses(**kwargs)
