@@ -16,8 +16,9 @@ class UserDomainService(object):
         kwargs['password_hash'] = hash_password(kwargs['password'])
         del kwargs['password']
 
-        current_user = request_context.current_user
-        kwargs['creator'] = current_user.username
+        if not kwargs.get('creator'):
+            current_user = request_context.current_user
+            kwargs['creator'] = current_user.username
         new_user = UserEntity.parse_obj(kwargs)
         success, message = self.repository.save(new_user)
         if success:

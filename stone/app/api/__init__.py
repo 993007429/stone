@@ -36,4 +36,4 @@ def api_after_request(response):
 
 
 api_blueprint.before_request(api_before_request)
-api_blueprint.after_request(api_after_request)
+# api_blueprint.after_request(api_after_request)
