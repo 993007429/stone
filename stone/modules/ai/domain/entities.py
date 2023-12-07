@@ -42,3 +42,7 @@ class AnalysisEntity(BaseEntity):
     model_version: str
     status: int
     time_consume: float
+
+
+class AnalysisVO(AnalysisEntity):
+    delete_permission: bool = False

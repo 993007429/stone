@@ -1,5 +1,5 @@
 from apiflask import Schema
-from marshmallow.fields import Integer, String, DateTime, List, Nested
+from marshmallow.fields import Integer, String, DateTime, List, Nested, Bool
 from marshmallow.validate import OneOf
 
 from stone.app.base_schema import DurationField, PageQuery, PaginationSchema
@@ -21,6 +21,7 @@ class AnalysisOut(Schema):
     status = String(required=True, validate=[OneOf([AnalysisStat.success.value, AnalysisStat.failed.value])])
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     time_consume = DurationField(required=True)
+    delete_permission = Bool(required=True)
 
 
 class ListAnalysesOut(Schema):

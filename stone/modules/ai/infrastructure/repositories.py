@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity
+from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity, AnalysisVO
 from stone.modules.ai.domain.repositories import AIRepository
 from stone.modules.ai.domain.enum import AIModel
 from stone.modules.ai.infrastructure.mark_models import get_ai_mark_model, get_ai_mark_to_tile_model, NPCountModel, Pdl1sCountModel, MarkGroupModel, ChangeRecordModel
@@ -95,7 +95,6 @@ class SQLAlchemyAIRepository(AIRepository):
         pagination = {'total': total, 'page': page, 'per_page': per_page}
 
         analyses = [AnalysisEntity.from_orm(model) for model in query.all()]
-
         return analyses, pagination
 
     def get_analysis_by_pk(self, pk: int) -> Optional[AnalysisEntity]:
@@ -110,7 +109,7 @@ class SQLAlchemyAIRepository(AIRepository):
         try:
             self._session.add(model)
             self._session.flush([model])
-            model.file_dir = os.path.join(entity.file_dir, 'analyses', str(model.id))
+            model.file_dir = os.path.join(entity.file_dir, str(model.id))
             self._session.add(model)
         except IntegrityError:
             return False, None

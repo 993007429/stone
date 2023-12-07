@@ -22,7 +22,7 @@ from stone.celery.app import app as celery_app
 from celery.exceptions import TimeoutError as CeleryTimeoutError
 
 from stone.modules.ai.domain.consts import AI_TYPE_MANUAL_MARK_TABLE_MAPPING
-from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity
+from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity, AnalysisVO
 from stone.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
@@ -374,13 +374,14 @@ class AiDomainService(object):
 
         return True, cell_mark_entities + roi_mark_entities
 
-    def get_analyses(self, **kwargs) -> Tuple[List[AnalysisEntity], dict, str]:
+    def get_analyses(self, **kwargs) -> Tuple[List[AnalysisVO], dict, str]:
         page = kwargs['page']
         per_page = kwargs['per_page']
         slice_id = kwargs['slice_id']
         userid = kwargs.get('userid')
         analyses, pagination = self.repository.get_analyses(page, per_page, slice_id, userid)
-        return analyses, pagination, 'Get analyses success'
+        analyses_hack = [AnalysisVO.parse_obj({**analysis.dict(), 'delete_permission': analysis.userid == 1}) for analysis in analyses]
+        return analyses_hack, pagination, 'Get analyses success'
 
     def get_analysis(self, analysis_id: int) -> Tuple[Optional[AnalysisEntity], str]:
         analysis = self.repository.get_analysis_by_pk(analysis_id)

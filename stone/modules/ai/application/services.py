@@ -29,6 +29,8 @@ class AiService(object):
         # task_param.slice_path = self.slice_service.get_slice_path(task_param.slice_id).data
         # result = tasks.run_ai_task(task_param)
         result = self.run_ai_task(task_param)
+        if result.err_code != 0:
+            return AppResponse(err_code=result.err_code, message=result.message)
 
         task_id = 1
         # rank = cache.get(self.RANK_AI_TASK, [])
@@ -52,34 +54,33 @@ class AiService(object):
 
         alg_model = self.domain_service.get_model(ai_model, model_version, threshold)
         if not alg_model:
-            return AppResponse(err_code=1, message=f'Model does not exist: {ai_model} {model_version}')
+            return AppResponse(err_code=1, message=f'Model does not exist: {ai_model}_{model_version}')
 
-        if ai_model in [AIModel.tct1, AIModel.tct2]:
-            result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
-        elif ai_model in [AIModel.lct1, AIModel.lct2]:
-            result = self.domain_service.run_lct(alg_model, ai_model, slice_path)
-        elif ai_model == AIModel.dna:
-            result = self.domain_service.run_tbs_dna(task_param)
-        elif ai_model == AIModel.dna_ploidy:
-            result = self.domain_service.run_dna_ploidy(task_param)
-        elif ai_model == AIModel.her2:
-            result = self.domain_service.run_her2(task_param, group_name_to_id)
+        # if ai_model in [AIModel.tct1, AIModel.tct2]:
+        #     result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
+        # elif ai_model in [AIModel.lct1, AIModel.lct2]:
+        #     result = self.domain_service.run_lct(alg_model, ai_model, slice_path)
+        # elif ai_model == AIModel.dna:
+        #     result = self.domain_service.run_tbs_dna(task_param)
+        # elif ai_model == AIModel.dna_ploidy:
+        #     result = self.domain_service.run_dna_ploidy(task_param)
+        # elif ai_model == AIModel.her2:
+        #     result = self.domain_service.run_her2(task_param, group_name_to_id)
 
         alg_time = time.time() - start_time
         logger.info(f'任务 {slice_id} - 算法部分完成,耗时{alg_time}')
 
-        analysis_data = dict(
-            userid=request_context.current_user.userid if request_context.current_user else 1,
-            username=request_context.current_user.username if request_context.current_user else 'sa',
-            slice_id=slice_id,
-            file_dir=os.path.dirname(slice_path),
-            ai_model=ai_model,
-            model_version=model_version,
-            status=AnalysisStat.success.value,
-            time_consume=alg_time
-        )
-        # analysis_data = {'userid': 1, 'username': 'sa', 'slice_id': 0, 'ai_model': 'tct1', 'model_version': 'v2',
-        #             'status': 1, 'time_consume': 49.704445362091064}
+        # analysis_data = dict(
+        #     userid=request_context.current_user.userid if request_context.current_user else 1,
+        #     username=request_context.current_user.username if request_context.current_user else 'sa',
+        #     slice_id=slice_id,
+        #     file_dir=os.path.join(os.path.dirname(slice_path), 'analyses'),
+        #     ai_model=ai_model,
+        #     model_version=model_version,
+        #     status=AnalysisStat.success.value,
+        #     time_consume=alg_time
+        # )
+        analysis_data = {'userid': 1, 'username': 'sa', 'slice_id': 0, 'file_dir': 'D:\\data\\analyses', 'ai_model': 'tct1', 'model_version': 'v3', 'status': 1, 'time_consume': 46.7326762676239}
         result = ALGResult(ai_suggest='阴性 -样本不满意 ', cell_marks=[], roi_marks=[
             Mark(id=1732284570046439424, position={'x': [], 'y': []},
                  ai_result={'cell_num': 5118, 'clarity': 1.0, 'slide_quality': 0, 'diagnosis': ['阴性', '-样本不满意'],
