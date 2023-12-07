@@ -23,7 +23,7 @@ class AiService(object):
         self.domain_service = domain_service
         self.slice_service = slice_service
 
-    def start_ai_analysis(self, **kwargs) -> AppResponse:
+    def start_ai_analysis(self, **kwargs) -> AppResponse[dict]:
         task_param = TaskParam(**kwargs)
         task_param.slice_path = 'D:\\data\\789.svs'
         # task_param.slice_path = self.slice_service.get_slice_path(task_param.slice_id).data
@@ -38,7 +38,7 @@ class AiService(object):
         # cache.set(self.RANK_AI_TASK, rank)
         return AppResponse(message='Ai start succeed', data={'task_id': task_id})
 
-    def run_ai_task(self, task_param: TaskParam) -> AppResponse:
+    def run_ai_task(self, task_param: TaskParam) -> AppResponse[dict]:
         ai_model = task_param.ai_model
         model_version = task_param.model_version
         slice_id = task_param.slice_id
@@ -200,7 +200,7 @@ class AiService(object):
 
         return AppResponse(message='Ai analysis succeed')
 
-    def polling(self, task_id: str) -> AppResponse:
+    def polling(self, task_id: str) -> AppResponse[dict]:
         err_msg, result = self.domain_service.get_ai_task_result(task_id)
         return AppResponse(err_code=1 if err_msg else 0, message=err_msg, data=result)
 
@@ -208,10 +208,18 @@ class AiService(object):
         analyses, pagination, message = self.domain_service.get_analyses(**kwargs)
         return AppResponse(message=message, data={'analyses': [analysis.dict() for analysis in analyses]},  pagination=pagination)
 
-    def get_analysis(self, analysis_id: int) -> AppResponse:
-        self.domain_service.get_analysis(analysis_id)
-        return AppResponse()
+    def get_analysis(self, analysis_id: int) -> AppResponse[dict]:
+        analysis, message = self.domain_service.get_analysis(analysis_id)
+        return AppResponse(message=message, data={'analysis': analysis})
 
     def delete_analysis(self, analysis_id: int) -> AppResponse[dict]:
         deleted_count, message = self.domain_service.delete_analysis(analysis_id)
         return AppResponse(message=message, data={'affected_count': deleted_count})
+
+    def get_roi(self, **kwargs) -> AppResponse[dict]:
+        roi_path, message = self.domain_service.get_roi(**kwargs)
+        return AppResponse(message=message, data={'roi_path': roi_path})
+
+    def get_marks(self, analysis_id: int) -> AppResponse[dict]:
+        marks, total, message = self.domain_service.get_marks(analysis_id)
+        return AppResponse(message=message, data={'marks': marks, 'total': total})

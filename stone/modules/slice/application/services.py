@@ -133,9 +133,5 @@ class SliceService(object):
         tile_path, message = self.domain_service.get_tile(**kwargs)
         return AppResponse(message=message, data={'tile_path': tile_path})
 
-    def get_roi(self, **kwargs) -> AppResponse[dict]:
-        roi_path, message = self.domain_service.get_roi(**kwargs)
-        return AppResponse(message=message, data={'roi_path': roi_path})
-
 
 

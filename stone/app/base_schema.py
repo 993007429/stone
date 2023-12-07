@@ -2,7 +2,7 @@ from apiflask import Schema
 from apiflask.fields import Integer, String, Raw
 from apiflask.validators import Range
 from marshmallow import ValidationError
-from marshmallow.fields import Nested
+from marshmallow.fields import Nested, Float, List
 
 
 def validate_positive_integers(num):
@@ -39,3 +39,8 @@ class APIAffectedCountOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
     data = Nested(AffectedCountOut())
+
+
+class Coordinate(Schema):
+    x = List(Float())
+    y = List(Float())

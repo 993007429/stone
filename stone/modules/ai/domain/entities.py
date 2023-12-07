@@ -28,10 +28,6 @@ class MarkEntity(BaseEntity):
     doctor_diagnosis: Optional[dict] = Field(None, description='医生手工判读')
     create_time: Optional[float] = Field(None, description='')
 
-    @property
-    def slice_path(self):
-        return ''
-
 
 class AnalysisEntity(BaseEntity):
     userid: int

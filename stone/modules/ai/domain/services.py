@@ -1,3 +1,4 @@
+import ast
 import logging
 import os
 import shutil
@@ -34,7 +35,7 @@ from stone.utils.load_yaml import load_yaml
 logger = logging.getLogger(__name__)
 
 
-def connect_slice_db():
+def create_slice_db():
     def deco(f):
 
         @wraps(f)
@@ -46,9 +47,8 @@ def connect_slice_db():
             model_version = kwargs['model_version']
             slice_path = kwargs['slice_path']
             db_path = os.path.join(os.path.dirname(slice_path), 'analyses', str(analysis_id), 'slice.db')
+            db_template_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources', 'slice.db')
 
-            db_template_path = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources', 'slice.db')
             if not os.path.exists(db_path):
                 os.makedirs(os.path.dirname(db_path), exist_ok=True)
                 shutil.copyfile(db_template_path, db_path)
@@ -67,6 +67,31 @@ def connect_slice_db():
 
             _self.repository.mark_table_suffix = f'{ai_model}_{model_version}'
             _self.repository.create_mark_tables(ai_model)
+
+            r = f(*args, **kwargs)
+
+            request_context.close_slice_db()
+
+            return r
+
+        return wrapped
+
+    return deco
+
+
+def connect_slice_db():
+    def deco(f):
+
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            _self: AiDomainService = args[0]
+            analysis_id = args[1]
+            analysis = _self.repository.get_analysis_by_pk(analysis_id)
+
+            _self.repository.mark_table_suffix = f'{analysis.ai_model}_{analysis.model_version}'
+
+            db_path = os.path.join(analysis.file_dir, 'slice.db')
+            request_context.connect_slice_db(db_path)
 
             r = f(*args, **kwargs)
 
@@ -330,7 +355,7 @@ class AiDomainService(object):
             roi_marks=roi_marks,
         )
 
-    @connect_slice_db()
+    @create_slice_db()
     def create_ai_marks(
             self,
             analysis_id: int,
@@ -402,3 +427,27 @@ class AiDomainService(object):
             fs.remove_dir(analysis.file_dir)
             return deleted_count, 'Deleted analysis succeed'
         return deleted_count, 'Deleted analysis failed'
+
+    def get_roi(self, **kwargs) -> Tuple[str, str]:
+        slice_key = kwargs['slice_key']
+        slice_name = kwargs['slice_name']
+        roi_args = ast.literal_eval(kwargs['roi_args'])
+        roi_id = kwargs['roi_id']
+
+        slice_dir = os.path.join(setting.DATA_DIR, slice_key)
+        roi_dir = os.path.join(slice_dir, 'rois')
+        os.makedirs(roi_dir, exist_ok=True)
+
+        slice_path = os.path.join(slice_dir, slice_name)
+        roi_path = os.path.join(roi_dir, f'{roi_id}.jpeg')
+
+        if not fs.path_exists(roi_path):
+            slide = open_slide(slice_path)
+            tile_image = slide.get_roi(roi_args)
+            tile_image.save(roi_path)
+        return roi_path, 'Get roi succeed'
+
+    @connect_slice_db()
+    def get_marks(self, analysis_id: int) -> Tuple[List[MarkEntity], Optional[int], str]:
+        marks, total = self.repository.get_marks()
+        return marks, total, 'get marks success'

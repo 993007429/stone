@@ -57,6 +57,12 @@ class SQLAlchemyAIRepository(AIRepository):
     def mark_model_class(self):
         return get_ai_mark_model(self.mark_table_suffix)
 
+    def get_marks(self, need_total: bool = False) -> Tuple[List[MarkEntity], Optional[int]]:
+        query = self._slice_db_session.query(self.mark_model_class)
+        total = query.count() if need_total else None
+        models = query.all()
+        return [MarkEntity.from_orm(model) for model in models], total
+
     def save_mark(self, entity: MarkEntity) -> Tuple[bool, str]:
         model = self.mark_model_class(**entity.dict())
         self._slice_db_session.add(model)
@@ -118,3 +124,5 @@ class SQLAlchemyAIRepository(AIRepository):
     def delete_analysis_by_pk(self, pk: int) -> int:
         deleted_count = self._session.query(Analysis).filter(Analysis.id == pk).delete(synchronize_session=False)
         return deleted_count
+
+

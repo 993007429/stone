@@ -219,16 +219,9 @@ class ComparisonListSliceOut(Schema):
     pagination = Nested(PaginationSchema)
 
 
-class TileIn(Schema):
+class QueryTileIn(Schema):
     slice_key = String(required=True, description='切片key')
     slice_name = String(required=True, description='切片name')
     x = Integer(required=True)
     y = Integer(required=True)
     z = Integer(required=True)
-
-
-class RoiIn(Schema):
-    slice_key = String(required=True, description='切片key')
-    slice_name = String(required=True, description='切片name')
-    roi_args = String(required=True, description='Roi 参数')
-    roi_id = Integer(required=True, description='Roi ID')

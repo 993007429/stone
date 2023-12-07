@@ -5,7 +5,7 @@ from stone.app.base_schema import APIAffectedCountOut
 from stone.app.schema.slice import SlicePageQuery, SliceFilter, SliceIdsIn, \
     ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, SliceUploadIn, \
     SliceUpdateIn, SingleSliceFieldOut, SliceAndLabelIdsIn, ApiSingleSliceOut, \
-    ApiSingleSliceUploadOut, ApiListSliceOut, TileIn, RoiIn
+    ApiSingleSliceUploadOut, ApiListSliceOut, QueryTileIn
 from stone.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -95,21 +95,12 @@ def add_labels(json_data):
 
 
 @slice_blueprint.get('/tile')
-@slice_blueprint.input(TileIn, location='query')
+@slice_blueprint.input(QueryTileIn, location='query')
 @slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
 @slice_blueprint.doc(summary='瓦片', security='ApiAuth')
 def get_tile(query_data):
     res = AppServiceFactory.slice_service.get_tile(**query_data)
     return send_file(res.data.get('tile_path'))
-
-
-@slice_blueprint.get('/roi')
-@slice_blueprint.input(RoiIn, location='query')
-@slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
-@slice_blueprint.doc(summary='ROI', security='ApiAuth')
-def get_roi(query_data):
-    res = AppServiceFactory.slice_service.get_roi(**query_data)
-    return send_file(res.data.get('roi_path'))
 
 
 @slice_blueprint.get('/<int:slice_id>/label')

@@ -342,22 +342,3 @@ class SliceDomainService(object):
             # buf = BytesIO()
             # tile_image.save(buf, 'jpeg')
         return tile_path, 'Get tile succeed'
-
-    def get_roi(self, **kwargs) -> Tuple[str, str]:
-        slice_key = kwargs['slice_key']
-        slice_name = kwargs['slice_name']
-        roi_args = ast.literal_eval(kwargs['roi_args'])
-        roi_id = kwargs['roi_id']
-
-        slice_dir = os.path.join(setting.DATA_DIR, slice_key)
-        roi_dir = os.path.join(slice_dir, 'rois')
-        os.makedirs(roi_dir, exist_ok=True)
-
-        slice_path = os.path.join(slice_dir, slice_name)
-        roi_path = os.path.join(roi_dir, f'{roi_id}.jpeg')
-
-        if not fs.path_exists(roi_path):
-            slide = open_slide(slice_path)
-            tile_image = slide.get_roi(roi_args)
-            tile_image.save(roi_path)
-        return roi_path, 'Get roi succeed'
