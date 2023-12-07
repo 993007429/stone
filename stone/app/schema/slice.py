@@ -220,12 +220,15 @@ class ComparisonListSliceOut(Schema):
 
 
 class TileIn(Schema):
-    slice_key: str = String(required=True, description='切片key')
-    slice_name: str = String(required=True, description='切片name')
-    x: int = Integer(required=True)
-    y: int = Integer(required=True)
-    z: int = Integer(required=True)
+    slice_key = String(required=True, description='切片key')
+    slice_name = String(required=True, description='切片name')
+    x = Integer(required=True)
+    y = Integer(required=True)
+    z = Integer(required=True)
 
 
-class ROIIn(Schema):
-    id: int = Integer(required=True, description='切片ID')
+class RoiIn(Schema):
+    slice_key = String(required=True, description='切片key')
+    slice_name = String(required=True, description='切片name')
+    roi_args = String(required=True, description='Roi 参数')
+    roi_id = Integer(required=True, description='Roi ID')
