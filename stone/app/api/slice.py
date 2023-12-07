@@ -1,11 +1,11 @@
 from apiflask import APIBlueprint, FileSchema
-from flask import send_from_directory
+from flask import send_from_directory, send_file
 
 from stone.app.base_schema import APIAffectedCountOut
 from stone.app.schema.slice import SlicePageQuery, SliceFilter, SliceIdsIn, \
-    WSIIn, ROIIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, SliceUploadIn, \
+    ROIIn, ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, SliceUploadIn, \
     SliceUpdateIn, SingleSliceFieldOut, SliceAndLabelIdsIn, ApiSingleSliceOut, \
-    ApiSingleSliceUploadOut, ApiListSliceOut
+    ApiSingleSliceUploadOut, ApiListSliceOut, TileIn
 from stone.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -94,13 +94,13 @@ def add_labels(json_data):
     return res.response
 
 
-@slice_blueprint.get('/WSI')
-@slice_blueprint.input(WSIIn, location='query')
+@slice_blueprint.get('/tile')
+@slice_blueprint.input(TileIn, location='query')
 @slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
-@slice_blueprint.doc(summary='切片全场图', security='ApiAuth')
-def get_wsi(query_data):
-    AppServiceFactory.slice_service.get_wsi(**query_data)
-    return send_from_directory('IMAGE_FOLDER', 'filename')
+@slice_blueprint.doc(summary='瓦片', security='ApiAuth')
+def get_tile(query_data):
+    res = AppServiceFactory.slice_service.get_tile(**query_data)
+    return send_file(res.data.get('tile_path'))
 
 
 @slice_blueprint.get('/ROI')
@@ -109,7 +109,7 @@ def get_wsi(query_data):
 @slice_blueprint.doc(summary='ROI', security='ApiAuth')
 def get_roi(query_data):
     AppServiceFactory.slice_service.get_roi(**query_data)
-    return send_from_directory('IMAGE_FOLDER', 'filename')
+    return send_file('IMAGE_FOLDER', 'filename')
 
 
 @slice_blueprint.get('/<int:slice_id>/label')
@@ -117,7 +117,7 @@ def get_roi(query_data):
 @slice_blueprint.doc(summary='切片标签', security='ApiAuth')
 def get_label_image(slice_id):
     AppServiceFactory.slice_service.get_label_image(slice_id)
-    return send_from_directory('IMAGE_FOLDER', 'filename')
+    return send_file('IMAGE_FOLDER', 'filename')
 
 
 @slice_blueprint.get('/<int:slice_id>/thumbnail')
@@ -125,7 +125,7 @@ def get_label_image(slice_id):
 @slice_blueprint.doc(summary='切片缩略图', security='ApiAuth')
 def get_thumbnail_image(slice_id):
     AppServiceFactory.slice_service.get_thumbnail_image(slice_id)
-    return send_from_directory('IMAGE_FOLDER', 'filename')
+    return send_file('IMAGE_FOLDER', 'filename')
 
 
 @slice_blueprint.post('/fields')

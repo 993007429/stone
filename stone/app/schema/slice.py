@@ -219,8 +219,9 @@ class ComparisonListSliceOut(Schema):
     pagination = Nested(PaginationSchema)
 
 
-class WSIIn(Schema):
-    id: int = Integer(required=True, description='切片ID')
+class TileIn(Schema):
+    slice_key: str = String(required=True, description='切片key')
+    slice_name: str = String(required=True, description='切片name')
     x: int = Integer(required=True)
     y: int = Integer(required=True)
     z: int = Integer(required=True)

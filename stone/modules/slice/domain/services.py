@@ -2,7 +2,8 @@ import logging
 import os
 import uuid
 from collections import Counter
-from typing import Tuple, Optional, List
+from io import BytesIO
+from typing import Tuple, Optional, List, Any
 
 from werkzeug.utils import secure_filename
 
@@ -318,3 +319,27 @@ class SliceDomainService(object):
         if updated_count:
             return new_dataset, 'Update dataset succeed'
         return None, 'Update dataset failed'
+
+    def get_tile(self, **kwargs) -> Tuple[Any, str]:
+        slice_key = kwargs['slice_key']
+        slice_name = kwargs['slice_name']
+        x = kwargs['x']
+        y = kwargs['y']
+        z = kwargs['z']
+
+        slice_path = os.path.join(setting.DATA_DIR, slice_key, slice_name)
+        tile_path = os.path.join(setting.DATA_DIR, slice_key, 'tiles', f'{z}_{x}_{y}.jpeg')
+
+        if not fs.path_exists(slice_path):
+            return None, 'Slice does not exist'
+
+        if not fs.path_exists(os.path.dirname(tile_path)):
+            os.makedirs(os.path.dirname(tile_path))
+
+        if not fs.path_exists(tile_path):
+            slide = open_slide(slice_path)
+            tile_image = slide.get_tile(x, y, z)
+            tile_image.save(tile_path)
+            # buf = BytesIO()
+            # tile_image.save(buf, 'jpeg')
+        return tile_path, 'Get tile succeed'

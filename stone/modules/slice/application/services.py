@@ -128,3 +128,10 @@ class SliceService(object):
         if not dataset:
             return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'dataset': dataset.dict()})
+
+    def get_tile(self, **kwargs) -> AppResponse[dict]:
+        tile_path, message = self.domain_service.get_tile(**kwargs)
+        return AppResponse(message=message, data={'tile_path': tile_path})
+
+
+
