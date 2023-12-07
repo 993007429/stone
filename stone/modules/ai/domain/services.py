@@ -103,6 +103,13 @@ class AiDomainService(object):
             logger.exception(e)
             return 'AI处理发生异常', {'done': True, 'rank': -1}
 
+    def new_default_roi(self) -> dict:
+        return {
+            'id': IdWorker.new_mark_id_worker().get_new_id(),
+            'x': [],
+            'y': []
+        }
+
     def get_model(self, ai_model: str, model_version: str, threshold: float) -> Any:
         from stone.modules.ai.libs.algorithms.TCTAnalysis_v2_2.tct_alg import AlgBase
         from stone.modules.ai.libs.algorithms.TCTAnalysis_v3_1.tct_alg import TCT_ALG2
@@ -121,22 +128,14 @@ class AiDomainService(object):
             config_path = os.path.join(yams_path, 'tct2', yaml_file)
             return TCT_ALG2(config_path=config_path, threshold=threshold)
 
-    def run_tct(self, task_param: TaskParam) -> ALGResult:
-        ai_model = task_param.ai_model
-        model_version = task_param.model_version
-        slice_path = task_param.slice_path
-
-        threshold = 1
-
+    def run_tct(self, alg_model: Any, ai_model: str, slice_path: str) -> Optional[ALGResult]:
         rois = []
-
-        alg_model = self.get_model(ai_model, model_version, threshold)
 
         slide = open_slide(slice_path)
 
         roi_marks = []
         prob_dict = None
-        for idx, roi in enumerate(rois or [task_param.new_default_roi()]):
+        for idx, roi in enumerate(rois or [self.new_default_roi()]):
             result = alg_model.cal_tct(slide)
 
             if ai_model == AIModel.tct2:
@@ -170,8 +169,8 @@ class AiDomainService(object):
             prob_dict=prob_dict
         )
 
-    def run_lct(self, task_param: TaskParam) -> ALGResult:
-        return self.run_tct(task_param)
+    def run_lct(self, alg_model: Any, ai_model: str, slice_path: str) -> ALGResult:
+        return self.run_tct(alg_model, ai_model, slice_path)
 
     def run_tbs_dna(self, task_param: TaskParam) -> ALGResult:
         ai_model = task_param.ai_model

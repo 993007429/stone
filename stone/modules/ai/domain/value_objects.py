@@ -70,14 +70,6 @@ class TaskParam(BaseValueObject):
     model_version: str
     slice_path: Optional[str] = None
 
-    @classmethod
-    def new_default_roi(cls) -> dict:
-        return {
-            'id': IdWorker.new_mark_id_worker().get_new_id(),
-            'x': [],
-            'y': []
-        }
-
 
 class Mark(BaseValueObject):
     id: Optional[int] = None

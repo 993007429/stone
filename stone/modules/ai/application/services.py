@@ -37,34 +37,44 @@ class AiService(object):
         return AppResponse(message='Ai start succeed', data={'task_id': task_id})
 
     def run_ai_task(self, task_param: TaskParam) -> AppResponse:
+        ai_model = task_param.ai_model
+        model_version = task_param.model_version
+        slice_id = task_param.slice_id
+        slice_path = task_param.slice_path
+        threshold = 1
+
         start_time = time.time()
-        logger.info(f'收到任务1 {task_param.slice_id}')
+        logger.info(f'收到任务1 {slice_id}')
 
         # groups = self.domain_service.get_mark_groups(template_id=task_param.template_id)
         groups = []
         group_name_to_id = {group['label']: int(group['id']) for group in groups}
 
-        # if task_param.ai_model in [AIModel.tct1, AIModel.tct2]:
-        #     result = self.domain_service.run_tct(task_param)
-        # elif task_param.ai_model in [AIModel.lct1, AIModel.lct2]:
-        #     result = self.domain_service.run_lct(task_param)
-        # elif task_param.ai_model == AIModel.dna:
-        #     result = self.domain_service.run_tbs_dna(task_param)
-        # elif task_param.ai_model == AIModel.dna_ploidy:
-        #     result = self.domain_service.run_dna_ploidy(task_param)
-        # elif task_param.ai_model == AIModel.her2:
-        #     result = self.domain_service.run_her2(task_param, group_name_to_id)
+        alg_model = self.domain_service.get_model(ai_model, model_version, threshold)
+        if not alg_model:
+            return AppResponse(err_code=1, message=f'Model does not exist: {ai_model} {model_version}')
+
+        if ai_model in [AIModel.tct1, AIModel.tct2]:
+            result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
+        elif ai_model in [AIModel.lct1, AIModel.lct2]:
+            result = self.domain_service.run_lct(alg_model, ai_model, slice_path)
+        elif ai_model == AIModel.dna:
+            result = self.domain_service.run_tbs_dna(task_param)
+        elif ai_model == AIModel.dna_ploidy:
+            result = self.domain_service.run_dna_ploidy(task_param)
+        elif ai_model == AIModel.her2:
+            result = self.domain_service.run_her2(task_param, group_name_to_id)
 
         alg_time = time.time() - start_time
-        logger.info(f'任务 {task_param.slice_id} - 算法部分完成,耗时{alg_time}')
+        logger.info(f'任务 {slice_id} - 算法部分完成,耗时{alg_time}')
 
         analysis_data = dict(
             userid=request_context.current_user.userid if request_context.current_user else 1,
             username=request_context.current_user.username if request_context.current_user else 'sa',
-            slice_id=task_param.slice_id,
-            file_dir=os.path.dirname(task_param.slice_path),
-            ai_model=task_param.ai_model,
-            model_version=task_param.model_version,
+            slice_id=slice_id,
+            file_dir=os.path.dirname(slice_path),
+            ai_model=ai_model,
+            model_version=model_version,
             status=AnalysisStat.success.value,
             time_consume=alg_time
         )
@@ -173,19 +183,19 @@ class AiService(object):
 
         success = self.domain_service.create_ai_marks(
             analysis_id=analysis.id,
-            ai_model=task_param.ai_model,
-            model_version=task_param.model_version,
-            slice_path=task_param.slice_path,
+            ai_model=ai_model,
+            model_version=model_version,
+            slice_path=slice_path,
             cell_marks=[mark.dict() for mark in result.cell_marks],
             roi_marks=[mark.dict() for mark in result.roi_marks],
-            skip_mark_to_tile=task_param.ai_model in [AIModel.bm]
+            skip_mark_to_tile=ai_model in [AIModel.bm]
         )
 
         if not success:
             return AppResponse(message='Ai analysis failed at creating marks')
 
         total_time = time.time() - start_time
-        logger.info(f'任务 {task_param.slice_id} - 全部完成,耗时{total_time}')
+        logger.info(f'任务 {slice_id} - 全部完成,耗时{total_time}')
 
         return AppResponse(message='Ai analysis succeed')
 
