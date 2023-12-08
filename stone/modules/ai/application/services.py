@@ -55,7 +55,7 @@ class AiService(object):
         threshold = 1
 
         start_time = time.time()
-        logger.info(f'收到任务 slice_id: {slice_id}, ai_model: {ai_model}, model_version: {model_version}')
+        logger.info(f'收到任务 {slice_id}')
 
         # groups = self.domain_service.get_mark_groups(template_id=task_param.template_id)
         groups = []
@@ -189,7 +189,7 @@ class AiService(object):
 
         analysis, _ = self.domain_service.create_analysis(**analysis_data)
         if not analysis or not analysis.id:
-            return AppResponse(message='Ai analysis failed at creating analysis')
+            return AppResponse(err_code=1, message='Ai analysis failed at creating analysis')
 
         success = self.domain_service.create_ai_marks(
             analysis_key=analysis.key,
@@ -202,7 +202,7 @@ class AiService(object):
         )
 
         if not success:
-            return AppResponse(message='Ai analysis failed at creating marks')
+            return AppResponse(err_code=1, message='Ai analysis failed at creating marks')
 
         total_time = time.time() - start_time
         logger.info(f'任务 {slice_id} - 全部完成,耗时{total_time}')
@@ -210,8 +210,8 @@ class AiService(object):
         return AppResponse(message='Ai analysis succeed', data={'analysis_id': analysis.id})
 
     def get_task_status(self, task_id: str) -> AppResponse[dict]:
-        message, result = self.domain_service.get_ai_task_result(task_id)
-        return AppResponse(message=message, data={'task_status': result})
+        message, task_status = self.domain_service.get_task_status(task_id)
+        return AppResponse(message=message, data={'task_status': task_status})
 
     def get_analyses(self, **kwargs) -> AppResponse[dict]:
         analyses, pagination, message = self.domain_service.get_analyses(**kwargs)

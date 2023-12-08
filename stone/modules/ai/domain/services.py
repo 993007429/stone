@@ -114,10 +114,10 @@ class AiDomainService(object):
     def __init__(self, repository: SQLAlchemyAIRepository):
         self.repository = repository
 
-    def get_ai_task_result(self, task_id: str) -> Tuple[str, Optional[dict]]:
+    def get_task_status(self, task_id: str) -> Tuple[str, Optional[dict]]:
+        task_queue = cache.get(self.RANK_AI_TASK, [])
         try:
             result = AsyncResult(task_id, app=celery_app)
-            task_queue = cache.get(self.RANK_AI_TASK, [])
             if result.ready():
                 task_queue.remove(task_id)
                 cache.set(self.RANK_AI_TASK, task_queue)
@@ -128,11 +128,17 @@ class AiDomainService(object):
             return 'AI analysis in queue', {'done': False, 'rank': rank}
 
         except CeleryTimeoutError:
-            pass
+            task_queue.remove(task_id)
+            cache.set(self.RANK_AI_TASK, task_queue)
+            return 'CeleryTimeoutError', {'done': True, 'rank': -3}
         except ValueError:
+            task_queue.remove(task_id)
+            cache.set(self.RANK_AI_TASK, task_queue)
             return 'AI analysis has been completed', {'done': True, 'rank': -2}
         except Exception as e:
             logger.exception(e)
+            task_queue.remove(task_id)
+            cache.set(self.RANK_AI_TASK, task_queue)
             return 'An exception occurred in AI analysis', {'done': True, 'rank': -3}
 
     def new_default_roi(self) -> dict:
