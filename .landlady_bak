@@ -4,8 +4,8 @@ token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjI1NjI0MDI4OTAsInVpZCI6OCwib
 endpoint=http://deploy.dev.dipath.cn/api
 
 [Deploy]
-backend_include=stone,yams,local_settings,app.py,setting.py,requirements.txt
+backend_include=stone,yams,migrations,scripts,local_settings,app.py,setting.py,requirements.txt,alembic.ini
 fe_dist=
 exclude_dirs=.git,__pycache__,tests
-exclude_suffix=.pyc,__pycache__
+exclude_suffix=.pyc,__pycache__,.dll,.so,.so.3.4,.so.5,.so.0,.so.58,.so.58.111.100,.so.58.11.102,.so.7,.so.7.87.100,.so.58,.so.58.62.100,.so.56,.so.56.60.100,.so.8,.so.8.2.2,.so.3,.so.3.8.100,.so.5,.so.5.8.100,.so.0,.so.0.2.0,.so.148,.so.79
 webhook=

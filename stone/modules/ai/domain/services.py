@@ -21,13 +21,11 @@ from stone.libs.heimdall.dispatch import open_slide
 from stone.celery.app import app as celery_app
 from celery.exceptions import TimeoutError as CeleryTimeoutError
 
-from stone.modules.ai.domain.consts import AI_TYPE_MANUAL_MARK_TABLE_MAPPING
 from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity, AnalysisVO
 from stone.modules.ai.domain.value_objects import Mark, ALGResult
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
-from stone.modules.user.infrastructure.permissions import DeleteAnalysisPermission
-from stone.utils.get_path import get_slice_dir, get_db_path, get_db_dir, get_roi_dir
+from stone.utils.get_path import get_db_path, get_db_dir
 from stone.utils.id_worker import IdWorker
 
 from stone.utils.load_yaml import load_yaml

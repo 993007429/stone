@@ -1,5 +1,5 @@
 from apiflask import APIBlueprint, FileSchema
-from flask import send_from_directory, send_file
+from flask import send_file
 
 from stone.app.base_schema import APIAffectedCountOut
 from stone.app.schema.slice import SlicePageQuery, SliceFilter, SliceIdsIn, \

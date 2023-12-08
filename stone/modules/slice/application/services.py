@@ -132,6 +132,3 @@ class SliceService(object):
     def get_tile(self, **kwargs) -> AppResponse[dict]:
         tile_path, message = self.domain_service.get_tile(**kwargs)
         return AppResponse(message=message, data={'tile_path': tile_path})
-
-
-
