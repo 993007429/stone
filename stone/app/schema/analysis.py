@@ -1,14 +1,29 @@
 from apiflask import Schema
-from marshmallow.fields import Integer, String, DateTime, List, Nested, Bool, Dict, Float
+from marshmallow.fields import Integer, String, DateTime, List, Nested, Bool, Dict, Float, Field
 from marshmallow.validate import OneOf
 
-from stone.app.base_schema import DurationField, PageQuery, PaginationSchema, Coordinate
+from stone.app.base_schema import PageQuery, PaginationSchema, Coordinate
 from stone.modules.ai.domain.enum import AnalysisStat
 
 
 class AnalysesQuery(PageQuery):
     slice_id = Integer(required=True)
     userid = Integer(required=False)
+
+
+class AnalysisStatusField(Field):
+
+    def _serialize(self, value, attr, obj):
+        if value == AnalysisStat.success:
+            return AnalysisStat.success.name
+        else:
+            return AnalysisStat.failed.name
+
+
+class DurationField(Field):
+    def _serialize(self, value, attr, obj):
+        minutes, seconds = divmod(value, 60)
+        return f'{int(minutes)}分{int(seconds)}秒'
 
 
 class AnalysisOut(Schema):
@@ -18,7 +33,7 @@ class AnalysisOut(Schema):
     slice_id = Integer(required=True)
     ai_model = String(required=True)
     model_version = String(required=True)
-    status = String(required=True, validate=[OneOf([AnalysisStat.success.value, AnalysisStat.failed.value])])
+    status = AnalysisStatusField(required=True, validate=[OneOf([AnalysisStat.success.name, AnalysisStat.failed.name])])
     created_at = DateTime(required=True, format='%Y-%m-%d %H:%M:%S')
     time_consume = DurationField(required=True)
     delete_permission = Bool(required=True)
@@ -33,6 +48,16 @@ class APIListAnalysesOut(Schema):
     message = String(required=True)
     data = Nested(ListAnalysesOut())
     pagination = Nested(PaginationSchema())
+
+
+class SingleAnalysesOut(Schema):
+    analysis = Nested(AnalysisOut())
+
+
+class APISingleAnalysesOut(Schema):
+    code = Integer(required=True)
+    message = String(required=True)
+    data = Nested(SingleAnalysesOut())
 
 
 class QueryRoiIn(Schema):

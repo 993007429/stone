@@ -10,12 +10,6 @@ def validate_positive_integers(num):
         raise ValidationError("Positive integers only.")
 
 
-class DurationField(Raw):
-    def format(self, value):
-        minutes, seconds = divmod(value, 60)
-        return f'{int(minutes)}分{int(seconds)}秒'
-
-
 class PageQuery(Schema):
     page = Integer(load_default=1, validate=Range(min=1))
     per_page = Integer(load_default=10, validate=Range(max=10000))

@@ -4,7 +4,7 @@ from flask import send_file
 from stone.app.base_schema import APIAffectedCountOut
 from stone.app.permission import permission_required
 from stone.app.schema.analysis import AnalysesQuery, ListAnalysesOut, APIListAnalysesOut, QueryMarksIn, QueryRoiIn, \
-    APIListMarkOut
+    APIListMarkOut, APISingleAnalysesOut
 from stone.app.service_factory import AppServiceFactory
 from stone.modules.user.infrastructure.permissions import DeleteAnalysisPermission
 
@@ -21,7 +21,7 @@ def get_analyses(query_data):
 
 
 @analysis_blueprint.get('/<int:analysis_id>')
-@analysis_blueprint.output(ListAnalysesOut)
+@analysis_blueprint.output(APISingleAnalysesOut)
 @analysis_blueprint.doc(summary='AI处理详情', security='ApiAuth')
 def get_analysis(analysis_id):
     res = AppServiceFactory.ai_service.get_analysis(analysis_id)

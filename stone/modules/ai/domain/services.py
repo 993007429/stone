@@ -27,7 +27,7 @@ from stone.modules.ai.domain.value_objects import Mark, ALGResult
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
 from stone.modules.user.infrastructure.permissions import DeleteAnalysisPermission
-from stone.utils.get_path import get_dir_with_key, get_db_path
+from stone.utils.get_path import get_dir_with_key, get_db_path, get_db_fir
 from stone.utils.id_worker import IdWorker
 
 from stone.utils.load_yaml import load_yaml
@@ -427,7 +427,7 @@ class AiDomainService(object):
 
         deleted_count = self.repository.delete_analysis_by_pk(analysis_id)
         if deleted_count:
-            fs.remove_dir(analysis.file_dir)
+            fs.remove_dir(get_db_fir(analysis.slice_key, analysis.key))
             return deleted_count, 'Deleted analysis succeed'
         return deleted_count, 'Deleted analysis failed'
 
