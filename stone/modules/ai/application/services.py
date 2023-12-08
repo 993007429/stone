@@ -207,7 +207,7 @@ class AiService(object):
         total_time = time.time() - start_time
         logger.info(f'任务 {slice_id} - 全部完成,耗时{total_time}')
 
-        return AppResponse(message='Ai analysis succeed')
+        return AppResponse(message='Ai analysis succeed', data={'analysis_id': analysis.id})
 
     def get_task_status(self, task_id: str) -> AppResponse[dict]:
         message, result = self.domain_service.get_ai_task_result(task_id)

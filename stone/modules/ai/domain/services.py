@@ -121,7 +121,8 @@ class AiDomainService(object):
             if result.ready():
                 task_queue.remove(task_id)
                 cache.set(self.RANK_AI_TASK, task_queue)
-                return 'AI analysis completed', {'done': True, 'rank': -1}
+                analysis_id = result.result.data['analysis_id']
+                return 'AI analysis completed', {'done': True, 'rank': -1, 'analysis_id': analysis_id}
 
             rank = task_queue.index(task_id)
             return 'AI analysis in queue', {'done': False, 'rank': rank}

@@ -28,6 +28,7 @@ class PollingIn(Schema):
 class PollingOut(Schema):
     done = Bool(required=True)
     rank = Integer(required=True)
+    analysis_id = Integer(required=False, allow_none=None)
 
 
 class SinglePollingOut(Schema):
