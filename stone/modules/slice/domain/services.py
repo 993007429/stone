@@ -98,7 +98,7 @@ class SliceDomainService(object):
     def upload_slice(self, **kwargs) -> Tuple[str, str]:
         slice_file = kwargs['slice_file']
 
-        slice_filename = secure_filename(slice_file.filename)
+        slice_filename = slice_file.filename
         slice_key = uuid.uuid4().hex
         slice_dir = get_dir_with_key(slice_key)
         slice_path = os.path.join(slice_dir, slice_filename)
