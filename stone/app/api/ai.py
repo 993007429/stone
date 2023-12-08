@@ -1,6 +1,6 @@
 from apiflask import APIBlueprint
 
-from stone.app.schema.ai import StartIn, SingleStartOut, PollingIn, SinglePollingOut, APISinglePollingOut
+from stone.app.schema.ai import StartIn, SingleStartOut, PollingIn, APISinglePollingOut
 from stone.app.service_factory import AppServiceFactory
 
 ai_blueprint = APIBlueprint('ai', __name__, url_prefix='/ai')
