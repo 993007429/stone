@@ -33,7 +33,6 @@ class Slice(Base):
     __tablename__ = 'slice'
 
     __table_args__ = (
-        Index('idx_slice_key', 'slice_key'),
         Index('idx_data_type', 'data_type'),
     )
 

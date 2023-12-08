@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import uuid
 
 import setting
 from setting import RANK_AI_TASK
@@ -8,10 +9,11 @@ from stone.app.request_context import request_context
 from stone.infra.fs import fs
 from stone.modules.ai.domain.enum import AnalysisStat, AIModel
 from stone.modules.ai.domain.services import AiDomainService
-from stone.modules.ai.domain.value_objects import TaskParam, ALGResult, Mark
+from stone.modules.ai.domain.value_objects import ALGResult, Mark
 from stone.modules.slice.application.services import SliceService
 from stone.seedwork.application.responses import AppResponse
 from stone.infra.cache import cache
+from stone.utils.get_path import get_dir_with_key
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +26,13 @@ class AiService(object):
         self.slice_service = slice_service
 
     def start_ai_analysis(self, **kwargs) -> AppResponse[dict]:
-        task_param = TaskParam(**kwargs)
-        task_param.slice_path = 'D:\\data\\789.svs'
-        # task_param.slice_path = self.slice_service.get_slice_path(task_param.slice_id).data
+        slice_id = kwargs['slice_id']
+        slice_key = kwargs['slice_key']
+        ai_model = kwargs['ai_model']
+        model_version = kwargs['model_version']
+
         # result = tasks.run_ai_task(task_param)
-        result = self.run_ai_task(task_param)
+        result = self.run_ai_task(slice_id, slice_key, ai_model, model_version)
         if result.err_code != 0:
             return AppResponse(err_code=result.err_code, message=result.message)
 
@@ -38,11 +42,7 @@ class AiService(object):
         # cache.set(self.RANK_AI_TASK, rank)
         return AppResponse(message='Ai start succeed', data={'task_id': task_id})
 
-    def run_ai_task(self, task_param: TaskParam) -> AppResponse[dict]:
-        ai_model = task_param.ai_model
-        model_version = task_param.model_version
-        slice_id = task_param.slice_id
-        slice_path = task_param.slice_path
+    def run_ai_task(self, slice_id: int, slice_key: str, ai_model: str, model_version: str) -> AppResponse[dict]:
         threshold = 1
 
         start_time = time.time()
@@ -55,6 +55,8 @@ class AiService(object):
         alg_model = self.domain_service.get_model(ai_model, model_version, threshold)
         if not alg_model:
             return AppResponse(err_code=1, message=f'Model does not exist: {ai_model}_{model_version}')
+
+        slice_path = get_dir_with_key(slice_key)
 
         # if ai_model in [AIModel.tct1, AIModel.tct2]:
         #     result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
@@ -70,17 +72,19 @@ class AiService(object):
         alg_time = time.time() - start_time
         logger.info(f'任务 {slice_id} - 算法部分完成,耗时{alg_time}')
 
-        # analysis_data = dict(
-        #     userid=request_context.current_user.userid if request_context.current_user else 1,
-        #     username=request_context.current_user.username if request_context.current_user else 'sa',
-        #     slice_id=slice_id,
-        #     file_dir=os.path.join(os.path.dirname(slice_path), 'analyses'),
-        #     ai_model=ai_model,
-        #     model_version=model_version,
-        #     status=AnalysisStat.success.value,
-        #     time_consume=alg_time
-        # )
-        analysis_data = {'userid': 1, 'username': 'sa', 'slice_id': 0, 'file_dir': 'D:\\data\\analyses', 'ai_model': 'tct1', 'model_version': 'v3', 'status': 1, 'time_consume': 46.7326762676239}
+        analysis_key = uuid.uuid4().hex
+
+        analysis_data = dict(
+            analysis_key=analysis_key,
+            ai_model=ai_model,
+            model_version=model_version,
+            status=AnalysisStat.success.value,
+            time_consume=alg_time,
+            userid=request_context.current_user.userid if request_context.current_user else 1,
+            username=request_context.current_user.username if request_context.current_user else 'sa',
+            slice_id=slice_id,
+            slice_key=slice_key
+        )
         result = ALGResult(ai_suggest='阴性 -样本不满意 ', cell_marks=[], roi_marks=[
             Mark(id=1732284570046439424, position={'x': [], 'y': []},
                  ai_result={'cell_num': 5118, 'clarity': 1.0, 'slide_quality': 0, 'diagnosis': ['阴性', '-样本不满意'],
@@ -186,7 +190,6 @@ class AiService(object):
             analysis_id=analysis.id,
             ai_model=ai_model,
             model_version=model_version,
-            slice_path=slice_path,
             cell_marks=[mark.dict() for mark in result.cell_marks],
             roi_marks=[mark.dict() for mark in result.roi_marks],
             skip_mark_to_tile=ai_model in [AIModel.bm]

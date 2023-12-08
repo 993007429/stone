@@ -16,6 +16,7 @@ from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSe
 from stone.modules.slice.domain.enum import DataType
 from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject
 from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
+from stone.utils.get_path import get_dir_with_key
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +100,7 @@ class SliceDomainService(object):
 
         slice_filename = secure_filename(slice_file.filename)
         slice_key = uuid.uuid4().hex
-        slice_dir = os.path.join(setting.DATA_DIR, slice_key)
+        slice_dir = get_dir_with_key(slice_key)
         slice_path = os.path.join(slice_dir, slice_filename)
 
         if not os.path.exists(slice_dir):

@@ -30,14 +30,15 @@ class MarkEntity(BaseEntity):
 
 
 class AnalysisEntity(BaseEntity):
-    userid: int
-    username: str
-    slice_id: int
-    file_dir: str
+    analysis_key: str
     ai_model: str
     model_version: str
     status: int
     time_consume: float
+    userid: int
+    username: str
+    slice_id: int
+    slice_key: str
 
 
 class AnalysisVO(AnalysisEntity):

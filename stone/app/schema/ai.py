@@ -7,6 +7,7 @@ from stone.modules.ai.domain.enum import AIModel
 
 class StartIn(Schema):
     slice_id = Integer(required=True)
+    slice_key = String(required=True)
     ai_model = String(required=True, validate=[OneOf([member.value for member in AIModel])])
     model_version = String(required=True)
 
@@ -33,4 +34,4 @@ class PollingOut(Schema):
 class SinglePollingOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(PollingOut)
+    data = Nested(PollingOut())

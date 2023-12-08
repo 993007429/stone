@@ -64,13 +64,6 @@ class AIType(BaseEnum):
 A = TypeVar('A', bound=AIType)
 
 
-class TaskParam(BaseValueObject):
-    slice_id: int
-    ai_model: str
-    model_version: str
-    slice_path: Optional[str] = None
-
-
 class Mark(BaseValueObject):
     id: Optional[int] = None
     position: Optional[dict] = None

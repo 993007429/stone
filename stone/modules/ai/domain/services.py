@@ -24,7 +24,7 @@ from celery.exceptions import TimeoutError as CeleryTimeoutError
 
 from stone.modules.ai.domain.consts import AI_TYPE_MANUAL_MARK_TABLE_MAPPING
 from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity, AnalysisVO
-from stone.modules.ai.domain.value_objects import Mark, ALGResult, TaskParam
+from stone.modules.ai.domain.value_objects import Mark, ALGResult
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
 from stone.modules.user.infrastructure.permissions import DeleteAnalysisPermission
@@ -197,7 +197,7 @@ class AiDomainService(object):
     def run_lct(self, alg_model: Any, ai_model: str, slice_path: str) -> ALGResult:
         return self.run_tct(alg_model, ai_model, slice_path)
 
-    def run_tbs_dna(self, task_param: TaskParam) -> ALGResult:
+    def run_tbs_dna(self) -> ALGResult:
         ai_model = task_param.ai_model
         model_version = task_param.model_version
         slice_path = task_param.slice_path
@@ -245,7 +245,7 @@ class AiDomainService(object):
             prob_dict=prob_dict
         )
 
-    def run_dna_ploidy(self, task_param: TaskParam) -> ALGResult:
+    def run_dna_ploidy(self) -> ALGResult:
 
         rois = []
 
@@ -283,7 +283,7 @@ class AiDomainService(object):
             prob_dict=prob_dict
         )
 
-    def run_her2(self, task_param: TaskParam, group_name_to_id: dict) -> ALGResult:
+    def run_her2(self, group_name_to_id: dict) -> ALGResult:
         cell_marks = []
         roi_marks = []
         ai_result = {}
@@ -361,7 +361,6 @@ class AiDomainService(object):
             analysis_id: int,
             ai_model: str,
             model_version: str,
-            slice_path: str,
             cell_marks: List[dict],
             roi_marks: List[dict],
             skip_mark_to_tile: bool = False
