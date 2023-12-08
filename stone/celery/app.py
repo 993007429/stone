@@ -60,7 +60,13 @@ def celery_task(f):
 
     @wraps(f)
     def _remote_func(*args, **kwargs):
+        from stone.app.request_context import request_context
+        request_context.connect_db()
         result = f(*args, **kwargs)
+        if result.err_code != 0:
+            request_context.close_db(commit=False)
+        else:
+            request_context.close_db()
         return result
 
     func = app.task(_remote_func)

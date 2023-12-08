@@ -42,7 +42,7 @@ class RequestContext:
         self.slice_db_session.set(session)
 
     def close_slice_db(self, commit: bool = True):
-        session = self.db_session.get()
+        session = self.slice_db_session.get()
         if session and session.is_active:
             if commit:
                 session.commit()

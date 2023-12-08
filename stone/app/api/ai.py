@@ -1,6 +1,6 @@
 from apiflask import APIBlueprint
 
-from stone.app.schema.ai import StartIn, SingleStartOut, PollingIn, SinglePollingOut
+from stone.app.schema.ai import StartIn, SingleStartOut, PollingIn, SinglePollingOut, APISinglePollingOut
 from stone.app.service_factory import AppServiceFactory
 
 ai_blueprint = APIBlueprint('ai', __name__, url_prefix='/ai')
@@ -17,8 +17,8 @@ def start_ai_analysis(json_data):
 
 @ai_blueprint.post('/polling/task-status')
 @ai_blueprint.input(PollingIn, location='json')
-@ai_blueprint.output(SinglePollingOut)
+@ai_blueprint.output(APISinglePollingOut)
 @ai_blueprint.doc(summary='轮询查看AI处理是否完成', security='ApiAuth')
-def polling(json_data):
-    res = AppServiceFactory.ai_service.polling(**json_data)
+def get_task_status(json_data):
+    res = AppServiceFactory.ai_service.get_task_status(**json_data)
     return res.response

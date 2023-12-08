@@ -121,16 +121,18 @@ class AiDomainService(object):
             if result.ready():
                 task_queue.remove(task_id)
                 cache.set(self.RANK_AI_TASK, task_queue)
-                return 'AI处理完成', {'done': True, 'rank': -1}
+                return 'AI analysis completed', {'done': True, 'rank': -1}
 
             rank = task_queue.index(task_id)
-            return 'Ai处理在排队中', {'done': False, 'rank': rank}
+            return 'AI analysis in queue', {'done': False, 'rank': rank}
 
         except CeleryTimeoutError:
             pass
+        except ValueError:
+            return 'AI analysis has been completed', {'done': True, 'rank': -2}
         except Exception as e:
             logger.exception(e)
-            return 'AI处理发生异常', {'done': True, 'rank': -1}
+            return 'An exception occurred in AI analysis', {'done': True, 'rank': -3}
 
     def new_default_roi(self) -> dict:
         return {

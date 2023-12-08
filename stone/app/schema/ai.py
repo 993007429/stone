@@ -31,6 +31,10 @@ class PollingOut(Schema):
 
 
 class SinglePollingOut(Schema):
+    task_status = Nested(PollingOut())
+
+
+class APISinglePollingOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(PollingOut())
+    data = Nested(SinglePollingOut())

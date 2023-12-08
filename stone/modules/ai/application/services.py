@@ -9,6 +9,7 @@ from setting import RANK_AI_TASK
 from stone.app.request_context import request_context
 from stone.infra.fs import fs
 from stone.libs.heimdall.dispatch import open_slide
+from stone.modules.ai.application import tasks
 from stone.modules.ai.domain.enum import AnalysisStat, AIModel
 from stone.modules.ai.domain.services import AiDomainService
 from stone.modules.ai.domain.value_objects import ALGResult, Mark
@@ -32,15 +33,15 @@ class AiService(object):
         ai_model = kwargs['ai_model']
         model_version = kwargs['model_version']
 
-        # result = tasks.run_ai_task(task_param)
-        result = self.run_ai_task(slice_id, ai_model, model_version)
-        if result.err_code != 0:
-            return AppResponse(err_code=result.err_code, message=result.message)
+        # result = self.run_ai_task(slice_id, ai_model, model_version)
+        # if result.err_code != 0:
+        #     return AppResponse(err_code=result.err_code, message=result.message)
+        # task_id = 1
 
-        task_id = 1
-        # rank = cache.get(self.RANK_AI_TASK, [])
-        # rank.append(task_id := result.task_id)
-        # cache.set(self.RANK_AI_TASK, rank)
+        result = tasks.run_ai_task(slice_id, ai_model, model_version)
+        rank = cache.get(self.RANK_AI_TASK, [])
+        rank.append(task_id := result.task_id)
+        cache.set(self.RANK_AI_TASK, rank)
         return AppResponse(message='Ai start succeed', data={'task_id': task_id})
 
     def run_ai_task(self, slice_id: int, ai_model: str, model_version: str) -> AppResponse[dict]:
@@ -54,41 +55,11 @@ class AiService(object):
         threshold = 1
 
         start_time = time.time()
-        logger.info(f'收到任务1 {slice_id}')
+        logger.info(f'收到任务 slice_id: {slice_id}, ai_model: {ai_model}, model_version: {model_version}')
 
         # groups = self.domain_service.get_mark_groups(template_id=task_param.template_id)
         groups = []
         group_name_to_id = {group['label']: int(group['id']) for group in groups}
-
-        alg_model = self.domain_service.get_model(ai_model, model_version, threshold)
-        if not alg_model:
-            return AppResponse(err_code=1, message=f'Model does not exist: {ai_model}_{model_version}')
-
-        # if ai_model in [AIModel.tct1, AIModel.tct2]:
-        #     result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
-        # elif ai_model in [AIModel.lct1, AIModel.lct2]:
-        #     result = self.domain_service.run_lct(alg_model, ai_model, slice_path)
-        # elif ai_model == AIModel.dna:
-        #     result = self.domain_service.run_tbs_dna(task_param)
-        # elif ai_model == AIModel.dna_ploidy:
-        #     result = self.domain_service.run_dna_ploidy(task_param)
-        # elif ai_model == AIModel.her2:
-        #     result = self.domain_service.run_her2(task_param, group_name_to_id)
-
-        alg_time = time.time() - start_time
-        logger.info(f'任务 {slice_id} - 算法部分完成,耗时{alg_time}')
-
-        analysis_data = dict(
-            key=uuid.uuid4().hex,
-            ai_model=ai_model,
-            model_version=model_version,
-            status=AnalysisStat.success.value,
-            time_consume=alg_time,
-            userid=request_context.current_user.userid if request_context.current_user else 1,
-            username=request_context.current_user.username if request_context.current_user else 'sa',
-            slice_id=slice_id,
-            slice_key=slice_key
-        )
         result = ALGResult(ai_suggest='阴性 -样本不满意 ', cell_marks=[], roi_marks=[
             Mark(id=1732284570046439424, position={'x': [], 'y': []},
                  ai_result={'cell_num': 5118, 'clarity': 1.0, 'slide_quality': 0, 'diagnosis': ['阴性', '-样本不满意'],
@@ -186,6 +157,36 @@ class AiService(object):
                            prob_dict={'NILM': 0.99216, 'ASC-US': 0.00709, 'LSIL': 0.00026, 'ASC-H': 0.00019,
                                       'HSIL': 1e-05, 'AGC': 0.0003}, err_msg=None)
 
+        alg_model = self.domain_service.get_model(ai_model, model_version, threshold)
+        if not alg_model:
+            return AppResponse(err_code=1, message=f'Model does not exist: {ai_model}_{model_version}')
+
+        if ai_model in [AIModel.tct1, AIModel.tct2]:
+            result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
+        # elif ai_model in [AIModel.lct1, AIModel.lct2]:
+        #     result = self.domain_service.run_lct(alg_model, ai_model, slice_path)
+        # elif ai_model == AIModel.dna:
+        #     result = self.domain_service.run_tbs_dna(task_param)
+        # elif ai_model == AIModel.dna_ploidy:
+        #     result = self.domain_service.run_dna_ploidy(task_param)
+        # elif ai_model == AIModel.her2:
+        #     result = self.domain_service.run_her2(task_param, group_name_to_id)
+
+        alg_time = time.time() - start_time
+        logger.info(f'任务 {slice_id} - 算法部分完成,耗时{alg_time}')
+
+        analysis_data = dict(
+            key=uuid.uuid4().hex,
+            ai_model=ai_model,
+            model_version=model_version,
+            status=AnalysisStat.success.value,
+            time_consume=alg_time,
+            userid=request_context.current_user.userid if request_context.current_user else 1,
+            username=request_context.current_user.username if request_context.current_user else 'sa',
+            slice_id=slice_id,
+            slice_key=slice_key
+        )
+
         analysis, _ = self.domain_service.create_analysis(**analysis_data)
         if not analysis or not analysis.id:
             return AppResponse(message='Ai analysis failed at creating analysis')
@@ -208,9 +209,9 @@ class AiService(object):
 
         return AppResponse(message='Ai analysis succeed')
 
-    def polling(self, task_id: str) -> AppResponse[dict]:
-        err_msg, result = self.domain_service.get_ai_task_result(task_id)
-        return AppResponse(err_code=1 if err_msg else 0, message=err_msg, data=result)
+    def get_task_status(self, task_id: str) -> AppResponse[dict]:
+        message, result = self.domain_service.get_ai_task_result(task_id)
+        return AppResponse(message=message, data={'task_status': result})
 
     def get_analyses(self, **kwargs) -> AppResponse[dict]:
         analyses, pagination, message = self.domain_service.get_analyses(**kwargs)
