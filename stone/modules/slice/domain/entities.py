@@ -5,7 +5,7 @@ from stone.seedwork.domain.entities import BaseEntity
 
 
 class SliceEntity(BaseEntity):
-    slice_key: Optional[str]
+    key: Optional[str]
     parent_id: Optional[int]
     name: Optional[str]
     data_type: Optional[int]

@@ -30,7 +30,7 @@ class MarkEntity(BaseEntity):
 
 
 class AnalysisEntity(BaseEntity):
-    analysis_key: str
+    key: str
     ai_model: str
     model_version: str
     status: int

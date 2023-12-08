@@ -27,10 +27,13 @@ class RequestContext:
         session.begin()
         self.db_session.set(session)
 
-    def close_db(self):
+    def close_db(self, commit: bool = True):
         session = self.db_session.get()
         if session and session.is_active:
-            session.commit()
+            if commit:
+                session.commit()
+            else:
+                session.rollback()
             session.close()
 
     def connect_slice_db(self, db_file_path: str):
@@ -38,10 +41,13 @@ class RequestContext:
         session.begin()
         self.slice_db_session.set(session)
 
-    def close_slice_db(self):
-        session = self.slice_db_session.get()
+    def close_slice_db(self, commit: bool = True):
+        session = self.db_session.get()
         if session and session.is_active:
-            session.commit()
+            if commit:
+                session.commit()
+            else:
+                session.rollback()
             session.close()
 
     @property

@@ -31,7 +31,10 @@ def api_before_request():
 
 
 def api_after_request(response):
-    request_context.close_db()
+    if response.status_code >= 400:
+        request_context.close_db(commit=False)
+    else:
+        request_context.close_db()
     return response
 
 

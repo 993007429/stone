@@ -46,19 +46,19 @@ def get_session_by_db_uri(uri: str):
     return Session(autocommit=False, autoflush=True, expire_on_commit=False, bind=engine)
 
 
-def exc_rollback(f):
-
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs):
-        from stone.app.request_context import request_context
-        session: Session = request_context.db_session.get()
-        assert session is not None
-
-        try:
-            return f(*args, **kwargs)
-        except Exception as e:
-            session.rollback()
-            traceback_str = traceback.format_exc()
-            raise RuntimeError(f"An error occurred: {e}\n{traceback_str}")
-
-    return wrapper
+# def exc_rollback(f):
+#
+#     @functools.wraps(f)
+#     def wrapper(*args, **kwargs):
+#         from stone.app.request_context import request_context
+#         session: Session = request_context.db_session.get()
+#         assert session is not None
+#
+#         try:
+#             return f(*args, **kwargs)
+#         except Exception as e:
+#             session.rollback()
+#             traceback_str = traceback.format_exc()
+#             raise RuntimeError(f"An error occurred: {e}\n{traceback_str}")
+#
+#     return wrapper

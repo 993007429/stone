@@ -27,12 +27,11 @@ class AiService(object):
 
     def start_ai_analysis(self, **kwargs) -> AppResponse[dict]:
         slice_id = kwargs['slice_id']
-        slice_key = kwargs['slice_key']
         ai_model = kwargs['ai_model']
         model_version = kwargs['model_version']
 
         # result = tasks.run_ai_task(task_param)
-        result = self.run_ai_task(slice_id, slice_key, ai_model, model_version)
+        result = self.run_ai_task(slice_id, ai_model, model_version)
         if result.err_code != 0:
             return AppResponse(err_code=result.err_code, message=result.message)
 
@@ -42,7 +41,14 @@ class AiService(object):
         # cache.set(self.RANK_AI_TASK, rank)
         return AppResponse(message='Ai start succeed', data={'task_id': task_id})
 
-    def run_ai_task(self, slice_id: int, slice_key: str, ai_model: str, model_version: str) -> AppResponse[dict]:
+    def run_ai_task(self, slice_id: int, ai_model: str, model_version: str) -> AppResponse[dict]:
+        res = self.slice_service.get_slice(slice_id)
+        if res.err_code != 0:
+            return res
+        slice_ = res.data['slice']
+        slice_key, slice_name = slice_['key'], slice_['name']
+        slice_path = os.path.join(get_dir_with_key(slice_key), slice_name)
+
         threshold = 1
 
         start_time = time.time()
@@ -55,8 +61,6 @@ class AiService(object):
         alg_model = self.domain_service.get_model(ai_model, model_version, threshold)
         if not alg_model:
             return AppResponse(err_code=1, message=f'Model does not exist: {ai_model}_{model_version}')
-
-        slice_path = get_dir_with_key(slice_key)
 
         # if ai_model in [AIModel.tct1, AIModel.tct2]:
         #     result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
@@ -72,10 +76,8 @@ class AiService(object):
         alg_time = time.time() - start_time
         logger.info(f'任务 {slice_id} - 算法部分完成,耗时{alg_time}')
 
-        analysis_key = uuid.uuid4().hex
-
         analysis_data = dict(
-            analysis_key=analysis_key,
+            key=uuid.uuid4().hex,
             ai_model=ai_model,
             model_version=model_version,
             status=AnalysisStat.success.value,
@@ -187,7 +189,8 @@ class AiService(object):
             return AppResponse(message='Ai analysis failed at creating analysis')
 
         success = self.domain_service.create_ai_marks(
-            analysis_id=analysis.id,
+            analysis_key=analysis.key,
+            slice_key=slice_key,
             ai_model=ai_model,
             model_version=model_version,
             cell_marks=[mark.dict() for mark in result.cell_marks],

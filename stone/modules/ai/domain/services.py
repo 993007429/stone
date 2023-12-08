@@ -15,7 +15,6 @@ from stone.app.request_context import request_context
 from stone.consts.her2 import Her2Consts
 from stone.infra.cache import cache
 from stone.infra.fs import fs
-from stone.infra.session import exc_rollback
 from stone.modules.ai.domain.enum import AIModel
 from stone.modules.ai.libs.algorithms.DNA1.dna_alg import DNA_1020
 from stone.libs.heimdall.dispatch import open_slide
@@ -28,6 +27,7 @@ from stone.modules.ai.domain.value_objects import Mark, ALGResult
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
 from stone.modules.user.infrastructure.permissions import DeleteAnalysisPermission
+from stone.utils.get_path import get_dir_with_key, get_db_path
 from stone.utils.id_worker import IdWorker
 
 from stone.utils.load_yaml import load_yaml
@@ -42,16 +42,15 @@ def create_slice_db():
         def wrapped(*args, **kwargs):
             _self: AiDomainService = args[0]
 
-            analysis_id = kwargs['analysis_id']
             ai_model = kwargs['ai_model']
             model_version = kwargs['model_version']
-            slice_path = kwargs['slice_path']
-            db_path = os.path.join(os.path.dirname(slice_path), 'analyses', str(analysis_id), 'slice.db')
+            slice_key = kwargs['slice_key']
+            analysis_key = kwargs['analysis_key']
+            db_path = get_db_path(slice_key, analysis_key, ai_model, model_version)
             db_template_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources', 'slice.db')
 
-            if not os.path.exists(db_path):
-                os.makedirs(os.path.dirname(db_path), exist_ok=True)
-                shutil.copyfile(db_template_path, db_path)
+            os.makedirs(os.path.dirname(db_path), exist_ok=True)
+            shutil.copyfile(db_template_path, db_path)
 
             request_context.connect_slice_db(db_path)
 
@@ -87,10 +86,15 @@ def connect_slice_db():
             _self: AiDomainService = args[0]
             analysis_id = args[1]
             analysis = _self.repository.get_analysis_by_pk(analysis_id)
+            ai_model = analysis.ai_model
+            model_version = analysis.model_version
+            analysis_key = analysis.key
+            slice_key = analysis.slice_key
 
             _self.repository.mark_table_suffix = f'{analysis.ai_model}_{analysis.model_version}'
 
-            db_path = os.path.join(analysis.file_dir, 'slice.db')
+            db_path = get_db_path(slice_key, analysis_key, ai_model, model_version)
+
             request_context.connect_slice_db(db_path)
 
             r = f(*args, **kwargs)
@@ -358,7 +362,8 @@ class AiDomainService(object):
     @create_slice_db()
     def create_ai_marks(
             self,
-            analysis_id: int,
+            analysis_key: str,
+            slice_key: str,
             ai_model: str,
             model_version: str,
             cell_marks: List[dict],
@@ -417,7 +422,6 @@ class AiDomainService(object):
             return new_analysis, 'create analysis success'
         return None, 'create analysis failed'
 
-    @exc_rollback
     def delete_analysis(self, analysis_id: int) -> Tuple[int, str]:
         analysis = self.repository.get_analysis_by_pk(analysis_id)
 

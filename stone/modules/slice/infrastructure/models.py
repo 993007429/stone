@@ -36,7 +36,7 @@ class Slice(Base):
         Index('idx_data_type', 'data_type'),
     )
 
-    slice_key = Column(String(255), nullable=False, unique=True, comment='切片唯一ID')
+    key = Column(String(255), nullable=False, unique=True, comment='切片唯一key')
     parent_id = Column(Integer, nullable=True, comment='关联数据(父级数据ID)')
     name = Column(String(255), nullable=False, server_default=text('""'), comment='切片名')
     data_type = Column(SmallInteger, nullable=False, server_default=literal_column(f'{DataType.wsi.value}'), comment='数据类型(WSI、ROI、Patch)')

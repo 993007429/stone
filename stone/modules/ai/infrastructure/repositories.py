@@ -115,8 +115,6 @@ class SQLAlchemyAIRepository(AIRepository):
         try:
             self._session.add(model)
             self._session.flush([model])
-            model.file_dir = os.path.join(entity.file_dir, str(model.id))
-            self._session.add(model)
         except IntegrityError:
             return False, None
         return True, entity.from_orm(model)

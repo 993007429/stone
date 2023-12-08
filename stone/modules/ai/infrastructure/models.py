@@ -12,7 +12,7 @@ class Analysis(Base):
         Index('idx_slice_id', 'slice_id'),
     )
 
-    analysis_key = Column(String(255), nullable=False, unique=True, comment='分析记录key')
+    key = Column(String(255), nullable=False, unique=True, comment='分析记录唯一key')
     ai_model = Column(String(255), nullable=False, comment='模型')
     model_version = Column(String(255), nullable=False, comment='模型版本')
     status = Column(Integer, nullable=False, comment='运算状态')
