@@ -1,3 +1,4 @@
+import ast
 import logging
 import os
 import time
@@ -7,13 +8,14 @@ import setting
 from setting import RANK_AI_TASK
 from stone.app.request_context import request_context
 from stone.infra.fs import fs
+from stone.libs.heimdall.dispatch import open_slide
 from stone.modules.ai.domain.enum import AnalysisStat, AIModel
 from stone.modules.ai.domain.services import AiDomainService
 from stone.modules.ai.domain.value_objects import ALGResult, Mark
 from stone.modules.slice.application.services import SliceService
 from stone.seedwork.application.responses import AppResponse
 from stone.infra.cache import cache
-from stone.utils.get_path import get_dir_with_key
+from stone.utils.get_path import get_slice_dir, get_roi_dir
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ class AiService(object):
             return res
         slice_ = res.data['slice']
         slice_key, slice_name = slice_['key'], slice_['name']
-        slice_path = os.path.join(get_dir_with_key(slice_key), slice_name)
+        slice_path = os.path.join(get_slice_dir(slice_key), slice_name)
 
         threshold = 1
 
@@ -223,8 +225,26 @@ class AiService(object):
         return AppResponse(message=message, data={'affected_count': deleted_count})
 
     def get_roi(self, **kwargs) -> AppResponse[dict]:
-        roi_path, message = self.domain_service.get_roi(**kwargs)
-        return AppResponse(message=message, data={'roi_path': roi_path})
+        analysis_id = kwargs['analysis_id']
+        roi_args = ast.literal_eval(kwargs['roi_args'])
+        roi_id = kwargs['roi_id']
+        analysis, _ = self.domain_service.get_analysis(analysis_id)
+
+        roi_dir = get_roi_dir(analysis.slice_key, analysis.key)
+        os.makedirs(roi_dir, exist_ok=True)
+        roi_path = os.path.join(roi_dir, f'{roi_id}.jpeg')
+
+        if not fs.path_exists(roi_path):
+            res = self.slice_service.get_slice(analysis.slice_id)
+            if res.err_code != 0:
+                return res
+            slice_ = res.data['slice']
+            slice_path = os.path.join(get_slice_dir(analysis.slice_key), slice_['name'])
+            slide = open_slide(slice_path)
+            tile_image = slide.get_roi(roi_args)
+            tile_image.save(roi_path)
+
+        return AppResponse(message='Get roi succeed', data={'roi_path': roi_path})
 
     def get_marks(self, analysis_id: int) -> AppResponse[dict]:
         marks, total, message = self.domain_service.get_marks(analysis_id)

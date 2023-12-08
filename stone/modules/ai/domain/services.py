@@ -27,7 +27,7 @@ from stone.modules.ai.domain.value_objects import Mark, ALGResult
 from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
 from stone.modules.user.infrastructure.permissions import DeleteAnalysisPermission
-from stone.utils.get_path import get_dir_with_key, get_db_path, get_db_fir
+from stone.utils.get_path import get_slice_dir, get_db_path, get_db_dir, get_roi_dir
 from stone.utils.id_worker import IdWorker
 
 from stone.utils.load_yaml import load_yaml
@@ -427,28 +427,9 @@ class AiDomainService(object):
 
         deleted_count = self.repository.delete_analysis_by_pk(analysis_id)
         if deleted_count:
-            fs.remove_dir(get_db_fir(analysis.slice_key, analysis.key))
+            fs.remove_dir(get_db_dir(analysis.slice_key, analysis.key))
             return deleted_count, 'Deleted analysis succeed'
         return deleted_count, 'Deleted analysis failed'
-
-    def get_roi(self, **kwargs) -> Tuple[str, str]:
-        slice_key = kwargs['slice_key']
-        slice_name = kwargs['slice_name']
-        roi_args = ast.literal_eval(kwargs['roi_args'])
-        roi_id = kwargs['roi_id']
-
-        slice_dir = os.path.join(setting.DATA_DIR, slice_key)
-        roi_dir = os.path.join(slice_dir, 'rois')
-        os.makedirs(roi_dir, exist_ok=True)
-
-        slice_path = os.path.join(slice_dir, slice_name)
-        roi_path = os.path.join(roi_dir, f'{roi_id}.jpeg')
-
-        if not fs.path_exists(roi_path):
-            slide = open_slide(slice_path)
-            tile_image = slide.get_roi(roi_args)
-            tile_image.save(roi_path)
-        return roi_path, 'Get roi succeed'
 
     @connect_slice_db()
     def get_marks(self, analysis_id: int) -> Tuple[List[MarkEntity], Optional[int], str]:

@@ -16,7 +16,7 @@ from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSe
 from stone.modules.slice.domain.enum import DataType
 from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject
 from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
-from stone.utils.get_path import get_dir_with_key
+from stone.utils.get_path import get_slice_dir, get_tile_dir, get_slice_path, get_tile_path
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +100,7 @@ class SliceDomainService(object):
 
         slice_filename = slice_file.filename
         slice_key = uuid.uuid4().hex
-        slice_dir = get_dir_with_key(slice_key)
+        slice_dir = get_slice_dir(slice_key)
         slice_path = os.path.join(slice_dir, slice_filename)
 
         if not os.path.exists(slice_dir):
@@ -329,17 +329,13 @@ class SliceDomainService(object):
         y = kwargs['y']
         z = kwargs['z']
 
-        slice_dir = os.path.join(setting.DATA_DIR, slice_key)
-        tile_dir = os.path.join(slice_dir, 'tiles')
+        tile_dir = get_tile_dir(slice_key)
         os.makedirs(tile_dir, exist_ok=True)
-
-        slice_path = os.path.join(slice_dir, slice_name)
-        tile_path = os.path.join(tile_dir, f'{z}_{x}_{y}.jpeg')
+        tile_path = get_tile_path(slice_key, x, y, z)
 
         if not fs.path_exists(tile_path):
+            slice_path = get_slice_path(slice_key, slice_name)
             slide = open_slide(slice_path)
             tile_image = slide.get_tile(x, y, z)
             tile_image.save(tile_path)
-            # buf = BytesIO()
-            # tile_image.save(buf, 'jpeg')
         return tile_path, 'Get tile succeed'
