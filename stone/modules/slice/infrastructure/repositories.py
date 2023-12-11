@@ -20,11 +20,6 @@ class SQLAlchemySliceRepository(SQLAlchemySingleModelRepository[SliceEntity]):
     def model_class(self) -> Type[Slice]:
         return Slice
 
-    def get_slices(self, ids: Union[list, set]) -> List[SliceEntity]:
-        query = self.session.query(Slice).filter(Slice.id.in_(ids))
-        models = query.all()
-        return [SliceEntity.from_orm(model) for model in models]
-
     def delete_slices(self, ids: list) -> int:
         deleted_count = self.session.query(Slice).filter(Slice.id.in_(ids)).delete(synchronize_session=False)
         return deleted_count

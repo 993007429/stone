@@ -8,7 +8,7 @@ class SliceService(object):
         self.domain_service = domain_service
 
     def get_slice_path(self, slice_id: int) -> AppResponse[dict]:
-        slice_, message = self.domain_service.get_slice_by_id(slice_id)
+        slice_, message = self.domain_service.get_slice(slice_id)
         return AppResponse(message=message, data={'slice_path': slice_.slice_path if slice_ else None})
 
     def upload_slice(self, **kwargs) -> AppResponse[dict]:
@@ -58,19 +58,19 @@ class SliceService(object):
         return AppResponse(message=message, data={'labels': [label.dict() for label in labels]})
 
     def get_slice(self, slice_id: int) -> AppResponse[dict]:
-        slice_, message = self.domain_service.get_slice_by_id(slice_id)
+        slice_, message = self.domain_service.get_slice(slice_id)
         if not slice_:
             return AppResponse(err_code=1, message=message)
         return AppResponse(data={'slice': slice_.dict()})
 
     def get_label(self, label_id: int) -> AppResponse[dict]:
-        label, message = self.domain_service.get_label_by_id(label_id)
+        label, message = self.domain_service.get_label(label_id)
         if not label:
             return AppResponse(err_code=1, message=message)
         return AppResponse(data={'label': label.dict()})
 
     def get_dataset(self, dataset_id: int) -> AppResponse[dict]:
-        dataset, message = self.domain_service.get_dataset_by_id(dataset_id)
+        dataset, message = self.domain_service.get_dataset(dataset_id)
         if not dataset:
             return AppResponse(err_code=1, message=message)
         return AppResponse(data={'dataset': dataset.dict()})

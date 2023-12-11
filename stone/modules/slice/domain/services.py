@@ -8,10 +8,12 @@ import setting
 from stone.app.request_context import request_context
 from stone.infra.fs import fs
 from stone.libs.heimdall.dispatch import open_slide
-from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity, FilterTemplateEntity
+from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity, \
+    FilterTemplateEntity
 from stone.modules.slice.domain.enum import DataType
 from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject
-from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
+from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository, SQLAlchemyDataSetRepository, \
+    SQLAlchemyLabelRepository, SQLAlchemyFilterTemplateRepository
 from stone.utils.get_path import get_slice_dir, get_tile_dir, get_slice_path, get_tile_path
 
 logger = logging.getLogger(__name__)
@@ -19,38 +21,47 @@ logger = logging.getLogger(__name__)
 
 class SliceDomainService(object):
 
-    def __init__(self, repository: SQLAlchemySliceRepository):
-        self.repository = repository
+    def __init__(
+            self,
+            slice_repository: SQLAlchemySliceRepository,
+            dataset_repository: SQLAlchemyDataSetRepository,
+            label_repository: SQLAlchemyLabelRepository,
+            filter_template_repository: SQLAlchemyFilterTemplateRepository
+    ):
+        self.slice_repository = slice_repository
+        self.dataset_repository = dataset_repository
+        self.label_repository = label_repository
+        self.filter_template_repository = filter_template_repository
 
-    def get_slice_by_id(self, slice_id: int) -> Tuple[Optional[SliceEntity], str]:
-        slide = self.repository.get_slice_by_id(slice_id)
-        if not slide:
+    def get_slice(self, slice_id: int) -> Tuple[Optional[SliceEntity], str]:
+        slice_ = self.slice_repository.get(slice_id)
+        if not slice_:
             return None, 'No slice'
-        return slide, 'Get slice succeed'
+        return slice_, 'Get slice succeed'
 
-    def get_label_by_id(self, label_id: int) -> Tuple[Optional[LabelEntity], str]:
-        label = self.repository.get_label_by_id(label_id)
+    def get_label(self, label_id: int) -> Tuple[Optional[LabelEntity], str]:
+        label = self.label_repository.get(label_id)
         if not label:
             return None, 'No label'
         return label, 'Get label succeed'
 
-    def get_dataset_by_id(self, dataset_id: int) -> Tuple[Optional[DataSetEntity], str]:
-        dataset = self.repository.get_dataset_by_id(dataset_id)
+    def get_dataset(self, dataset_id: int) -> Tuple[Optional[DataSetEntity], str]:
+        dataset = self.dataset_repository.get(dataset_id)
         if not dataset:
             return None, 'No dataset'
         return dataset, 'Get dataset succeed'
 
     def get_dataset_statistics(self, dataset_id: int) -> Tuple[Optional[DatasetStatisticsValueObject], str]:
-        dataset = self.repository.get_dataset_by_id(dataset_id)
+        dataset = self.dataset_repository.get(dataset_id)
         if not dataset:
             return None, 'No dataset'
 
-        dataset_slices = self.repository.get_dataset_slices_by_dataset(dataset_id)
+        dataset_slices = self.dataset_repository.get_dataset_slices_by_dataset(dataset_id)
         slice_ids = [dataset_slice.slice_id for dataset_slice in dataset_slices]
 
         annotations_count = []
 
-        slices = self.repository.get_slices(set(slice_ids))
+        slices = self.slice_repository.gets(set(slice_ids))
         data_type_values = [slice_.data_type for slice_ in slices]
         total_data_types = len(data_type_values)
 
@@ -68,7 +79,7 @@ class SliceDomainService(object):
         data_types_statistics = [{'name': key, 'count': count - 1, 'ratio': round((count - 1) / total_data_types, 2)}
                                  for key, count in Counter(data_type_names).items()]
 
-        slice_labels = self.repository.get_slice_labels_by_slice_ids(set(slice_ids))
+        slice_labels = self.slice_repository.get_slice_labels_by_slice_ids(set(slice_ids))
         label_names = [slice_label.label_name for slice_label in slice_labels]
         total_label_names = len(label_names)
         label_names_statistics = [{'name': key, 'count': count, 'ratio': round(count / total_label_names, 2)}
@@ -88,8 +99,7 @@ class SliceDomainService(object):
         return dataset_statistics, 'Get dataset_statistics succeed'
 
     def get_slice_fields(self) -> list:
-        fields = self.repository.get_slice_fields()
-        return fields
+        return self.slice_repository.get_slice_fields()
 
     def upload_slice(self, **kwargs) -> Tuple[str, str]:
         slice_file = kwargs['slice_file']
@@ -116,10 +126,10 @@ class SliceDomainService(object):
         return slice_key, slice_filename
 
     def create_slice(self, **kwargs) -> Tuple[Optional[SliceEntity], str]:
-        slice_ = SliceEntity.parse_obj(kwargs)
-        succeed, new_slice = self.repository.save_slice(slice_)
-        if not succeed:
-            return None, 'Duplicate slice'
+        slice_to_save = SliceEntity.parse_obj(kwargs)
+        new_slice = self.slice_repository.save(slice_to_save)
+        if not new_slice:
+            return None, 'Create slice failed'
         return new_slice, 'Create slice succeed'
 
     def create_label(self, **kwargs) -> Tuple[Optional[LabelEntity], str]:
@@ -277,7 +287,7 @@ class SliceDomainService(object):
         return deleted_count, 'Delete dataset succeed'
 
     def copy_dataset(self, dataset_id: int) -> Tuple[Optional[DataSetEntity], str]:
-        old_dataset = self.repository.get_dataset_by_id(dataset_id)
+        old_dataset = self.repository.get_dataset(dataset_id)
         if not old_dataset:
             return None, 'No dataset selected'
 
@@ -303,7 +313,7 @@ class SliceDomainService(object):
             return None, 'Duplicate label name'
 
         updated_count, message = self.repository.update_label(label_id, label_data)
-        new_label = self.repository.get_label_by_id(label_id)
+        new_label = self.repository.get_label(label_id)
         if updated_count:
             return new_label, message
         return None, message
@@ -313,7 +323,7 @@ class SliceDomainService(object):
         dataset_data = kwargs['dataset_data']
 
         updated_count = self.repository.update_dataset(dataset_id, dataset_data)
-        new_dataset = self.repository.get_dataset_by_id(dataset_id)
+        new_dataset = self.repository.get_dataset(dataset_id)
         if updated_count:
             return new_dataset, 'Update dataset succeed'
         return None, 'Update dataset failed'
