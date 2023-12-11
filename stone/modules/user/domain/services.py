@@ -9,8 +9,8 @@ from stone.modules.user.utils.auth import verify_password, hash_password, get_to
 
 class UserDomainService(object):
 
-    def __init__(self, repository: SQLAlchemyUserRepository):
-        self.repository = repository
+    def __init__(self, user_repository: SQLAlchemyUserRepository):
+        self.user_repository = user_repository
 
     def create_user(self, **kwargs) -> Tuple[Optional[UserEntity], str]:
         kwargs['password_hash'] = hash_password(kwargs['password'])
@@ -19,25 +19,24 @@ class UserDomainService(object):
         if not kwargs.get('creator'):
             current_user = request_context.current_user
             kwargs['creator'] = current_user.username
-        new_user = UserEntity.parse_obj(kwargs)
-        success, message = self.repository.save(new_user)
-        if success:
-            user = self.repository.get_user_by_name(kwargs['username'])
-            return user, message
-        return None, message
+        user_to_save = UserEntity.parse_obj(kwargs)
+        new_user = self.user_repository.save(user_to_save)
+        if not new_user:
+            return None, 'Create user failed'
+        return new_user, 'Create user succeed'
 
     def get_users(self, **kwargs) -> Tuple[List[UserEntity], dict, str]:
         page = kwargs['page']
         per_page = kwargs['per_page']
         names_to_exclude = ['sa']
-        users, pagination = self.repository.get_users(page, per_page, names_to_exclude)
+        users, pagination = self.user_repository.get_users(page, per_page, names_to_exclude)
         return users, pagination, 'Get users succeed'
 
     def get_user(self, userid: int) -> Tuple[Optional[UserEntity], str]:
-        user = self.repository.get_user_by_pk(userid)
+        user = self.user_repository.get(userid)
         if not user:
-            return None, 'no user'
-        return user, 'get user success'
+            return None, 'No user'
+        return user, 'Get user success'
 
     def update_user(self, **kwargs) -> Tuple[Optional[UserEntity], str]:
         user_id = kwargs['user_id']
@@ -45,20 +44,20 @@ class UserDomainService(object):
         user_data['password_hash'] = hash_password(user_data['password'])
         del user_data['password']
 
-        updated_count, message = self.repository.update_user(user_id, user_data)
-        if updated_count:
-            new_dataset = self.repository.get_user_by_pk(user_id)
-            return new_dataset, 'Update user succeed'
-        return None, 'Update user failed'
+        updated_count = self.user_repository.update(user_id, user_data)
+        if not updated_count:
+            return None, 'Update user failed'
+        user = self.user_repository.get(user_id)
+        return user, 'Update user succeed'
 
     def delete_user(self, userid: int) -> Tuple[int, str]:
-        deleted_count = self.repository.delete_user_by_pk(userid)
-        if deleted_count:
-            return deleted_count, 'Delete user succeed'
-        return deleted_count, 'No user deleted'
+        deleted_count = self.user_repository.delete(userid)
+        if not deleted_count:
+            return deleted_count, 'No user deleted'
+        return deleted_count, 'Delete user succeed'
 
     def login(self, **kwargs) -> Tuple[Optional[LoginUser], str]:
-        user = self.repository.get_user_by_name(kwargs['username'])
+        user = self.user_repository.get_user_by_name(kwargs['username'])
         if not user:
             return None, 'No user'
 

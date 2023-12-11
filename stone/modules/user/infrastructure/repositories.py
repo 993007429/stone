@@ -9,7 +9,7 @@ from stone.modules.user.infrastructure.models import User
 from stone.seedwork.infrastructure.repositories import SQLAlchemySingleModelRepository
 
 
-class SQLAlchemyUserRepository(SQLAlchemySingleModelRepository):
+class SQLAlchemyUserRepository(SQLAlchemySingleModelRepository[UserEntity]):
 
     @property
     def model_class(self) -> Type[User]:
@@ -29,15 +29,4 @@ class SQLAlchemyUserRepository(SQLAlchemySingleModelRepository):
         offset = min((page - 1), math.floor(total / per_page)) * per_page
         query = query.offset(offset).limit(per_page)
 
-        pagination = {
-            'total': total,
-            'page': page,
-            'per_page': per_page
-        }
-
-        users = []
-        for model in query.all():
-            entity = UserEntity.from_orm(model)
-            users.append(entity)
-
-        return users, pagination
+        return [UserEntity.from_orm(model) for model in query.all()], {'total': total, 'page': page, 'per_page': per_page}

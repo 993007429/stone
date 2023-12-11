@@ -23,13 +23,13 @@ class UserService(object):
     def get_user(self, userid: int) -> AppResponse[dict]:
         user, message = self.domain_service.get_user(userid)
         if not user:
-            return AppResponse(message=message)
+            return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'user': user.dict()})
 
     def update_user(self, **kwargs) -> AppResponse[dict]:
         user, message = self.domain_service.update_user(**kwargs)
         if not user:
-            return AppResponse(message=message)
+            return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'user': user.dict()})
 
     def login(self, **kwargs) -> AppResponse[dict]:

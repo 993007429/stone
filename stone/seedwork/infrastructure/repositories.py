@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABCMeta
 from contextvars import ContextVar
-from typing import Generic, Optional, Type, Tuple
+from typing import Generic, Optional, Type, Tuple, Union, List
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -28,26 +28,46 @@ class SQLAlchemySingleModelRepository(SQLAlchemyRepository, Generic[E]):
     def model_class(self) -> Type[Base]:
         ...
 
-    def save_entity(self, entity: E) -> bool:
+    def save(self, entity: E) -> Optional[E]:
         model = self.model_class(**entity.dict())
         try:
             self.session.add(model)
             self.session.flush([model])
         except IntegrityError:
-            return False
+            return None
+        return E.from_orm(model)
+
+    def batch_save(self, entities: List[E]) -> bool:
+        for entity in entities:
+            self.save(entity)
         return True
 
-    def get_entity_by_pk(self, pk: int) -> Optional[E]:
+    def get(self, pk: int) -> Optional[E]:
         query = self.session.query(self.model_class).filter(self.model_class.id == pk)
         model = query.first()
         if not model:
             return None
         return E.from_orm(model)
 
-    def update_entity_by_pk(self, pk: int, update_data: dict) -> int:
+    def gets(self, ids: Optional[Union[list, set]]) -> List[Optional[E]]:
+        query = self.session.query(self.model_class)
+        if ids:
+            query = query.filter(self.model_class.in_(ids))
+        models = query.all()
+        return [E.from_orm(model) for model in models]
+
+    def update(self, pk: int, update_data: dict) -> int:
         updated_count = self.session.query(self.model_class).filter(self.model_class.id == pk).update(update_data, synchronize_session=False)
         return updated_count
 
-    def delete_entity_by_pk(self, pk: int) -> int:
+    def batch_update(self, ids: Union[list, set], update_data: dict) -> int:
+        updated_count = self.session.query(self.model_class).filter(self.model_class.in_(ids)).update(update_data, synchronize_session=False)
+        return updated_count
+
+    def delete(self, pk: int) -> int:
         deleted_count = self.session.query(self.model_class).filter(self.model_class.id == pk).delete(synchronize_session=False)
+        return deleted_count
+
+    def batch_delete(self, ids: Union[list, set]) -> int:
+        deleted_count = self.session.query(self.model_class).filter(self.model_class.id.in_(ids)).delete(synchronize_session=False)
         return deleted_count
