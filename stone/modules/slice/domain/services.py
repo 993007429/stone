@@ -340,3 +340,17 @@ class SliceDomainService(object):
         filter_template = FilterTemplateEntity.parse_obj(kwargs)
         succeed, filter_template = self.repository.save_filter_template(filter_template)
         return filter_template, 'Create filter template succeed'
+
+    def delete_filter_template(self, label_id: int) -> Tuple[int, str]:
+        deleted_count = self.repository.delete_label(label_id)
+        return deleted_count, 'Delete labels succeed'
+
+    def get_filter_templates(self) -> Tuple[Optional[FilterTemplateEntity], str]:
+        filter_templates = self.repository.get_filter_templates()
+        return filter_templates, 'Get filter templates succeed'
+
+    def get_filter_template_by_id(self, label_id: int) -> Tuple[Optional[LabelEntity], str]:
+        filter_template = self.repository.get_filter_template_by_id(label_id)
+        if not filter_template:
+            return None, 'No filter template'
+        return filter_template, 'Get filter template succeed'

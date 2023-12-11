@@ -1,3 +1,5 @@
+from typing import TypeVar
+
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -10,3 +12,6 @@ class BaseEntity(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+E = TypeVar('E', bound=BaseEntity)
