@@ -8,7 +8,7 @@ import setting
 from stone.app.request_context import request_context
 from stone.infra.fs import fs
 from stone.libs.heimdall.dispatch import open_slide
-from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity
+from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity, FilterTemplateEntity
 from stone.modules.slice.domain.enum import DataType
 from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject
 from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
@@ -335,3 +335,8 @@ class SliceDomainService(object):
             tile_image = slide.get_tile(x, y, z)
             tile_image.save(tile_path)
         return tile_path, 'Get tile succeed'
+
+    def create_filter_template(self, **kwargs) -> Tuple[Optional[FilterTemplateEntity], str]:
+        filter_template = FilterTemplateEntity.parse_obj(kwargs)
+        succeed, filter_template = self.repository.save_filter_template(filter_template)
+        return filter_template, 'Create filter template succeed'

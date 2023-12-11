@@ -7,10 +7,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity, DataSetEntity, \
-    DataSetSliceEntity
+    DataSetSliceEntity, FilterTemplateEntity
 from stone.modules.slice.domain.repositories import SliceRepository
 from stone.modules.slice.domain.enum import Condition, LogicType
-from stone.modules.slice.infrastructure.models import Slice, Label, SliceLabel, DataSet, DataSetSlice
+from stone.modules.slice.infrastructure.models import Slice, Label, SliceLabel, DataSet, DataSetSlice, FilterTemplate
 
 
 class SQLAlchemySliceRepository(SliceRepository):
@@ -171,6 +171,12 @@ class SQLAlchemySliceRepository(SliceRepository):
             self._session.flush([model])
         except IntegrityError:
             return False, None
+        return True, entity.from_orm(model)
+
+    def save_filter_template(self, entity: FilterTemplateEntity) -> Tuple[bool, Optional[FilterTemplateEntity]]:
+        model = FilterTemplate(**entity.dict())
+        self._session.add(model)
+        self._session.flush([model])
         return True, entity.from_orm(model)
 
     def save_data_set(self, entity: DataSetEntity) -> Tuple[bool, Optional[DataSetEntity]]:

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer, DateTime, BigInteger, Float, Boolean, SmallInteger, text, literal_column, Index
+from sqlalchemy import Column, String, Integer, DateTime, BigInteger, Float, Boolean, SmallInteger, text, \
+    literal_column, Index, JSON
 
 from stone.modules.slice.domain.enum import DataType, SliceAnalysisStat
 from stone.seedwork.infrastructure.models import Base
@@ -83,6 +84,14 @@ class Label(Base):
 
     name = Column(String(255), nullable=False, unique=True)
     creator = Column(String(255), nullable=True)
+
+
+class FilterTemplate(Base):
+    __tablename__ = 'filter_template'
+
+    name = Column(String(255), nullable=False)
+    logic = Column(String(255), nullable=False)
+    fields = Column(JSON, default=[], nullable=True)
 
 
 class DataSet(Base):

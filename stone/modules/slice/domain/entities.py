@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 from stone.seedwork.domain.entities import BaseEntity
@@ -58,6 +58,15 @@ class SliceEntity(BaseEntity):
 class LabelEntity(BaseEntity):
     name: Optional[str]
     creator: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
+class FilterTemplateEntity(BaseEntity):
+    name: Optional[str]
+    logic: Optional[str]
+    fields: List[dict]
 
     class Config:
         orm_mode = True

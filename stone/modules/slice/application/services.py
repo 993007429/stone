@@ -132,3 +132,9 @@ class SliceService(object):
     def get_tile(self, **kwargs) -> AppResponse[dict]:
         tile_path, message = self.domain_service.get_tile(**kwargs)
         return AppResponse(message=message, data={'tile_path': tile_path})
+
+    def create_filter_template(self, **kwargs) -> AppResponse[dict]:
+        filter_template, message = self.domain_service.create_filter_template(**kwargs)
+        if not filter_template:
+            return AppResponse(err_code=1, message=message)
+        return AppResponse(message=message, data={'filter_template': filter_template.dict()})

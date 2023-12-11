@@ -5,7 +5,7 @@ import setting
 from stone.app.api.ai import ai_blueprint
 from stone.app.api.analysis import analysis_blueprint
 from stone.app.api.dataset import dataset_blueprint
-from stone.app.api.ft import ft_blueprint
+from stone.app.api.ft import filter_template_blueprint
 from stone.app.api.label import label_blueprint
 from stone.app.api.slice import slice_blueprint
 from stone.app.api.user import user_blueprint
@@ -20,7 +20,7 @@ api_blueprint.register_blueprint(ai_blueprint)
 api_blueprint.register_blueprint(analysis_blueprint)
 api_blueprint.register_blueprint(dataset_blueprint)
 api_blueprint.register_blueprint(label_blueprint)
-api_blueprint.register_blueprint(ft_blueprint)
+api_blueprint.register_blueprint(filter_template_blueprint)
 
 
 def api_before_request():

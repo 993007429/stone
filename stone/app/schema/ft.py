@@ -7,26 +7,26 @@ class FieldCondition(Schema):
     condition = String(required=True)
 
 
-class FTIn(Schema):
+class FilterTemplateIn(Schema):
     name = String(required=True)
     logic = String(required=True)
-    fields = List(Nested(FieldCondition()))
+    fields = List(Nested(FieldCondition()), required=True)
 
 
-class FTOut(Schema):
+class FilterTemplateOut(Schema):
     id = Integer(required=True)
     name = String(required=True)
     logic = String(required=True)
     fields = List(Nested(FieldCondition()), required=True)
 
 
-class SingleFTOut(Schema):
+class SingleFilterTemplateOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Dict(keys=String(), values=Nested(FTOut()), required=True)
+    data = Nested(FilterTemplateOut())
 
 
-class ListFTOut(Schema):
+class ListFilterTemplateOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Dict(keys=String(), values=List(Nested(FTOut())), required=True)
+    data = Dict(keys=String(), values=List(Nested(FilterTemplateOut())), required=True)
