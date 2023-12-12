@@ -1,21 +1,17 @@
-from abc import ABCMeta, abstractmethod
-from typing import Optional
+from abc import ABCMeta
+from typing import Optional, List, Tuple
 
-from stone.modules.ai.domain.value_objects import AIType
+from stone.modules.ai.domain.entities import AnalysisEntity, MarkEntity
+from stone.seedwork.domain.repositories import SingleModelRepository
 
 
-class AIRepository(metaclass=ABCMeta):
+class MarkRepository(SingleModelRepository[MarkEntity], metaclass=ABCMeta):
 
-    @abstractmethod
-    def create_mark_tables(self, ai_type: AIType):
+    def create_mark_tables(self, ai_model: str):
         ...
 
-    @property
-    @abstractmethod
-    def mark_table_suffix(self) -> Optional[str]:
-        ...
 
-    @mark_table_suffix.setter
-    @abstractmethod
-    def mark_table_suffix(self, value):
+class AnalysisRepository(SingleModelRepository[AnalysisEntity], metaclass=ABCMeta):
+
+    def get_analyses(self, page: int, per_page: int, slice_id: int, userid: Optional[int]) -> Tuple[List[AnalysisEntity], dict]:
         ...

@@ -5,7 +5,7 @@ from stone.modules.user.domain.entities import UserEntity
 from stone.seedwork.domain.repositories import SingleModelRepository
 
 
-class UserRepository(SingleModelRepository, metaclass=ABCMeta):
+class UserRepository(SingleModelRepository[UserEntity], metaclass=ABCMeta):
 
     def get_user_by_name(self, username: str) -> Optional[UserEntity]:
         ...

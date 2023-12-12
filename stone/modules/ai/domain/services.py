@@ -16,6 +16,7 @@ from stone.consts.her2 import Her2Consts
 from stone.infra.cache import cache
 from stone.infra.fs import fs
 from stone.modules.ai.domain.enum import AIModel
+from stone.modules.ai.domain.repositories import MarkRepository, AnalysisRepository
 from stone.modules.ai.libs.algorithms.DNA1.dna_alg import DNA_1020
 from stone.libs.heimdall.dispatch import open_slide
 from stone.celery.app import app as celery_app
@@ -23,7 +24,6 @@ from celery.exceptions import TimeoutError as CeleryTimeoutError
 
 from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity, AnalysisVO
 from stone.modules.ai.domain.value_objects import Mark, ALGResult
-from stone.modules.ai.infrastructure.repositories import SQLAlchemyAIRepository
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
 from stone.utils.get_path import get_db_path, get_db_dir
 from stone.utils.id_worker import IdWorker
@@ -109,8 +109,9 @@ def connect_slice_db():
 class AiDomainService(object):
     RANK_AI_TASK = RANK_AI_TASK
 
-    def __init__(self, repository: SQLAlchemyAIRepository):
-        self.repository = repository
+    def __init__(self, mark_repository: MarkRepository, analysis_repository: AnalysisRepository):
+        self.mark_repository = mark_repository
+        self.analysis_repository = analysis_repository
 
     def get_task_status(self, task_id: str) -> Tuple[str, Optional[dict]]:
         task_queue = cache.get(self.RANK_AI_TASK, [])

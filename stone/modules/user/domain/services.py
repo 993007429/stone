@@ -2,14 +2,14 @@ from typing import Optional, List, Tuple
 
 from stone.app.request_context import request_context
 from stone.modules.user.domain.entities import UserEntity
+from stone.modules.user.domain.repositories import UserRepository
 from stone.modules.user.domain.value_objects import LoginUser
-from stone.modules.user.infrastructure.repositories import SQLAlchemyUserRepository
 from stone.modules.user.utils.auth import verify_password, hash_password, get_token_for_user
 
 
 class UserDomainService(object):
 
-    def __init__(self, user_repository: SQLAlchemyUserRepository):
+    def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 
     def create_user(self, **kwargs) -> Tuple[Optional[UserEntity], str]:

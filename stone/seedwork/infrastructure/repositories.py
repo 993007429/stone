@@ -13,11 +13,11 @@ from stone.seedwork.infrastructure.models import Base
 class SQLAlchemyRepository(object):
 
     def __init__(self, session: ContextVar):
-        self._session_cv = session
+        self.session_cv = session
 
     @property
     def session(self) -> Session:
-        s = self._session_cv.get()
+        s = self.session_cv.get()
         assert s is not None
         return s
 
@@ -39,8 +39,7 @@ class SQLAlchemySingleModelRepository(SingleModelRepository, SQLAlchemyRepositor
         return E.from_orm(model)
 
     def batch_save(self, entities: List[E]) -> bool:
-        for entity in entities:
-            self.save(entity)
+        self.session.bulk_insert_mappings(self.model_class, [entity.dict() for entity in entities])
         return True
 
     def get(self, pk: int) -> Optional[E]:
