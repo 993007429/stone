@@ -1,14 +1,11 @@
 import math
-from contextvars import ContextVar
 from typing import List, Optional, Tuple, Union, Type
 
 from sqlalchemy import not_, and_, or_
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
 
 from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity, DataSetEntity, \
     DataSetSliceEntity, FilterTemplateEntity
-from stone.modules.slice.domain.repositories import SliceRepository
 from stone.modules.slice.domain.enum import Condition, LogicType
 from stone.modules.slice.infrastructure.models import Slice, Label, SliceLabel, DataSet, DataSetSlice, FilterTemplate
 from stone.seedwork.infrastructure.repositories import SQLAlchemySingleModelRepository

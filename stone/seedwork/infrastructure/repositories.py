@@ -1,11 +1,12 @@
-from abc import abstractmethod, ABCMeta
+from abc import abstractmethod
 from contextvars import ContextVar
-from typing import Generic, Optional, Type, Tuple, Union, List
+from typing import Generic, Optional, Type, Union, List
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from stone.seedwork.domain.entities import E
+from stone.seedwork.domain.repositories import SingleModelRepository
 from stone.seedwork.infrastructure.models import Base
 
 
@@ -21,7 +22,7 @@ class SQLAlchemyRepository(object):
         return s
 
 
-class SQLAlchemySingleModelRepository(SQLAlchemyRepository, Generic[E]):
+class SQLAlchemySingleModelRepository(SingleModelRepository, SQLAlchemyRepository, Generic[E]):
 
     @property
     @abstractmethod

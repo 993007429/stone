@@ -1,15 +1,13 @@
 import math
 from typing import List, Optional, Tuple, Union, Type
 
-from sqlalchemy.exc import IntegrityError
-
 from stone.modules.user.domain.entities import UserEntity
 from stone.modules.user.domain.repositories import UserRepository
 from stone.modules.user.infrastructure.models import User
 from stone.seedwork.infrastructure.repositories import SQLAlchemySingleModelRepository
 
 
-class SQLAlchemyUserRepository(SQLAlchemySingleModelRepository[UserEntity]):
+class SQLAlchemyUserRepository(UserRepository, SQLAlchemySingleModelRepository[UserEntity]):
 
     @property
     def model_class(self) -> Type[User]:
