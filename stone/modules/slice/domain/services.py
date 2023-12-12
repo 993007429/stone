@@ -8,12 +8,10 @@ import setting
 from stone.app.request_context import request_context
 from stone.infra.fs import fs
 from stone.libs.heimdall.dispatch import open_slide
-from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity, \
-    FilterTemplateEntity
+from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity, FilterTemplateEntity
 from stone.modules.slice.domain.enum import DataType
+from stone.modules.slice.domain.repositories import FilterTemplateRepository, DataSetRepository, SliceRepository, LabelRepository
 from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject
-from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository, SQLAlchemyDataSetRepository, \
-    SQLAlchemyLabelRepository, SQLAlchemyFilterTemplateRepository
 from stone.utils.get_path import get_slice_dir, get_tile_dir, get_slice_path, get_tile_path
 
 logger = logging.getLogger(__name__)
@@ -23,10 +21,10 @@ class SliceDomainService(object):
 
     def __init__(
             self,
-            slice_repository: SQLAlchemySliceRepository,
-            dataset_repository: SQLAlchemyDataSetRepository,
-            label_repository: SQLAlchemyLabelRepository,
-            filter_template_repository: SQLAlchemyFilterTemplateRepository
+            slice_repository: SliceRepository,
+            dataset_repository: DataSetRepository,
+            label_repository: LabelRepository,
+            filter_template_repository: FilterTemplateRepository
     ):
         self.slice_repository = slice_repository
         self.dataset_repository = dataset_repository
@@ -161,7 +159,7 @@ class SliceDomainService(object):
         labels, pagination = self.label_repository.filter_labels(page, per_page, filters)
         new_labels = []
         for label in labels:
-            slice_labels = self.label_repository.get_slice_labels_by_label(label.id)
+            slice_labels = self.slice_repository.get_slice_labels_by_label(label.id)
             label_dict = label.dict()
             label_dict['count'] = len(slice_labels)
             new_label = LabelValueObject.parse_obj(label_dict)

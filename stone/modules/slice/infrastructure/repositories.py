@@ -7,11 +7,13 @@ from sqlalchemy.exc import IntegrityError
 from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity, DataSetEntity, \
     DataSetSliceEntity, FilterTemplateEntity
 from stone.modules.slice.domain.enum import Condition, LogicType
+from stone.modules.slice.domain.repositories import SliceRepository, DataSetRepository, LabelRepository, \
+    FilterTemplateRepository
 from stone.modules.slice.infrastructure.models import Slice, Label, SliceLabel, DataSet, DataSetSlice, FilterTemplate
 from stone.seedwork.infrastructure.repositories import SQLAlchemySingleModelRepository
 
 
-class SQLAlchemySliceRepository(SQLAlchemySingleModelRepository[SliceEntity]):
+class SQLAlchemySliceRepository(SliceRepository, SQLAlchemySingleModelRepository[SliceEntity]):
 
     @property
     def model_class(self) -> Type[Slice]:
@@ -145,7 +147,7 @@ class SQLAlchemySliceRepository(SQLAlchemySingleModelRepository[SliceEntity]):
         return slices, pagination
 
 
-class SQLAlchemyDataSetRepository(SQLAlchemySingleModelRepository[DataSetEntity]):
+class SQLAlchemyDataSetRepository(DataSetRepository, SQLAlchemySingleModelRepository[DataSetEntity]):
 
     @property
     def model_class(self) -> Type[DataSet]:
@@ -244,7 +246,7 @@ class SQLAlchemyDataSetRepository(SQLAlchemySingleModelRepository[DataSetEntity]
         return deleted_count
 
 
-class SQLAlchemyLabelRepository(SQLAlchemySingleModelRepository[LabelEntity]):
+class SQLAlchemyLabelRepository(LabelRepository, SQLAlchemySingleModelRepository[LabelEntity]):
 
     @property
     def model_class(self) -> Type[Label]:
@@ -329,7 +331,7 @@ class SQLAlchemyLabelRepository(SQLAlchemySingleModelRepository[LabelEntity]):
         return deleted_count
 
 
-class SQLAlchemyFilterTemplateRepository(SQLAlchemySingleModelRepository[FilterTemplateEntity]):
+class SQLAlchemyFilterTemplateRepository(FilterTemplateRepository, SQLAlchemySingleModelRepository[FilterTemplateEntity]):
 
     @property
     def model_class(self) -> Type[FilterTemplate]:
