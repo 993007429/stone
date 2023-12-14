@@ -34,6 +34,10 @@ class SliceService(object):
             return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'dataset': dataset.dict()})
 
+    def get_filter_templates(self) -> AppResponse[dict]:
+        filter_templates, message = self.domain_service.get_filter_templates()
+        return AppResponse(message=message, data={'filter_templates': [filter_template.dict() for filter_template in filter_templates]})
+
     def filter_slices(self, **kwargs) -> AppResponse[dict]:
         slices, pagination, message = self.domain_service.filter_slices(**kwargs)
         return AppResponse(message=message, data={'slices': [slice_.dict() for slice_ in slices]}, pagination=pagination)
@@ -76,6 +80,12 @@ class SliceService(object):
             return AppResponse(err_code=1, message=message)
         return AppResponse(data={'dataset': dataset.dict()})
 
+    def get_filter_template(self, filter_template_id: int) -> AppResponse[dict]:
+        filter_template, message = self.domain_service.get_filter_template(filter_template_id)
+        if not filter_template:
+            return AppResponse(err_code=1, message=message)
+        return AppResponse(data={'filter_template': filter_template.dict()})
+
     def get_dataset_statistics(self, dataset_id: int) -> AppResponse[dict]:
         dataset_statistics, message = self.domain_service.get_dataset_statistics(dataset_id)
         if not dataset_statistics:
@@ -112,6 +122,10 @@ class SliceService(object):
 
     def delete_dataset(self, dataset_id: int) -> AppResponse[dict]:
         deleted_count, message = self.domain_service.delete_dataset(dataset_id)
+        return AppResponse(message=message, data={'affected_count': deleted_count})
+
+    def delete_filter_template(self, filter_template_id: int) -> AppResponse[dict]:
+        deleted_count, message = self.domain_service.delete_filter_template(filter_template_id)
         return AppResponse(message=message, data={'affected_count': deleted_count})
 
     def copy_dataset(self, dataset_id: int) -> AppResponse[dict]:

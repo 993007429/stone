@@ -8,8 +8,8 @@ filter_template_blueprint = APIBlueprint('筛选模板', __name__, url_prefix='/
 @filter_template_blueprint.get('')
 @filter_template_blueprint.output(ListFilterTemplateOut)
 @filter_template_blueprint.doc(summary='筛选模板列表', security='ApiAuth')
-def get_filter_templates(query_data, json_data):
-    res = AppServiceFactory.slice_service.get_filter_templates(**query_data, **json_data)
+def get_filter_templates():
+    res = AppServiceFactory.slice_service.get_filter_templates()
     return res.response
 
 

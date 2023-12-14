@@ -84,7 +84,7 @@ class SliceDomainService(object):
             slice_labels = self.slice_repository.get_slice_labels_by_label_ids(label_ids)
             slice_ids = [slice_label.slice_id for slice_label in slice_labels]
 
-        slices, pagination = self.slice_repository.filter(page, per_page, logic, filters, set(slice_ids))
+        slices, pagination = self.slice_repository.filter(page, per_page, filters, logic, set(slice_ids))
 
         new_slices = []
         for slice_ in slices:
@@ -108,7 +108,7 @@ class SliceDomainService(object):
             slice_labels = self.slice_repository.get_slice_labels_by_label_ids(label_ids)
             slice_ids = [slice_label.slice_id for slice_label in slice_labels]
 
-        slices, pagination = self.slice_repository.filter(page, per_page, logic, filters, set(slice_ids))
+        slices, pagination = self.slice_repository.filter(page, per_page, filters, logic, set(slice_ids))
 
         new_slices = []
         for slice_ in slices:
@@ -212,6 +212,12 @@ class SliceDomainService(object):
         if not dataset:
             return None, 'No dataset'
         return dataset, 'Get dataset succeed'
+
+    def get_filter_template(self, filter_template_id: int) -> Tuple[Optional[FilterTemplateEntity], str]:
+        filter_template = self.filter_template_repository.get(filter_template_id)
+        if not filter_template:
+            return None, 'No dataset'
+        return filter_template, 'Get dataset succeed'
 
     def get_dataset_statistics(self, dataset_id: int) -> Tuple[Optional[DatasetStatisticsValueObject], str]:
         dataset = self.dataset_repository.get(dataset_id)
