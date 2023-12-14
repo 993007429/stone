@@ -1,7 +1,8 @@
 from abc import ABCMeta
-from typing import Generic, Optional, Union, List
+from typing import Generic, Optional, Union, List, Tuple
 
 from stone.seedwork.domain.entities import E
+from stone.seedwork.domain.enum import LogicType
 
 
 class SingleModelRepository(Generic[E], metaclass=ABCMeta):
@@ -28,4 +29,7 @@ class SingleModelRepository(Generic[E], metaclass=ABCMeta):
         ...
 
     def batch_delete(self, ids: Union[list, set]) -> int:
+        ...
+
+    def filter(self, page: int, per_page: int, filters: list, logic: str = LogicType.and_.value, ids: Union[list, set] = None) -> Tuple[List[E], dict]:
         ...

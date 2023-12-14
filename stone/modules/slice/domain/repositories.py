@@ -32,9 +32,6 @@ class SliceRepository(SingleModelRepository[SliceEntity], metaclass=ABCMeta):
     def add_labels(self, slice_ids: list, label_ids: list) -> int:
         ...
 
-    def filter_slices(self, page: int, per_page: int, logic: str, filters: list, slice_ids: set) -> Tuple[List[SliceEntity], dict]:
-        ...
-
 
 class DataSetRepository(SingleModelRepository[DataSetEntity], metaclass=ABCMeta):
 
@@ -53,9 +50,6 @@ class DataSetRepository(SingleModelRepository[DataSetEntity], metaclass=ABCMeta)
     def batch_save_dataset_slice(self, entities: List[DataSetSliceEntity]) -> bool:
         ...
 
-    def copy_dataset(self, dataset_id: int) -> Optional[DataSetEntity]:
-        ...
-
     def delete_dataset(self, dataset_id: int) -> int:
         ...
 
@@ -72,9 +66,6 @@ class LabelRepository(SingleModelRepository[LabelEntity], metaclass=ABCMeta):
         ...
 
     def get_labels_with_fuzzy(self, name: Optional[str]) -> List[LabelEntity]:
-        ...
-
-    def filter_labels(self, page: int, per_page: int, filters: list) -> Tuple[List[LabelEntity], dict]:
         ...
 
     def delete_label(self, label_id: int) -> int:

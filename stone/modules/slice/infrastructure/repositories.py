@@ -66,86 +66,6 @@ class SQLAlchemySliceRepository(SliceRepository, SQLAlchemySingleModelRepository
         self.session.add_all(slice_labels)
         return len(slice_ids)
 
-    def filter_slices(self, page: int, per_page: int, logic: str, filters: list, slice_ids: set)\
-            -> Tuple[List[SliceEntity], dict]:
-        query = self.session.query(Slice)
-        total = query.count()
-        if slice_ids:
-            query = query.filter(Slice.id.in_(slice_ids))
-
-        for filter_ in filters:
-            field = filter_['field']
-            condition = filter_['condition']
-            value = filter_['value']
-            if field in ['create_at']:
-                if logic == LogicType.and_.value:
-                    if condition == Condition.equal.value:
-                        query = query.filter(and_(getattr(Slice, field) == value))
-                    elif condition == Condition.greater_than.value:
-                        query = query.filter(and_(getattr(Slice, field).__gt__(value)))
-                    elif condition == Condition.less_than.value:
-                        query = query.filter(and_(getattr(Slice, field).__lt__(value)))
-                    elif condition == Condition.is_null.value:
-                        query = query.filter(and_(not_(getattr(Slice, field).is_(None))))
-                    elif condition == Condition.not_null.value:
-                        query = query.filter(and_(not_(getattr(Slice, field).is_not(None))))
-                elif logic == LogicType.or_.value:
-                    if condition == Condition.equal.value:
-                        query = query.filter(or_(getattr(Slice, field) == value))
-                    elif condition == Condition.greater_than.value:
-                        query = query.filter(and_(getattr(Slice, field) != value))
-                    elif condition == Condition.less_than.value:
-                        query = query.filter(and_(getattr(Slice, field).contains(value)))
-                    elif condition == Condition.is_null.value:
-                        query = query.filter(or_(not_(getattr(Slice, field).is_(None))))
-                    elif condition == Condition.not_null.value:
-                        query = query.filter(or_(not_(getattr(Slice, field).is_not(None))))
-            else:
-                if logic == LogicType.and_.value:
-                    if condition == Condition.equal.value:
-                        query = query.filter(and_(getattr(Slice, field) == value))
-                    elif condition == Condition.unequal.value:
-                        query = query.filter(and_(getattr(Slice, field) != value))
-                    elif condition == Condition.contain.value:
-                        query = query.filter(and_(getattr(Slice, field).contains(value)))
-                    elif condition == Condition.not_contain.value:
-                        query = query.filter(and_(not_(getattr(Slice, field).contains(value))))
-                    elif condition == Condition.is_null.value:
-                        query = query.filter(and_(not_(getattr(Slice, field).is_(None))))
-                    elif condition == Condition.not_null.value:
-                        query = query.filter(and_(not_(getattr(Slice, field).is_not(None))))
-                elif logic == LogicType.or_.value:
-                    if condition == Condition.equal.value:
-                        query = query.filter(or_(getattr(Slice, field) == value))
-                    elif condition == Condition.unequal.value:
-                        query = query.filter(or_(getattr(Slice, field) != value))
-                    elif condition == Condition.contain.value:
-                        query = query.filter(or_(getattr(Slice, field).contains(value)))
-                    elif condition == Condition.not_contain.value:
-                        query = query.filter(or_(not_(getattr(Slice, field).contains(value))))
-                    elif condition == Condition.is_null.value:
-                        query = query.filter(or_(not_(getattr(Slice, field).is_(None))))
-                    elif condition == Condition.not_null.value:
-                        query = query.filter(or_(not_(getattr(Slice, field).is_not(None))))
-
-        query = query.order_by(Slice.id)
-
-        offset = min((page - 1), math.floor(total / per_page)) * per_page
-        query = query.offset(offset).limit(per_page)
-
-        pagination = {
-            'total': total,
-            'page': page,
-            'per_page': per_page
-        }
-
-        slices = []
-        for model in query.all():
-            entity = SliceEntity.from_orm(model)
-            slices.append(entity)
-
-        return slices, pagination
-
 
 class SQLAlchemyDataSetRepository(DataSetRepository, SQLAlchemySingleModelRepository[DataSetEntity]):
 
@@ -175,51 +95,6 @@ class SQLAlchemyDataSetRepository(DataSetRepository, SQLAlchemySingleModelReposi
         self.session.add_all(dataset_slices)
         return len(slices)
 
-    def filter_datasets(self, page: int, per_page: int, filters: list) -> Tuple[List[DataSetEntity], dict]:
-        query = self.session.query(DataSet)
-        total = query.count()
-        for filter_ in filters:
-            field = filter_['field']
-            condition = filter_['condition']
-            value = filter_['value']
-            if field in ['create_at']:
-                if condition == 'equal':
-                    query = query.filter(and_(getattr(DataSet, field) == value))
-                elif condition == 'greater_than':
-                    query = query.filter(and_(getattr(DataSet, field).__gt__(value)))
-                elif condition == 'less_than':
-                    query = query.filter(and_(getattr(DataSet, field).__lt__(value)))
-                elif condition == 'is_null':
-                    query = query.filter(and_(not_(getattr(DataSet, field).is_(None))))
-                elif condition == 'not_null':
-                    query = query.filter(and_(not_(getattr(DataSet, field).is_not(None))))
-            else:
-                if condition == 'equal':
-                    query = query.filter(and_(getattr(DataSet, field) == value))
-                elif condition == 'unequal':
-                    query = query.filter(and_(getattr(DataSet, field) != value))
-                elif condition == 'contain':
-                    query = query.filter(and_(getattr(DataSet, field).contains(value)))
-                elif condition == 'not_contain':
-                    query = query.filter(and_(not_(getattr(DataSet, field).contains(value))))
-                elif condition == 'is_null':
-                    query = query.filter(and_(not_(getattr(DataSet, field).is_(None))))
-                elif condition == 'not_null':
-                    query = query.filter(and_(not_(getattr(DataSet, field).is_not(None))))
-
-        query = query.order_by(DataSet.id)
-
-        offset = min((page - 1), math.floor(total / per_page)) * per_page
-        query = query.offset(offset).limit(per_page)
-
-        pagination = {
-            'total': total,
-            'page': page,
-            'per_page': per_page
-        }
-
-        return [DataSetEntity.from_orm(model) for model in query.all()], pagination
-
     def batch_save_dataset_slice(self, entities: List[DataSetSliceEntity]) -> bool:
         models = [DataSetSlice(**entity.dict()) for entity in entities]
         try:
@@ -228,11 +103,6 @@ class SQLAlchemyDataSetRepository(DataSetRepository, SQLAlchemySingleModelReposi
         except IntegrityError:
             return False
         return True
-
-    def copy_dataset(self, dataset_id: int) -> Optional[DataSetEntity]:
-        deleted_count = self.session.query(DataSet).filter(DataSet.id == dataset_id).delete(synchronize_session=False)
-        self.session.query(DataSetSlice).filter(DataSetSlice.dataset_id == dataset_id).delete(synchronize_session=False)
-        return deleted_count
 
     def delete_dataset(self, dataset_id: int) -> int:
         deleted_count = self.session.query(DataSet).filter(DataSet.id == dataset_id).delete(synchronize_session=False)
@@ -274,56 +144,6 @@ class SQLAlchemyLabelRepository(LabelRepository, SQLAlchemySingleModelRepository
         if name:
             query = query.filter(Label.name.like(f'{name}%'))
         return [LabelEntity.from_orm(model) for model in query.all()]
-
-    def filter_labels(self, page: int, per_page: int, filters: list) -> Tuple[List[LabelEntity], dict]:
-        query = self.session.query(Label)
-        total = query.count()
-        for filter_ in filters:
-            field = filter_['field']
-            condition = filter_['condition']
-            value = filter_['value']
-            if field in ['create_at']:
-                if condition == 'equal':
-                    query = query.filter(and_(getattr(Label, field) == value))
-                elif condition == 'greater_than':
-                    query = query.filter(and_(getattr(Label, field).__gt__(value)))
-                elif condition == 'less_than':
-                    query = query.filter(and_(getattr(Label, field).__lt__(value)))
-                elif condition == 'is_null':
-                    query = query.filter(and_(not_(getattr(Label, field).is_(None))))
-                elif condition == 'not_null':
-                    query = query.filter(and_(not_(getattr(Label, field).is_not(None))))
-            else:
-                if condition == 'equal':
-                    query = query.filter(and_(getattr(Label, field) == value))
-                elif condition == 'unequal':
-                    query = query.filter(and_(getattr(Label, field) != value))
-                elif condition == 'contain':
-                    query = query.filter(and_(getattr(Label, field).contains(value)))
-                elif condition == 'not_contain':
-                    query = query.filter(and_(not_(getattr(Label, field).contains(value))))
-                elif condition == 'is_null':
-                    query = query.filter(and_(not_(getattr(Label, field).is_(None))))
-                elif condition == 'not_null':
-                    query = query.filter(and_(not_(getattr(Label, field).is_not(None))))
-
-        query = query.order_by(Label.id)
-
-        offset = min((page - 1), math.floor(total / per_page)) * per_page
-        query = query.offset(offset).limit(per_page)
-
-        pagination = {
-            'total': total,
-            'page': page,
-            'per_page': per_page
-        }
-
-        labels = []
-        for model in query.all():
-            entity = LabelEntity.from_orm(model)
-            labels.append(entity)
-
-        return labels, pagination
 
     def delete_label(self, label_id: int) -> int:
         deleted_count = self.session.query(Label).filter(Label.id == label_id).delete(synchronize_session=False)

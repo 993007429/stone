@@ -83,7 +83,7 @@ class SliceDomainService(object):
             slice_labels = self.slice_repository.get_slice_labels_by_label_ids(label_ids)
             slice_ids = [slice_label.slice_id for slice_label in slice_labels]
 
-        slices, pagination = self.slice_repository.filter_slices(page, per_page, logic, filters, set(slice_ids))
+        slices, pagination = self.slice_repository.filter(page, per_page, logic, filters, set(slice_ids))
 
         new_slices = []
         for slice_ in slices:
@@ -106,7 +106,7 @@ class SliceDomainService(object):
             slice_labels = self.slice_repository.get_slice_labels_by_label_ids(label_ids)
             slice_ids = [slice_label.slice_id for slice_label in slice_labels]
 
-        slices, pagination = self.slice_repository.filter_slices(page, per_page, logic, filters, set(slice_ids))
+        slices, pagination = self.slice_repository.filter(page, per_page, logic, filters, set(slice_ids))
 
         return slices, pagination, 'Filter slices succeed'
 
@@ -156,7 +156,7 @@ class SliceDomainService(object):
         page = kwargs['page_query']['page']
         per_page = kwargs['page_query']['per_page']
         filters = kwargs['filter']['filters']
-        labels, pagination = self.label_repository.filter_labels(page, per_page, filters)
+        labels, pagination = self.label_repository.filter(page, per_page, filters)
         new_labels = []
         for label in labels:
             slice_labels = self.slice_repository.get_slice_labels_by_label(label.id)
@@ -256,7 +256,7 @@ class SliceDomainService(object):
         page = kwargs['page_query']['page']
         per_page = kwargs['page_query']['per_page']
         filters = kwargs['filter']['filters']
-        datasets, pagination = self.dataset_repository.filter_datasets(page, per_page, filters)
+        datasets, pagination = self.dataset_repository.filter(page, per_page, filters)
 
         new_datasets = []
         for dataset in datasets:
