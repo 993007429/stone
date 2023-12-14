@@ -12,7 +12,7 @@ from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSe
 from stone.modules.slice.domain.enum import DataType
 from stone.modules.slice.domain.repositories import FilterTemplateRepository, DataSetRepository, SliceRepository, LabelRepository
 from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject
-from stone.utils.get_path import get_slice_dir, get_tile_dir, get_slice_path, get_tile_path
+from stone.utils.get_path import get_slice_dir, get_tile_dir, get_slice_path, get_tile_path, get_label_path
 
 logger = logging.getLogger(__name__)
 

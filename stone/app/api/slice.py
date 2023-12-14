@@ -103,20 +103,20 @@ def get_tile(query_data):
     return send_file(res.data.get('tile_path'))
 
 
-@slice_blueprint.get('/<int:slice_id>/label')
+@slice_blueprint.get('/label/<string:slice_key>')
 @slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
 @slice_blueprint.doc(summary='切片标签', security='ApiAuth')
-def get_label_image(slice_id):
-    AppServiceFactory.slice_service.get_label_image(slice_id)
-    return send_file('IMAGE_FOLDER', 'filename')
+def get_label_image(slice_key):
+    res = AppServiceFactory.slice_service.get_label_image(slice_key)
+    return send_file(res.data.get('label_path'))
 
 
-@slice_blueprint.get('/<int:slice_id>/thumbnail')
+@slice_blueprint.get('/thumbnail/<string:slice_key>')
 @slice_blueprint.output(FileSchema(type='string', format='binary'), content_type='image/png')
 @slice_blueprint.doc(summary='切片缩略图', security='ApiAuth')
-def get_thumbnail_image(slice_id):
-    AppServiceFactory.slice_service.get_thumbnail_image(slice_id)
-    return send_file('IMAGE_FOLDER', 'filename')
+def get_thumbnail_image(slice_key):
+    res = AppServiceFactory.slice_service.get_thumbnail_image(slice_key)
+    return send_file(res.data.get('thumbnail_path'))
 
 
 @slice_blueprint.post('/fields')

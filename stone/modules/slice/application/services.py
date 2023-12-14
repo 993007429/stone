@@ -1,5 +1,6 @@
 from stone.modules.slice.domain.services import SliceDomainService
 from stone.seedwork.application.responses import AppResponse
+from stone.utils.get_path import get_label_path, get_thumbnail_path
 
 
 class SliceService(object):
@@ -138,3 +139,11 @@ class SliceService(object):
         if not filter_template:
             return AppResponse(err_code=1, message=message)
         return AppResponse(message=message, data={'filter_template': filter_template.dict()})
+
+    def get_label_image(self, slice_key: str) -> AppResponse[dict]:
+        label_path = get_label_path(slice_key)
+        return AppResponse(data={'label_path': label_path})
+
+    def get_thumbnail_image(self, slice_key: str) -> AppResponse[dict]:
+        thumbnail_path = get_thumbnail_path(slice_key)
+        return AppResponse(data={'thumbnail_path': thumbnail_path})

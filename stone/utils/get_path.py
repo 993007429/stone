@@ -19,6 +19,14 @@ def get_tile_path(slice_key: str, x: int, y: int, z: int):
     return os.path.join(get_tile_dir(slice_key), f'{z}_{x}_{y}.jpeg')
 
 
+def get_label_path(slice_key: str):
+    return os.path.join(get_slice_dir(slice_key), 'label.png')
+
+
+def get_thumbnail_path(slice_key: str):
+    return os.path.join(get_slice_dir(slice_key), 'thumbnail.jpeg')
+
+
 def get_db_dir(slice_key: str, analysis_key: str):
     return os.path.join(get_slice_dir(slice_key), 'analyses', analysis_key)
 
