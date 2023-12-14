@@ -7,6 +7,10 @@ class SliceValueObject(SliceEntity):
     labels: List[str] = None
 
 
+class SliceThumbnailValueObject(SliceEntity):
+    thumbnail: str
+
+
 class LabelValueObject(LabelEntity):
     count: Optional[int]
 

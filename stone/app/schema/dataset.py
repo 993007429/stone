@@ -4,8 +4,8 @@ from marshmallow import validates_schema, ValidationError
 from marshmallow.validate import OneOf
 
 from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers
-from stone.modules.slice.domain.enum import Condition
 from stone.modules.slice.infrastructure.models import DataSet
+from stone.seedwork.domain.enum import Condition
 
 
 class DataSetPageQuery(PageQuery):

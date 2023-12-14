@@ -6,8 +6,8 @@ from marshmallow.fields import Integer, String, List, Nested, DateTime, Raw, Dic
 from marshmallow.validate import OneOf
 
 from stone.app.base_schema import PageQuery, PaginationSchema
-from stone.modules.slice.domain.enum import Condition
 from stone.modules.slice.infrastructure.models import Label
+from stone.seedwork.domain.enum import Condition
 
 columns_with_types = {column_name: str(column.type) for column_name, column in Label.__table__.columns.items()}
 

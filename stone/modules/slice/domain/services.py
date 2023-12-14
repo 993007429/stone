@@ -11,7 +11,8 @@ from stone.libs.heimdall.dispatch import open_slide
 from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity, FilterTemplateEntity
 from stone.modules.slice.domain.enum import DataType
 from stone.modules.slice.domain.repositories import FilterTemplateRepository, DataSetRepository, SliceRepository, LabelRepository
-from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject
+from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject, \
+    SliceThumbnailValueObject
 from stone.utils.get_path import get_slice_dir, get_tile_dir, get_slice_path, get_tile_path, get_label_path
 
 logger = logging.getLogger(__name__)
@@ -108,7 +109,13 @@ class SliceDomainService(object):
 
         slices, pagination = self.slice_repository.filter(page, per_page, logic, filters, set(slice_ids))
 
-        return slices, pagination, 'Filter slices succeed'
+        new_slices = []
+        for slice_ in slices:
+            slice_dict = slice_.dict()
+            slice_dict['thumbnail'] = request_context.slice_db_session
+            new_slice = SliceThumbnailValueObject.parse_obj(slice_dict)
+            new_slices.append(new_slice)
+        return new_slices, pagination, 'Filter slices succeed'
 
     def update_slices(self, **kwargs) -> Tuple[int, str]:
         ids = kwargs.pop('ids')

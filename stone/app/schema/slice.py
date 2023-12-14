@@ -7,8 +7,8 @@ from marshmallow.fields import Integer, String, DateTime, Float, Dict, Raw, Bool
 from marshmallow.validate import Length, OneOf
 
 from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers
-from stone.modules.slice.domain.enum import LogicType, Condition
 from stone.modules.slice.infrastructure.models import Slice
+from stone.seedwork.domain.enum import LogicType, Condition
 
 columns_with_types = {column_name: str(column.type) for column_name, column in Slice.__table__.columns.items()}
 
