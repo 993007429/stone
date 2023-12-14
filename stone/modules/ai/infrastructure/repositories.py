@@ -22,6 +22,10 @@ class SQLAlchemyMarkRepository(MarkRepository, SQLAlchemySingleModelRepository[M
         return get_ai_mark_model(self.mark_table_suffix)
 
     @property
+    def entity_class(self) -> Type[MarkEntity]:
+        return MarkEntity
+
+    @property
     def manual(self) -> 'MarkRepository':
         return self._manual
 
@@ -55,6 +59,10 @@ class SQLAlchemyAnalysisRepository(AnalysisRepository, SQLAlchemySingleModelRepo
     @property
     def model_class(self) -> Type[Analysis]:
         return Analysis
+
+    @property
+    def entity_class(self) -> Type[AnalysisEntity]:
+        return AnalysisEntity
 
     def get_analyses(self, page: int, per_page: int, slice_id: int, userid: Optional[int]) -> Tuple[List[AnalysisEntity], dict]:
         query = self.session.query(Analysis).filter(Analysis.slice_id == slice_id)

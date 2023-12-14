@@ -24,6 +24,7 @@ api_blueprint.register_blueprint(filter_template_blueprint)
 
 
 def api_before_request():
+    request_context.host_url = request.host_url
     request_context.connect_db()
     if request.path not in setting.WHITE_LIST:
         token = request.headers.get("Authorization")

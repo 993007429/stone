@@ -7,7 +7,7 @@ from sqlalchemy import and_, not_, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from stone.seedwork.domain.entities import E
+from stone.seedwork.domain.entities import E, BaseEntity
 from stone.seedwork.domain.enum import LogicType, Condition
 from stone.seedwork.domain.repositories import SingleModelRepository
 from stone.seedwork.infrastructure.models import Base
@@ -32,6 +32,11 @@ class SQLAlchemySingleModelRepository(SingleModelRepository, SQLAlchemyRepositor
     def model_class(self) -> Type[Base]:
         ...
 
+    @property
+    @abstractmethod
+    def entity_class(self) -> Type[BaseEntity]:
+        ...
+
     def save(self, entity: E) -> Optional[E]:
         model = self.model_class(**entity.dict())
         try:
@@ -39,7 +44,7 @@ class SQLAlchemySingleModelRepository(SingleModelRepository, SQLAlchemyRepositor
             self.session.flush([model])
         except IntegrityError:
             return None
-        return E.from_orm(model)
+        return self.entity_class.from_orm(model)
 
     def batch_save(self, entities: List[E]) -> bool:
         self.session.bulk_insert_mappings(self.model_class, [entity.dict() for entity in entities])
@@ -50,14 +55,14 @@ class SQLAlchemySingleModelRepository(SingleModelRepository, SQLAlchemyRepositor
         model = query.first()
         if not model:
             return None
-        return E.from_orm(model)
+        return self.entity_class.from_orm(model)
 
     def gets(self, ids: Optional[Union[list, set]]) -> List[Optional[E]]:
         query = self.session.query(self.model_class)
         if ids:
             query = query.filter(self.model_class.in_(ids))
         models = query.all()
-        return [E.from_orm(model) for model in models]
+        return [self.entity_class.from_orm(model) for model in models]
 
     def update(self, pk: int, update_data: dict) -> int:
         updated_count = self.session.query(self.model_class).filter(self.model_class.id == pk).update(update_data, synchronize_session=False)
@@ -141,7 +146,7 @@ class SQLAlchemySingleModelRepository(SingleModelRepository, SQLAlchemyRepositor
         offset = min((page - 1), math.floor(total / per_page)) * per_page
         query = query.offset(offset).limit(per_page)
 
-        entities = [E.from_orm(model) for model in query.all()]
+        entities = [self.entity_class.from_orm(model) for model in query.all()]
         pagination = {'total': total, 'page': page, 'per_page': per_page}
 
         return entities, pagination

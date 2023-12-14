@@ -13,6 +13,10 @@ class SQLAlchemyUserRepository(UserRepository, SQLAlchemySingleModelRepository[U
     def model_class(self) -> Type[User]:
         return User
 
+    @property
+    def entity_class(self) -> Type[UserEntity]:
+        return UserEntity
+
     def get_user_by_name(self, username: str) -> Optional[UserEntity]:
         query = self.session.query(User).filter(User.username == username)
         model = query.first()

@@ -5,10 +5,11 @@ from stone.modules.slice.domain.entities import DataSetEntity, LabelEntity, Slic
 
 class SliceValueObject(SliceEntity):
     labels: List[str] = None
+    label_url: str
 
 
 class SliceThumbnailValueObject(SliceEntity):
-    thumbnail: str
+    thumbnail_url: str
 
 
 class LabelValueObject(LabelEntity):

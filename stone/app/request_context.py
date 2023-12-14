@@ -8,9 +8,10 @@ from stone.modules.user.domain.value_objects import LoginUser
 
 class RequestContext:
     _db_session: ContextVar[Session] = ContextVar('_db_session', default=None)
-    _slice_db_session: ContextVar[Session] = ContextVar("_slice_db_session", default=None)
+    _slice_db_session: ContextVar[Session] = ContextVar('_slice_db_session', default=None)
     _token: ContextVar = ContextVar('_token', default=None)
-    _current_user: ContextVar = ContextVar("_current_user", default=None)
+    _current_user: ContextVar = ContextVar('_current_user', default=None)
+    _host_url: ContextVar = ContextVar('_host_url', default='')
 
     @property
     def db_session(self) -> ContextVar[Session]:
@@ -65,6 +66,14 @@ class RequestContext:
     @current_user.setter
     def current_user(self, user: LoginUser):
         self._current_user.set(user)
+
+    @property
+    def host_url(self):
+        return self._host_url.get()
+
+    @host_url.setter
+    def host_url(self, value):
+        self._host_url.set(value)
 
 
 request_context = RequestContext()

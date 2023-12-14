@@ -14,6 +14,10 @@ class SQLAlchemySliceRepository(SliceRepository, SQLAlchemySingleModelRepository
     def model_class(self) -> Type[Slice]:
         return Slice
 
+    @property
+    def entity_class(self) -> Type[SliceEntity]:
+        return SliceEntity
+
     def delete_slices(self, ids: list) -> int:
         deleted_count = self.session.query(Slice).filter(Slice.id.in_(ids)).delete(synchronize_session=False)
         return deleted_count
@@ -68,6 +72,10 @@ class SQLAlchemyDataSetRepository(DataSetRepository, SQLAlchemySingleModelReposi
     def model_class(self) -> Type[DataSet]:
         return DataSet
 
+    @property
+    def entity_class(self) -> Type[DataSetEntity]:
+        return DataSetEntity
+
     def get_datasets_with_fuzzy(self, userid: int, name: Optional[str]) -> List[DataSetEntity]:
         query = self.session.query(DataSet).filter(DataSet.userid == userid)
         if name:
@@ -117,6 +125,10 @@ class SQLAlchemyLabelRepository(LabelRepository, SQLAlchemySingleModelRepository
     def model_class(self) -> Type[Label]:
         return Label
 
+    @property
+    def entity_class(self) -> Type[LabelEntity]:
+        return LabelEntity
+
     def get_label_by_name(self, name: str) -> Optional[LabelEntity]:
         query = self.session.query(Label).filter_by(name=name)
         model = query.first()
@@ -151,3 +163,7 @@ class SQLAlchemyFilterTemplateRepository(FilterTemplateRepository, SQLAlchemySin
     @property
     def model_class(self) -> Type[FilterTemplate]:
         return FilterTemplate
+
+    @property
+    def entity_class(self) -> Type[FilterTemplateEntity]:
+        return FilterTemplateEntity

@@ -91,6 +91,7 @@ class SliceDomainService(object):
             slice_labels = self.slice_repository.get_slice_labels_by_slice(slice_.id)
             slice_dict = slice_.dict()
             slice_dict['labels'] = [slice_label.label_name for slice_label in slice_labels]
+            slice_dict['label_url'] = request_context.host_url + f'label/{slice_.key}'
             new_slice = SliceValueObject.parse_obj(slice_dict)
             new_slices.append(new_slice)
         return new_slices, pagination, 'Filter slices succeed'
@@ -100,7 +101,7 @@ class SliceDomainService(object):
         per_page = kwargs['page_query']['per_page']
         logic = kwargs['filter']['logic']
         filters = kwargs['filter']['filters']
-        label_ids = kwargs['filter']['label_ids']
+        label_ids = kwargs['filter'].get('label_ids')
 
         slice_ids = []
         if label_ids:
@@ -112,7 +113,7 @@ class SliceDomainService(object):
         new_slices = []
         for slice_ in slices:
             slice_dict = slice_.dict()
-            slice_dict['thumbnail'] = request_context.slice_db_session
+            slice_dict['thumbnail_url'] = request_context.host_url + f'thumbnail/{slice_.key}'
             new_slice = SliceThumbnailValueObject.parse_obj(slice_dict)
             new_slices.append(new_slice)
         return new_slices, pagination, 'Filter slices succeed'
