@@ -57,7 +57,7 @@ class AnalysisEntity(BaseEntity):
     username: str
     slice_id: int
     slice_key: str
-    result: str
+    ai_suggest: str
 
 
 class AnalysisVO(AnalysisEntity):

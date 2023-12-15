@@ -161,8 +161,8 @@ class AiService(object):
         if not alg_model:
             return AppResponse(err_code=1, message=f'Model does not exist: {ai_model}_{model_version}')
 
-        if ai_model in [AIModel.tct1, AIModel.tct2]:
-            result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
+        # if ai_model in [AIModel.tct1, AIModel.tct2]:
+        #     result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
         # elif ai_model in [AIModel.lct1, AIModel.lct2]:
         #     result = self.domain_service.run_lct(alg_model, ai_model, slice_path)
         # elif ai_model == AIModel.dna:
@@ -184,10 +184,12 @@ class AiService(object):
             userid=request_context.current_user.userid if request_context.current_user else 1,
             username=request_context.current_user.username if request_context.current_user else 'sa',
             slice_id=slice_id,
-            slice_key=slice_key
+            slice_key=slice_key,
+            ai_suggest=result.ai_suggest,
         )
 
-        analysis, _ = self.domain_service.create_analysis(**analysis_data)
+        analysis_res = self.slice_service.create_analysis(**analysis_data)
+        analysis = analysis_res.data['analysis']
         if not analysis or not analysis.id:
             return AppResponse(err_code=1, message='Ai analysis failed at creating analysis')
 
@@ -213,23 +215,13 @@ class AiService(object):
         message, task_status = self.domain_service.get_task_status(task_id)
         return AppResponse(message=message, data={'task_status': task_status})
 
-    def get_analyses(self, **kwargs) -> AppResponse[dict]:
-        analyses, pagination, message = self.domain_service.get_analyses(**kwargs)
-        return AppResponse(message=message, data={'analyses': [analysis.dict() for analysis in analyses]},  pagination=pagination)
-
-    def get_analysis(self, analysis_id: int) -> AppResponse[dict]:
-        analysis, message = self.domain_service.get_analysis(analysis_id)
-        return AppResponse(message=message, data={'analysis': analysis})
-
-    def delete_analysis(self, analysis_id: int) -> AppResponse[dict]:
-        deleted_count, message = self.domain_service.delete_analysis(analysis_id)
-        return AppResponse(message=message, data={'affected_count': deleted_count})
-
     def get_roi(self, **kwargs) -> AppResponse[dict]:
         analysis_id = kwargs['analysis_id']
         roi_args = ast.literal_eval(kwargs['roi_args'])
         roi_id = kwargs['roi_id']
-        analysis, _ = self.domain_service.get_analysis(analysis_id)
+
+        analysis_res = self.slice_service.get_analysis(analysis_id)
+        analysis = analysis_res.data['analysis']
 
         roi_dir = get_roi_dir(analysis.slice_key, analysis.key)
         os.makedirs(roi_dir, exist_ok=True)

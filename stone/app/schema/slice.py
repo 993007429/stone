@@ -65,9 +65,12 @@ class Filter(Schema):
                 raise ValidationError('value must be a str')
 
 
-class SliceFilter(Schema):
+class BaseFilter(Schema):
     logic = String(required=True, validate=[OneOf([LogicType.and_.value, LogicType.or_.value])])
     filters = List(Nested(Filter()), required=True)
+
+
+class SliceFilter(BaseFilter):
     label_ids = List(Integer(), required=False)
 
 
@@ -208,24 +211,23 @@ class QueryTileIn(Schema):
     z = Integer(required=True)
 
 
-class ComparisonSliceFilter(Schema):
-    logic = String(required=True, validate=[OneOf([LogicType.and_.value, LogicType.or_.value])])
-    filters = List(Nested(Filter()))
+class ComparisonSliceFilter(BaseFilter):
     ai_model = String(required=True, description='模块')
-    mode_versions = List(String(), description='模型列表')
+    model_versions = List(String(), description='模型列表')
 
     @validates_schema(pass_many=True, pass_original=True)
     def validate_value(self, data, raw_data, **kwargs):
         ai_model = data.get('ai_model')
-        mode_versions = data.get('mode_versions')
+        model_versions = data.get('model_versions')
 
         if ai_model not in models_and_versions:
             raise ValidationError(f'{ai_model} is not a valid model')
 
         for model, versions in models_and_versions.items():
             if ai_model == model:
-                if mode_versions == versions[:len(mode_versions)]:
-                    raise ValidationError(f'{mode_versions} contains a invalid version for model {ai_model}')
+                versions = [version for version in versions]
+                if not set(model_versions).issubset(set(versions)):
+                    raise ValidationError(f'{model_versions} contains invalid version for model {ai_model}')
 
 
 class AnalysisResultOut(Schema):

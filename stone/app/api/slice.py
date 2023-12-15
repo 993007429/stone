@@ -5,7 +5,7 @@ from stone.app.base_schema import APIAffectedCountOut
 from stone.app.schema.slice import SlicePageQuery, SliceFilter, SliceIdsIn, \
     ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, SliceUploadIn, \
     SliceUpdateIn, SingleSliceFieldOut, SliceAndLabelIdsIn, ApiSingleSliceOut, \
-    ApiSingleSliceUploadOut, ApiListSliceOut, QueryTileIn
+    ApiSingleSliceUploadOut, ApiListSliceOut, QueryTileIn, ApiComparisonListSliceOut
 from stone.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -117,10 +117,10 @@ def get_slice_fields():
     return res.response
 
 
-@slice_blueprint.get('/comparison')
+@slice_blueprint.post('/comparison')
 @slice_blueprint.input(SlicePageQuery, location='query')
 @slice_blueprint.input(ComparisonSliceFilter, location='json')
-@slice_blueprint.output(ComparisonListSliceOut)
+@slice_blueprint.output(ApiComparisonListSliceOut)
 @slice_blueprint.doc(summary='对比模式', security='ApiAuth')
 def filter_comparison_slices(query_data, json_data):
     res = AppServiceFactory.slice_service.filter_comparison_slices(**{'page_query': query_data, 'filter': json_data})

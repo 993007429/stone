@@ -127,8 +127,8 @@ class SliceDomainService(object):
         per_page = kwargs['page_query']['per_page']
         logic = kwargs['filter']['logic']
         filters = kwargs['filter']['filters']
-        ai_model = kwargs['ai_model']
-        model_versions = kwargs['model_versions']
+        ai_model = kwargs['filter']['ai_model']
+        model_versions = kwargs['filter']['model_versions']
 
         slices, pagination = self.slice_repository.filter(page, per_page, filters, logic)
 
@@ -139,7 +139,7 @@ class SliceDomainService(object):
         for slice_ in slices:
             slice_dict = slice_.dict(include={'id', 'key', 'name'})
             analyses = [analysis for analysis in analyses_all if analysis.slice_id == slice_.id]
-            analysis_results = [analysis.dict(include={'id', 'ai_model', 'model_version', 'result'}) for analysis in analyses]
+            analysis_results = [analysis.dict(include={'id', 'ai_model', 'model_version', 'ai_suggest'}) for analysis in analyses]
             slice_dict['analysis_results'] = analysis_results
             new_slice = SliceComparisonValueObject.parse_obj(slice_dict)
             new_slices.append(new_slice)

@@ -120,4 +120,4 @@ class Analysis(Base):
     username = Column(String(255), nullable=False, comment='执行用户名')
     slice_id = Column(Integer, nullable=False, comment='切片ID')
     slice_key = Column(String(255), nullable=False, comment='切片key')
-    result = Column(String(2000), nullable=True, comment='分析结果')
+    ai_suggest = Column(String(2000), nullable=True, comment='分析结果: AI建议')

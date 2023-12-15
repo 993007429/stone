@@ -165,3 +165,21 @@ class SliceService(object):
     def filter_comparison_slices(self, **kwargs) -> AppResponse[dict]:
         comparison_slices, pagination, message = self.domain_service.filter_comparison_slices(**kwargs)
         return AppResponse(message=message, data={'comparison_slices': [comparison_slice.dict() for comparison_slice in comparison_slices]}, pagination=pagination)
+
+    def create_analysis(self, **kwargs) -> AppResponse[dict]:
+        analysis, message = self.domain_service.create_analysis(**kwargs)
+        if not analysis:
+            return AppResponse(err_code=1, message=message)
+        return AppResponse(message=message, data={'analysis': analysis.dict()})
+
+    def get_analyses(self, **kwargs) -> AppResponse[dict]:
+        analyses, pagination, message = self.domain_service.get_analyses(**kwargs)
+        return AppResponse(message=message, data={'analyses': [analysis.dict() for analysis in analyses]},  pagination=pagination)
+
+    def get_analysis(self, analysis_id: int) -> AppResponse[dict]:
+        analysis, message = self.domain_service.get_analysis(analysis_id)
+        return AppResponse(message=message, data={'analysis': analysis})
+
+    def delete_analysis(self, analysis_id: int) -> AppResponse[dict]:
+        deleted_count, message = self.domain_service.delete_analysis(analysis_id)
+        return AppResponse(message=message, data={'affected_count': deleted_count})

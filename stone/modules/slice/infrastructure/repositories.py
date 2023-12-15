@@ -94,7 +94,7 @@ class SQLAlchemyAnalysisRepository(AnalysisRepository, SQLAlchemySingleModelRepo
         return analyses, pagination
 
     def gets_for_comparison(self, slice_ids: Union[list, set], ai_model: str, model_versions: Union[list, set]) -> List[AnalysisEntity]:
-        query = self.session.query(Analysis).filter(and_(Analysis.slice_id.in_(slice_ids), Analysis.ai_model.equal(ai_model), Analysis.model_version.in_(model_versions)))
+        query = self.session.query(Analysis).filter(and_(Analysis.slice_id.in_(slice_ids), Analysis.ai_model == ai_model, Analysis.model_version.in_(model_versions)))
         query = query.order_by(Analysis.id)
         analyses = [AnalysisEntity.from_orm(model) for model in query.all()]
         return analyses
