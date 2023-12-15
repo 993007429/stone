@@ -4,12 +4,10 @@ from typing import List, Optional, Tuple, Union, Type
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 
-from stone.modules.ai.infrastructure.models import Analysis
-from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity, DataSetEntity, \
-    DataSetSliceEntity, FilterTemplateEntity, AnalysisEntity
-from stone.modules.slice.domain.repositories import SliceRepository, DataSetRepository, LabelRepository, \
-    FilterTemplateRepository, AnalysisRepository
-from stone.modules.slice.infrastructure.models import Slice, Label, SliceLabel, DataSet, DataSetSlice, FilterTemplate
+from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity, DataSetEntity, DataSetSliceEntity, FilterTemplateEntity, AnalysisEntity
+from stone.modules.slice.domain.repositories import SliceRepository, DataSetRepository, LabelRepository, FilterTemplateRepository, AnalysisRepository
+from stone.modules.slice.infrastructure.models import Slice, Label, SliceLabel, DataSet, DataSetSlice, FilterTemplate, \
+    Analysis
 from stone.seedwork.infrastructure.repositories import SQLAlchemySingleModelRepository
 
 

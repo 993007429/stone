@@ -3,10 +3,10 @@ from dependency_injector import containers, providers
 from stone.app.request_context import RequestContext
 from stone.modules.ai.application.services import AiService
 from stone.modules.ai.domain.services import AiDomainService
-from stone.modules.ai.infrastructure.repositories import SQLAlchemyMarkRepository, SQLAlchemyAnalysisRepository
+from stone.modules.ai.infrastructure.repositories import SQLAlchemyMarkRepository
 from stone.modules.slice.application.services import SliceService
 from stone.modules.slice.domain.services import SliceDomainService
-from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository
+from stone.modules.slice.infrastructure.repositories import SQLAlchemySliceRepository, SQLAlchemyAnalysisRepository
 from stone.modules.user.application.services import UserService
 from stone.modules.user.domain.services import UserDomainService
 from stone.modules.user.infrastructure.repositories import SQLAlchemyUserRepository
@@ -36,6 +36,10 @@ class SliceContainer(containers.DeclarativeContainer):
         SQLAlchemySliceRepository,
         session=core_container.request_context.provided.db_session
     )
+    analysis_repository = providers.Factory(
+        SQLAlchemyAnalysisRepository,
+        session=core_container.request_context.provided.db_session
+    )
     dataset_repository = providers.Factory(
         SQLAlchemySliceRepository,
         session=core_container.request_context.provided.db_session
@@ -52,6 +56,7 @@ class SliceContainer(containers.DeclarativeContainer):
     slice_domain_service = providers.Factory(
         SliceDomainService,
         slice_repository=slice_repository,
+        analysis_repository=analysis_repository,
         dataset_repository=dataset_repository,
         label_repository=label_repository,
         filter_template_repository=filter_template_repository
@@ -77,12 +82,7 @@ class AiContainer(containers.DeclarativeContainer):
         manual=_manual_repository
     )
 
-    analysis_repository = providers.Factory(
-        SQLAlchemyAnalysisRepository,
-        session=core_container.request_context.provided.db_session
-    )
-
-    ai_domain_service = providers.Factory(AiDomainService, mark_repository=mark_repository, analysis_repository=analysis_repository)
+    ai_domain_service = providers.Factory(AiDomainService, mark_repository=mark_repository)
 
     ai_service = providers.Factory(
         AiService,

@@ -1,11 +1,11 @@
 import math
 from typing import List, Optional, Tuple, Type
 
-from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity
-from stone.modules.ai.domain.repositories import MarkRepository, AnalysisRepository
+from stone.modules.ai.domain.entities import MarkEntity
+from stone.modules.ai.domain.repositories import MarkRepository
 from stone.modules.ai.domain.enum import AIModel
 from stone.modules.ai.infrastructure.mark_models import get_ai_mark_model, get_ai_mark_to_tile_model, NPCountModel, Pdl1sCountModel, MarkGroupModel, ChangeRecordModel
-from stone.modules.ai.infrastructure.models import Analysis
+from stone.modules.slice.infrastructure.models import Analysis
 from stone.seedwork.infrastructure.models import Base
 from stone.seedwork.infrastructure.repositories import SQLAlchemySingleModelRepository
 
