@@ -15,7 +15,7 @@ from stone.modules.slice.domain.repositories import FilterTemplateRepository, Da
     LabelRepository, AnalysisRepository
 from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject, \
     SliceThumbnailValueObject, SliceComparisonValueObject
-from stone.utils.get_path import get_slice_dir, get_tile_dir, get_slice_path, get_tile_path, get_label_path, get_db_dir
+from stone.utils.get_path import get_slice_dir, get_tile_dir, get_slice_path, get_tile_path, get_db_dir
 
 logger = logging.getLogger(__name__)
 

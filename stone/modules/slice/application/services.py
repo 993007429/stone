@@ -174,7 +174,7 @@ class SliceService(object):
 
     def get_analyses(self, **kwargs) -> AppResponse[dict]:
         analyses, pagination, message = self.domain_service.get_analyses(**kwargs)
-        return AppResponse(message=message, data={'analyses': [analysis.dict() for analysis in analyses]},  pagination=pagination)
+        return AppResponse(message=message, data={'analyses': [analysis.dict() for analysis in analyses]}, pagination=pagination)
 
     def get_analysis(self, analysis_id: int) -> AppResponse[dict]:
         analysis, message = self.domain_service.get_analysis(analysis_id)

@@ -3,7 +3,6 @@ from typing import Optional, List, TypeVar
 
 from stone.consts.common import Consts
 from stone.seedwork.domain.value_objects import BaseEnum, BaseValueObject
-from stone.utils.id_worker import IdWorker
 
 
 @enum.unique
@@ -81,7 +80,7 @@ class Mark(BaseValueObject):
 
 
 class ALGResult(BaseValueObject):
-    ai_suggest: str
+    ai_suggest: Optional[dict]
     cell_marks: List[Mark] = []
     roi_marks: List[Mark] = []
     slide_quality: Optional[int] = None

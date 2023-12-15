@@ -5,7 +5,7 @@ from apiflask import Schema
 from apiflask.fields import File
 from marshmallow import ValidationError, validates_schema
 from marshmallow.fields import Integer, String, DateTime, Float, Dict, Raw, Boolean, List, Nested
-from marshmallow.validate import Length, OneOf
+from marshmallow.validate import OneOf
 
 import setting
 from stone.app.base_schema import PageQuery, PaginationSchema, validate_positive_integers

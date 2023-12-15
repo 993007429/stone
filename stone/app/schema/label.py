@@ -2,7 +2,7 @@ from datetime import datetime
 
 from apiflask import Schema
 from marshmallow import ValidationError, validates_schema
-from marshmallow.fields import Integer, String, List, Nested, DateTime, Raw, Dict
+from marshmallow.fields import Integer, String, List, Nested, DateTime, Raw
 from marshmallow.validate import OneOf
 
 from stone.app.base_schema import PageQuery, PaginationSchema
@@ -95,9 +95,3 @@ class ApiListLabelOut(Schema):
     message = String(required=True)
     data = Nested(ListLabelOut())
     pagination = Nested(PaginationSchema())
-
-
-class LabelIdsOut(Schema):
-    code = Integer(required=True)
-    message = String(required=True)
-    data = Dict(keys=String(), values=Integer(required=True), description='受影响标签数量')

@@ -1,5 +1,5 @@
 from apiflask import Schema
-from apiflask.fields import Integer, String, Raw
+from apiflask.fields import Integer, String
 from apiflask.validators import Range
 from marshmallow import ValidationError
 from marshmallow.fields import Nested, Float, List

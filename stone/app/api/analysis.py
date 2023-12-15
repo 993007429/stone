@@ -3,7 +3,7 @@ from flask import send_file
 
 from stone.app.base_schema import APIAffectedCountOut
 from stone.app.permission import permission_required
-from stone.app.schema.analysis import AnalysesQuery, ListAnalysesOut, APIListAnalysesOut, QueryMarksIn, QueryRoiIn, \
+from stone.app.schema.analysis import AnalysesQuery, APIListAnalysesOut, QueryMarksIn, QueryRoiIn, \
     APIListMarkOut, APISingleAnalysesOut
 from stone.app.service_factory import AppServiceFactory
 from stone.modules.user.infrastructure.permissions import DeleteAnalysisPermission

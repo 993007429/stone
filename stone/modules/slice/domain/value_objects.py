@@ -3,7 +3,6 @@ from typing import Optional, List
 from pydantic import BaseModel
 
 from stone.modules.slice.domain.entities import DataSetEntity, LabelEntity, SliceEntity
-from stone.seedwork.domain.entities import BaseEntity
 
 
 class SliceValueObject(SliceEntity):

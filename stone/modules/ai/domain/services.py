@@ -1,4 +1,3 @@
-import ast
 import logging
 import os
 import shutil
@@ -14,7 +13,6 @@ from stone.app.permission import permission_required
 from stone.app.request_context import request_context
 from stone.consts.her2 import Her2Consts
 from stone.infra.cache import cache
-from stone.infra.fs import fs
 from stone.modules.ai.domain.enum import AIModel
 from stone.modules.ai.domain.repositories import MarkRepository
 from stone.modules.ai.libs.algorithms.DNA1.dna_alg import DNA_1020
@@ -25,7 +23,7 @@ from celery.exceptions import TimeoutError as CeleryTimeoutError
 from stone.modules.ai.domain.entities import MarkEntity
 from stone.modules.ai.domain.value_objects import Mark, ALGResult
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
-from stone.utils.get_path import get_db_path, get_db_dir
+from stone.utils.get_path import get_db_path
 from stone.utils.id_worker import IdWorker
 
 from stone.utils.load_yaml import load_yaml
