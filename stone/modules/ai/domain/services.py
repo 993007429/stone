@@ -162,7 +162,7 @@ class AiDomainService(object):
             config_path = os.path.join(yams_path, 'tct2', yaml_file)
             return TCT_ALG2(config_path=config_path, threshold=threshold)
 
-    def run_tct(self, alg_model: Any, ai_model: str, slice_path: str) -> Optional[ALGResult]:
+    def run_tct(self, model: Any, ai_model: str, slice_path: str) -> Optional[ALGResult]:
         rois = []
 
         slide = open_slide(slice_path)
@@ -170,7 +170,7 @@ class AiDomainService(object):
         roi_marks = []
         prob_dict = None
         for idx, roi in enumerate(rois or [self.new_default_roi()]):
-            result = alg_model.cal_tct(slide)
+            result = model.cal_tct(slide)
 
             if ai_model == AIModel.tct2:
                 from stone.modules.ai.utils.tct import generate_ai_result2
@@ -197,39 +197,33 @@ class AiDomainService(object):
 
         return ALGResult(
             roi_marks=roi_marks,
-            # ai_suggest=' '.join(ai_result['diagnosis']) + ' ' + ','.join(ai_result['microbe']),
             ai_suggest={'diagnosis': ai_result['diagnosis'], 'microbe': ai_result['microbe']},
             slide_quality=ai_result['slide_quality'],
             cell_num=ai_result['cell_num'],
             prob_dict=prob_dict
         )
 
-    def run_lct(self, alg_model: Any, ai_model: str, slice_path: str) -> ALGResult:
-        return self.run_tct(alg_model, ai_model, slice_path)
+    def run_lct(self, model: Any, ai_model: str, slice_path: str) -> ALGResult:
+        return self.run_tct(model, ai_model, slice_path)
 
-    def run_tbs_dna(self) -> ALGResult:
-        ai_model = task_param.ai_model
-        model_version = task_param.model_version
-        slice_path = task_param.slice_path
+    def run_tbs_dna(self, model: Any, ai_model: str, slice_path: str) -> ALGResult:
 
         dna_alg_model = DNA_1020()
 
         rois = []
         threshold = 1
 
-        alg_model = self.get_model(ai_model, model_version, threshold)
-
         slide = open_slide(slice_path)
 
         roi_marks = []
         prob_dict = None
 
-        for idx, roi in enumerate(rois or [task_param.new_default_roi()]):
-            tbs_result = alg_model.cal_tct(slide)
+        for idx, roi in enumerate(rois or [self.new_default_roi()]):
+            tbs_result = model.cal_tct(slide)
             dna_result = dna_alg_model.dna_test(slide)
 
             from stone.modules.ai.utils.prob import save_prob_to_file
-            prob_dict = save_prob_to_file(slice_path=task_param.slice_path, result=tbs_result)
+            prob_dict = save_prob_to_file(slice_path=slice_path, result=tbs_result)
             ai_result = generate_ai_result(result=tbs_result, roiid=roi['id'])
             ai_result.update(generate_dna_ai_result(result=dna_result, roiid=roi['id']))
 

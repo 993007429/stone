@@ -57,16 +57,16 @@ class AiService(object):
         groups = []
         group_name_to_id = {group['label']: int(group['id']) for group in groups}
 
-        alg_model = self.domain_service.get_model(ai_model, model_version, threshold)
-        if not alg_model:
+        model = self.domain_service.get_model(ai_model, model_version, threshold)
+        if not model:
             return AppResponse(err_code=1, message=f'Model does not exist: {ai_model}_{model_version}')
 
         if ai_model in [AIModel.tct1, AIModel.tct2]:
-            result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
-        # elif ai_model in [AIModel.lct1, AIModel.lct2]:
-        #     result = self.domain_service.run_lct(alg_model, ai_model, slice_path)
-        # elif ai_model == AIModel.dna:
-        #     result = self.domain_service.run_tbs_dna(task_param)
+            result = self.domain_service.run_tct(model, ai_model, slice_path)
+        elif ai_model in [AIModel.lct1, AIModel.lct2]:
+            result = self.domain_service.run_lct(model, ai_model, slice_path)
+        elif ai_model == AIModel.dna:
+            result = self.domain_service.run_tbs_dna(model, ai_model, slice_path)
         # elif ai_model == AIModel.dna_ploidy:
         #     result = self.domain_service.run_dna_ploidy(task_param)
         # elif ai_model == AIModel.her2:
