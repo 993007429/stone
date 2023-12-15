@@ -65,7 +65,7 @@ class AiService(object):
             result = self.domain_service.run_tct(model, ai_model, slice_path)
         elif ai_model in [AIModel.lct1, AIModel.lct2]:
             result = self.domain_service.run_lct(model, ai_model, slice_path)
-        elif ai_model == AIModel.dna:
+        elif ai_model == AIModel.tbs_dna:
             result = self.domain_service.run_tbs_dna(model, ai_model, slice_path)
         # elif ai_model == AIModel.dna_ploidy:
         #     result = self.domain_service.run_dna_ploidy(task_param)

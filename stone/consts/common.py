@@ -15,7 +15,7 @@ class Consts:
         'ki67hot': 'Ki-67热区',
         'her2': 'Her-2',
         'np': '鼻息肉',
-        'dna': 'TBS+DNA',
+        'tbs_dna': 'TBS+DNA',
         'bm': '骨髓血细胞',
         'cd30': 'CD30'
     }
@@ -26,7 +26,7 @@ class Consts:
         'lct': (1, 5),
         'model_calibrate_lct': (1, 10),
         'model_calibrate_tct': (1, 10),
-        'dna': (1, 5),
+        'tbs_dna': (1, 5),
         'dna_ploidy': (1, 5),
         'bm': (1, 5),
         'pdl1': ((1, 5), 10),
@@ -56,7 +56,7 @@ class Consts:
         'ki67hot': 1800,
         'her2': 6400,
         'np': 6400,
-        'dna': 1800,
+        'tbs_dna': 1800,
         'bm': 1800,
         'model_calibrate_lct': 6400,
         'model_calibrate_tct': 6400,

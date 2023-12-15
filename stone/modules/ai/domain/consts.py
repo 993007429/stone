@@ -8,7 +8,7 @@ AI_TYPE_MANUAL_MARK_TABLE_MAPPING = {
     AIType.tct2: 'human_tl',
     AIType.lct1: 'human_tl',
     AIType.lct2: 'human_tl',
-    AIType.dna: 'human_tl',
+    AIType.tbs_dna: 'human_tl',
     AIType.human_tl: 'human_tl',
     AIType.human_bm: 'human_bm',
     AIType.bm: 'human_bm'

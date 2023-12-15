@@ -1,66 +1,6 @@
-import enum
-from typing import Optional, List, TypeVar
+from typing import Optional, List
 
-from stone.consts.common import Consts
-from stone.seedwork.domain.value_objects import BaseEnum, BaseValueObject
-
-
-@enum.unique
-class AIType(BaseEnum):
-
-    @classmethod
-    def get_by_value(cls, value: Optional[str]):
-        if isinstance(value, AIType):
-            value = value.value
-        if value and (value.startswith('tct') or value.startswith('lct')):
-            value = value[0:3]
-        if value and value.startswith('fish'):
-            value = 'fishTissue'
-        if value == 'tagging':
-            value = 'label'
-        return super().get_by_value(value)
-
-    human = 'human'
-    human_tl = 'human_tl'
-    human_bm = 'human_bm'
-    label = 'label'
-    np = 'np'
-    er = 'er'
-    pr = 'pr'
-    bm = 'bm'
-    tct1 = 'tct1'
-    tct2 = 'tct2'
-    lct1 = 'lct1'
-    lct2 = 'lct2'
-    dna = 'dna'
-    dna_ploidy = 'dna_ploidy'
-    her2 = 'her2'
-    ki67 = 'ki67'
-    pdl1 = 'pdl1'
-    cd30 = 'cd30'
-    ki67hot = 'ki67hot'
-    celldet = 'celldet'
-    cellseg = 'cellseg'
-    fish_tissue = 'fishTissue'
-    model_calibrate_tct = 'model_calibrate_tct'
-    model_calibrate_lct = 'model_calibrate_lct'
-
-    @property
-    def ai_name(self) -> str:
-        if self == AIType.ki67:
-            return AIType.ki67hot.value
-        return self.value
-
-    @property
-    def display_name(self) -> str:
-        return Consts.ALGOR_DICT.get(self.value, '')
-
-    @property
-    def is_human_type(self):
-        return self in [self.human, self.human_tl, self.human_bm]
-
-
-A = TypeVar('A', bound=AIType)
+from stone.seedwork.domain.value_objects import BaseValueObject
 
 
 class Mark(BaseValueObject):

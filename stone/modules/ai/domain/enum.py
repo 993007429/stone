@@ -29,7 +29,7 @@ class AIModel(BaseEnum):
     tct2 = 'tct2'
     lct1 = 'lct1'
     lct2 = 'lct2'
-    dna = 'dna'
+    tbs_dna = 'tbs_dna'
     dna_ploidy = 'dna_ploidy'
     her2 = 'her2'
     ki67 = 'ki67'
