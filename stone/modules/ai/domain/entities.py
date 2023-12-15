@@ -27,19 +27,3 @@ class MarkEntity(BaseEntity):
     dashed: Optional[int] = Field(None, description='虚线为1，实线为0')
     doctor_diagnosis: Optional[dict] = Field(None, description='医生手工判读')
     create_time: Optional[float] = Field(None, description='')
-
-
-class AnalysisEntity(BaseEntity):
-    key: str
-    ai_model: str
-    model_version: str
-    status: int
-    time_consume: float
-    userid: int
-    username: str
-    slice_id: int
-    slice_key: str
-
-
-class AnalysisVO(AnalysisEntity):
-    delete_permission: bool = False

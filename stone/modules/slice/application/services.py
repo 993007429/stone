@@ -161,3 +161,7 @@ class SliceService(object):
     def get_thumbnail_image(self, slice_key: str) -> AppResponse[dict]:
         thumbnail_path = get_thumbnail_path(slice_key)
         return AppResponse(data={'thumbnail_path': thumbnail_path})
+
+    def filter_comparison_slices(self, **kwargs) -> AppResponse[dict]:
+        comparison_slices, pagination, message = self.domain_service.filter_comparison_slices(**kwargs)
+        return AppResponse(message=message, data={'comparison_slices': [comparison_slice.dict() for comparison_slice in comparison_slices]}, pagination=pagination)

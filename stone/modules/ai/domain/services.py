@@ -16,13 +16,13 @@ from stone.consts.her2 import Her2Consts
 from stone.infra.cache import cache
 from stone.infra.fs import fs
 from stone.modules.ai.domain.enum import AIModel
-from stone.modules.ai.domain.repositories import MarkRepository, AnalysisRepository
+from stone.modules.ai.domain.repositories import MarkRepository
 from stone.modules.ai.libs.algorithms.DNA1.dna_alg import DNA_1020
 from stone.libs.heimdall.dispatch import open_slide
 from stone.celery.app import app as celery_app
 from celery.exceptions import TimeoutError as CeleryTimeoutError
 
-from stone.modules.ai.domain.entities import MarkEntity, AnalysisEntity, AnalysisVO
+from stone.modules.ai.domain.entities import MarkEntity
 from stone.modules.ai.domain.value_objects import Mark, ALGResult
 from stone.modules.ai.utils.tct import generate_ai_result, generate_dna_ai_result
 from stone.utils.get_path import get_db_path, get_db_dir
@@ -109,9 +109,8 @@ def connect_slice_db():
 class AiDomainService(object):
     RANK_AI_TASK = RANK_AI_TASK
 
-    def __init__(self, mark_repository: MarkRepository, analysis_repository: AnalysisRepository):
+    def __init__(self, mark_repository: MarkRepository):
         self.mark_repository = mark_repository
-        self.analysis_repository = analysis_repository
 
     def get_task_status(self, task_id: str) -> Tuple[str, Optional[dict]]:
         task_queue = cache.get(self.RANK_AI_TASK, [])
@@ -411,35 +410,7 @@ class AiDomainService(object):
 
         return True, cell_mark_entities + roi_mark_entities
 
-    def get_analyses(self, **kwargs) -> Tuple[List[AnalysisVO], dict, str]:
-        page = kwargs['page']
-        per_page = kwargs['per_page']
-        slice_id = kwargs['slice_id']
-        userid = kwargs.get('userid')
-        analyses, pagination = self.repository.get_analyses(page, per_page, slice_id, userid)
-        analyses_hack = [AnalysisVO.parse_obj({**analysis.dict(), 'delete_permission': analysis.userid == 1}) for analysis in analyses]
-        return analyses_hack, pagination, 'Get analyses success'
-
-    def get_analysis(self, analysis_id: int) -> Tuple[Optional[AnalysisEntity], str]:
-        analysis = self.repository.get_analysis_by_pk(analysis_id)
-        return analysis, 'get analysis success'
-
-    def create_analysis(self, **kwargs) -> Tuple[Optional[AnalysisEntity], str]:
-        success, new_analysis = self.repository.save_analysis(AnalysisEntity.parse_obj(kwargs))
-        if success:
-            return new_analysis, 'create analysis success'
-        return None, 'create analysis failed'
-
-    def delete_analysis(self, analysis_id: int) -> Tuple[int, str]:
-        analysis = self.repository.get_analysis_by_pk(analysis_id)
-
-        deleted_count = self.repository.delete_analysis_by_pk(analysis_id)
-        if deleted_count:
-            fs.remove_dir(get_db_dir(analysis.slice_key, analysis.key))
-            return deleted_count, 'Deleted analysis succeed'
-        return deleted_count, 'Deleted analysis failed'
-
     @connect_slice_db()
     def get_marks(self, analysis_id: int) -> Tuple[List[MarkEntity], Optional[int], str]:
-        marks, total = self.repository.get_marks()
+        marks, total = self.mark_repository.gets(None)
         return marks, total, 'get marks success'

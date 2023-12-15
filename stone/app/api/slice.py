@@ -75,16 +75,6 @@ def update_slices(json_data):
     return res.response
 
 
-@slice_blueprint.get('/comparison')
-@slice_blueprint.input(SlicePageQuery, location='query')
-@slice_blueprint.input(ComparisonSliceFilter, location='json')
-@slice_blueprint.output(ComparisonListSliceOut)
-@slice_blueprint.doc(summary='对比模式', security='ApiAuth')
-def get_comparison_slices(query_data, json_data):
-    res = AppServiceFactory.slice_service.get_comparison_slices(**query_data, **json_data)
-    return res.response
-
-
 @slice_blueprint.put('/add-labels')
 @slice_blueprint.input(SliceAndLabelIdsIn, location='json')
 @slice_blueprint.output(APIAffectedCountOut)
@@ -124,4 +114,14 @@ def get_thumbnail_image(slice_key):
 @slice_blueprint.doc(summary='切片字段', security='ApiAuth')
 def get_slice_fields():
     res = AppServiceFactory.slice_service.get_slice_fields()
+    return res.response
+
+
+@slice_blueprint.get('/comparison')
+@slice_blueprint.input(SlicePageQuery, location='query')
+@slice_blueprint.input(ComparisonSliceFilter, location='json')
+@slice_blueprint.output(ComparisonListSliceOut)
+@slice_blueprint.doc(summary='对比模式', security='ApiAuth')
+def filter_comparison_slices(query_data, json_data):
+    res = AppServiceFactory.slice_service.filter_comparison_slices(**{'page_query': query_data, 'filter': json_data})
     return res.response

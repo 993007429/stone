@@ -2,7 +2,7 @@ from abc import ABCMeta
 
 from typing import List, Tuple, Union, Optional
 
-from stone.modules.slice.domain.entities import SliceEntity, SliceLabelEntity, DataSetEntity, DataSetSliceEntity, LabelEntity, FilterTemplateEntity
+from stone.modules.slice.domain.entities import SliceEntity, SliceLabelEntity, DataSetEntity, DataSetSliceEntity, LabelEntity, FilterTemplateEntity, AnalysisEntity
 from stone.seedwork.domain.repositories import SingleModelRepository
 
 
@@ -30,6 +30,15 @@ class SliceRepository(SingleModelRepository[SliceEntity], metaclass=ABCMeta):
         ...
 
     def add_labels(self, slice_ids: list, label_ids: list) -> int:
+        ...
+
+
+class AnalysisRepository(SingleModelRepository[AnalysisEntity], metaclass=ABCMeta):
+
+    def get_analyses(self, page: int, per_page: int, slice_id: int, userid: Optional[int]) -> Tuple[List[AnalysisEntity], dict]:
+        ...
+
+    def gets_for_comparison(self, slice_ids: Union[list, set], ai_model: str, model_versions: Union[list, set]) -> List[AnalysisEntity]:
         ...
 
 

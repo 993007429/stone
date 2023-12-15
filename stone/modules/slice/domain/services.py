@@ -8,12 +8,14 @@ import setting
 from stone.app.request_context import request_context
 from stone.infra.fs import fs
 from stone.libs.heimdall.dispatch import open_slide
-from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity, FilterTemplateEntity
+from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, DataSetEntity, DataSetSliceEntity, \
+    FilterTemplateEntity, AnalysisVO, AnalysisEntity
 from stone.modules.slice.domain.enum import DataType
-from stone.modules.slice.domain.repositories import FilterTemplateRepository, DataSetRepository, SliceRepository, LabelRepository
+from stone.modules.slice.domain.repositories import FilterTemplateRepository, DataSetRepository, SliceRepository, \
+    LabelRepository, AnalysisRepository
 from stone.modules.slice.domain.value_objects import DatasetStatisticsValueObject, LabelValueObject, SliceValueObject, \
-    SliceThumbnailValueObject
-from stone.utils.get_path import get_slice_dir, get_tile_dir, get_slice_path, get_tile_path, get_label_path
+    SliceThumbnailValueObject, SliceComparisonValueObject
+from stone.utils.get_path import get_slice_dir, get_tile_dir, get_slice_path, get_tile_path, get_label_path, get_db_dir
 
 logger = logging.getLogger(__name__)
 
@@ -23,11 +25,13 @@ class SliceDomainService(object):
     def __init__(
             self,
             slice_repository: SliceRepository,
+            analysis_repository: AnalysisRepository,
             dataset_repository: DataSetRepository,
             label_repository: LabelRepository,
             filter_template_repository: FilterTemplateRepository
     ):
         self.slice_repository = slice_repository
+        self.analysis_repository = analysis_repository
         self.dataset_repository = dataset_repository
         self.label_repository = label_repository
         self.filter_template_repository = filter_template_repository
@@ -117,6 +121,29 @@ class SliceDomainService(object):
             new_slice = SliceThumbnailValueObject.parse_obj(slice_dict)
             new_slices.append(new_slice)
         return new_slices, pagination, 'Filter slices succeed'
+
+    def filter_comparison_slices(self, **kwargs) -> Tuple[List[SliceComparisonValueObject], dict, str]:
+        page = kwargs['page_query']['page']
+        per_page = kwargs['page_query']['per_page']
+        logic = kwargs['filter']['logic']
+        filters = kwargs['filter']['filters']
+        ai_model = kwargs['ai_model']
+        model_versions = kwargs['model_versions']
+
+        slices, pagination = self.slice_repository.filter(page, per_page, filters, logic)
+
+        slice_ids = [slice_.id for slice_ in slices]
+        analyses_all = self.analysis_repository.gets_for_comparison(slice_ids, ai_model, model_versions)
+
+        new_slices = []
+        for slice_ in slices:
+            slice_dict = slice_.dict(include={'id', 'key', 'name'})
+            analyses = [analysis for analysis in analyses_all if analysis.slice_id == slice_.id]
+            analysis_results = [analysis.dict(include={'id', 'ai_model', 'model_version', 'result'}) for analysis in analyses]
+            slice_dict['analysis_results'] = analysis_results
+            new_slice = SliceComparisonValueObject.parse_obj(slice_dict)
+            new_slices.append(new_slice)
+        return new_slices, pagination, 'Filter succeed'
 
     def update_slices(self, **kwargs) -> Tuple[int, str]:
         ids = kwargs.pop('ids')
@@ -372,3 +399,31 @@ class SliceDomainService(object):
             tile_image = slide.get_tile(x, y, z)
             tile_image.save(tile_path)
         return tile_path, 'Get tile succeed'
+
+    def get_analyses(self, **kwargs) -> Tuple[List[AnalysisVO], dict, str]:
+        page = kwargs['page']
+        per_page = kwargs['per_page']
+        slice_id = kwargs['slice_id']
+        userid = kwargs.get('userid')
+        analyses, pagination = self.analysis_repository.get_analyses(page, per_page, slice_id, userid)
+        analyses_hack = [AnalysisVO.parse_obj({**analysis.dict(), 'delete_permission': analysis.userid == 1}) for analysis in analyses]
+        return analyses_hack, pagination, 'Get analyses success'
+
+    def get_analysis(self, analysis_id: int) -> Tuple[Optional[AnalysisEntity], str]:
+        analysis = self.analysis_repository.get(analysis_id)
+        return analysis, 'get analysis success'
+
+    def create_analysis(self, **kwargs) -> Tuple[Optional[AnalysisEntity], str]:
+        success, new_analysis = self.analysis_repository.save(AnalysisEntity.parse_obj(kwargs))
+        if success:
+            return new_analysis, 'create analysis success'
+        return None, 'create analysis failed'
+
+    def delete_analysis(self, analysis_id: int) -> Tuple[int, str]:
+        analysis = self.analysis_repository.get(analysis_id)
+
+        deleted_count = self.analysis_repository.delete(analysis_id)
+        if deleted_count:
+            fs.remove_dir(get_db_dir(analysis.slice_key, analysis.key))
+            return deleted_count, 'Deleted analysis succeed'
+        return deleted_count, 'Deleted analysis failed'

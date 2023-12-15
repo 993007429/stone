@@ -1,6 +1,9 @@
 from typing import Optional, List
 
+from pydantic import BaseModel
+
 from stone.modules.slice.domain.entities import DataSetEntity, LabelEntity, SliceEntity
+from stone.seedwork.domain.entities import BaseEntity
 
 
 class SliceValueObject(SliceEntity):
@@ -10,6 +13,20 @@ class SliceValueObject(SliceEntity):
 
 class SliceThumbnailValueObject(SliceEntity):
     thumbnail_url: str
+
+
+class AnalysisResult(BaseModel):
+    id: int
+    ai_model: str
+    model_version: str
+    result: str
+
+
+class SliceComparisonValueObject(BaseModel):
+    id: int
+    key: str
+    name: str
+    analysis_results: List[AnalysisResult]
 
 
 class LabelValueObject(LabelEntity):

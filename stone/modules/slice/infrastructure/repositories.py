@@ -1,9 +1,14 @@
+import math
 from typing import List, Optional, Tuple, Union, Type
 
+from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 
-from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity, DataSetEntity, DataSetSliceEntity, FilterTemplateEntity
-from stone.modules.slice.domain.repositories import SliceRepository, DataSetRepository, LabelRepository, FilterTemplateRepository
+from stone.modules.ai.infrastructure.models import Analysis
+from stone.modules.slice.domain.entities import SliceEntity, LabelEntity, SliceLabelEntity, DataSetEntity, \
+    DataSetSliceEntity, FilterTemplateEntity, AnalysisEntity
+from stone.modules.slice.domain.repositories import SliceRepository, DataSetRepository, LabelRepository, \
+    FilterTemplateRepository, AnalysisRepository
 from stone.modules.slice.infrastructure.models import Slice, Label, SliceLabel, DataSet, DataSetSlice, FilterTemplate
 from stone.seedwork.infrastructure.repositories import SQLAlchemySingleModelRepository
 
@@ -64,6 +69,37 @@ class SQLAlchemySliceRepository(SliceRepository, SQLAlchemySingleModelRepository
                 slice_labels.append(slice_label)
         self.session.add_all(slice_labels)
         return len(slice_ids)
+
+
+class SQLAlchemyAnalysisRepository(AnalysisRepository, SQLAlchemySingleModelRepository[AnalysisEntity]):
+
+    @property
+    def model_class(self) -> Type[Analysis]:
+        return Analysis
+
+    @property
+    def entity_class(self) -> Type[AnalysisEntity]:
+        return AnalysisEntity
+
+    def gets_analyses(self, page: int, per_page: int, slice_id: int, userid: Optional[int]) -> Tuple[List[AnalysisEntity], dict]:
+        query = self.session.query(Analysis).filter(Analysis.slice_id == slice_id)
+        if userid:
+            query = query.filter(Analysis.userid == userid)
+        total = query.count()
+        query = query.order_by(Analysis.id)
+
+        offset = min((page - 1), math.floor(total / per_page)) * per_page
+        query = query.offset(offset).limit(per_page)
+        pagination = {'total': total, 'page': page, 'per_page': per_page}
+
+        analyses = [AnalysisEntity.from_orm(model) for model in query.all()]
+        return analyses, pagination
+
+    def gets_for_comparison(self, slice_ids: Union[list, set], ai_model: str, model_versions: Union[list, set]) -> List[AnalysisEntity]:
+        query = self.session.query(Analysis).filter(and_(Analysis.slice_id.in_(slice_ids), Analysis.ai_model.equal(ai_model), Analysis.model_version.in_(model_versions)))
+        query = query.order_by(Analysis.id)
+        analyses = [AnalysisEntity.from_orm(model) for model in query.all()]
+        return analyses
 
 
 class SQLAlchemyDataSetRepository(DataSetRepository, SQLAlchemySingleModelRepository[DataSetEntity]):

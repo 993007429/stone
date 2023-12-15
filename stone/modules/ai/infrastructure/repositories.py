@@ -52,28 +52,3 @@ class SQLAlchemyMarkRepository(MarkRepository, SQLAlchemySingleModelRepository[M
             tables.append(Pdl1sCountModel.__table__)
 
         Base.metadata.create_all(engine, tables=tables)
-
-
-class SQLAlchemyAnalysisRepository(AnalysisRepository, SQLAlchemySingleModelRepository[AnalysisEntity]):
-
-    @property
-    def model_class(self) -> Type[Analysis]:
-        return Analysis
-
-    @property
-    def entity_class(self) -> Type[AnalysisEntity]:
-        return AnalysisEntity
-
-    def get_analyses(self, page: int, per_page: int, slice_id: int, userid: Optional[int]) -> Tuple[List[AnalysisEntity], dict]:
-        query = self.session.query(Analysis).filter(Analysis.slice_id == slice_id)
-        if userid:
-            query = query.filter(Analysis.userid == userid)
-        total = query.count()
-        query = query.order_by(Analysis.id)
-
-        offset = min((page - 1), math.floor(total / per_page)) * per_page
-        query = query.offset(offset).limit(per_page)
-        pagination = {'total': total, 'page': page, 'per_page': per_page}
-
-        analyses = [AnalysisEntity.from_orm(model) for model in query.all()]
-        return analyses, pagination

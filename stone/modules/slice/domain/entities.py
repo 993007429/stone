@@ -47,6 +47,23 @@ class SliceEntity(BaseEntity):
         orm_mode = True
 
 
+class AnalysisEntity(BaseEntity):
+    key: str
+    ai_model: str
+    model_version: str
+    status: int
+    time_consume: float
+    userid: int
+    username: str
+    slice_id: int
+    slice_key: str
+    result: str
+
+
+class AnalysisVO(AnalysisEntity):
+    delete_permission: bool = False
+
+
 class LabelEntity(BaseEntity):
     name: Optional[str]
     creator: Optional[str]
