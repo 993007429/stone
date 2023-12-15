@@ -151,10 +151,14 @@ class ApiSingleSliceUploadOut(Schema):
     data = Nested(SingleSliceUploadOut())
 
 
-class SingleSliceFieldOut(Schema):
+class SingleSliceFieldsOut(Schema):
+    fields = List(String())
+
+
+class ApiSingleSliceFieldsOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Dict(keys=String(), values=List(String(required=True)))
+    data = Nested(SingleSliceFieldsOut())
 
 
 class SingleSliceOut(Schema):
@@ -234,7 +238,7 @@ class AnalysisResultOut(Schema):
     analysis_id = Integer(required=True)
     ai_model = String(required=True, description='模块')
     model_version = String(required=True, description='模型')
-    result = String(required=True, description='模型分析结果')
+    ai_suggest = Dict(keys=String(), values=List(String()), description='模型分析结果')
 
 
 class ComparisonSliceOut(Schema):

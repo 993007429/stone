@@ -3,9 +3,10 @@ from flask import send_file
 
 from stone.app.base_schema import APIAffectedCountOut
 from stone.app.schema.slice import SlicePageQuery, SliceFilter, SliceIdsIn, \
-    ComparisonSliceFilter, ComparisonListSliceOut, SliceIn, SliceUploadIn, \
-    SliceUpdateIn, SingleSliceFieldOut, SliceAndLabelIdsIn, ApiSingleSliceOut, \
-    ApiSingleSliceUploadOut, ApiListSliceOut, QueryTileIn, ApiComparisonListSliceOut
+    ComparisonSliceFilter, SliceIn, SliceUploadIn, \
+    SliceUpdateIn, SliceAndLabelIdsIn, ApiSingleSliceOut, \
+    ApiSingleSliceUploadOut, ApiListSliceOut, QueryTileIn, ApiComparisonListSliceOut, \
+    ApiSingleSliceFieldsOut
 from stone.app.service_factory import AppServiceFactory
 
 slice_blueprint = APIBlueprint('切片', __name__, url_prefix='/slices')
@@ -110,7 +111,7 @@ def get_thumbnail_image(slice_key):
 
 
 @slice_blueprint.post('/fields')
-@slice_blueprint.output(SingleSliceFieldOut)
+@slice_blueprint.output(ApiSingleSliceFieldsOut)
 @slice_blueprint.doc(summary='切片字段', security='ApiAuth')
 def get_slice_fields():
     res = AppServiceFactory.slice_service.get_slice_fields()

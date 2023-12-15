@@ -21,12 +21,20 @@ class FilterTemplateOut(Schema):
 
 
 class SingleFilterTemplateOut(Schema):
+    filter_template = Nested(FilterTemplateOut())
+
+
+class ApiSingleFilterTemplateOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Nested(FilterTemplateOut())
+    data = Nested(SingleFilterTemplateOut())
 
 
 class ListFilterTemplateOut(Schema):
+    filter_templates = List(Nested(FilterTemplateOut()))
+
+
+class ApiListFilterTemplateOut(Schema):
     code = Integer(required=True)
     message = String(required=True)
-    data = Dict(keys=String(), values=List(Nested(FilterTemplateOut())), required=True)
+    data = Nested(ListFilterTemplateOut())
