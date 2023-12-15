@@ -12,7 +12,6 @@ class SliceEntity(BaseEntity):
     slice_num: Optional[str]
     entry_stat: Optional[bool]
     entry_date: Optional[datetime]
-    label: Optional[str]
     macro: Optional[str]
     analysis_stat: Optional[str]
     ai_model: Optional[str]
@@ -57,7 +56,7 @@ class AnalysisEntity(BaseEntity):
     username: str
     slice_id: int
     slice_key: str
-    ai_suggest: str
+    ai_suggest: dict
 
 
 class AnalysisVO(AnalysisEntity):

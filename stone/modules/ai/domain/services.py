@@ -199,7 +199,8 @@ class AiDomainService(object):
 
         return ALGResult(
             roi_marks=roi_marks,
-            ai_suggest=' '.join(ai_result['diagnosis']) + ' ' + ','.join(ai_result['microbe']),
+            # ai_suggest=' '.join(ai_result['diagnosis']) + ' ' + ','.join(ai_result['microbe']),
+            ai_suggest={'diagnosis': ai_result['diagnosis'], 'microbe': ai_result['microbe']},
             slide_quality=ai_result['slide_quality'],
             cell_num=ai_result['cell_num'],
             prob_dict=prob_dict

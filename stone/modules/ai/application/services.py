@@ -33,15 +33,15 @@ class AiService(object):
         ai_model = kwargs['ai_model']
         model_version = kwargs['model_version']
 
-        # result = self.run_ai_task(slice_id, ai_model, model_version)
-        # if result.err_code != 0:
-        #     return AppResponse(err_code=result.err_code, message=result.message)
-        # task_id = 1
+        result = self.run_ai_task(slice_id, ai_model, model_version)
+        if result.err_code != 0:
+            return AppResponse(err_code=result.err_code, message=result.message)
+        task_id = 1
 
-        result = tasks.run_ai_task(slice_id, ai_model, model_version)
-        rank = cache.get(self.RANK_AI_TASK, [])
-        rank.append(task_id := result.task_id)
-        cache.set(self.RANK_AI_TASK, rank)
+        # result = tasks.run_ai_task(slice_id, ai_model, model_version)
+        # rank = cache.get(self.RANK_AI_TASK, [])
+        # rank.append(task_id := result.task_id)
+        # cache.set(self.RANK_AI_TASK, rank)
         return AppResponse(message='Ai start succeed', data={'task_id': task_id})
 
     def run_ai_task(self, slice_id: int, ai_model: str, model_version: str) -> AppResponse[dict]:
@@ -161,8 +161,8 @@ class AiService(object):
         if not alg_model:
             return AppResponse(err_code=1, message=f'Model does not exist: {ai_model}_{model_version}')
 
-        # if ai_model in [AIModel.tct1, AIModel.tct2]:
-        #     result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
+        if ai_model in [AIModel.tct1, AIModel.tct2]:
+            result = self.domain_service.run_tct(alg_model, ai_model, slice_path)
         # elif ai_model in [AIModel.lct1, AIModel.lct2]:
         #     result = self.domain_service.run_lct(alg_model, ai_model, slice_path)
         # elif ai_model == AIModel.dna:
@@ -189,9 +189,9 @@ class AiService(object):
         )
 
         analysis_res = self.slice_service.create_analysis(**analysis_data)
+        if analysis_res.err_code != 0:
+            return analysis_res
         analysis = analysis_res.data['analysis']
-        if not analysis or not analysis.id:
-            return AppResponse(err_code=1, message='Ai analysis failed at creating analysis')
 
         success = self.domain_service.create_ai_marks(
             analysis_key=analysis.key,

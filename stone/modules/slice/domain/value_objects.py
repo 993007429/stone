@@ -19,7 +19,7 @@ class AnalysisResult(BaseModel):
     id: int
     ai_model: str
     model_version: str
-    ai_suggest: str
+    ai_suggest: dict
 
 
 class SliceComparisonValueObject(BaseModel):

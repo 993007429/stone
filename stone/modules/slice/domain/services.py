@@ -414,9 +414,9 @@ class SliceDomainService(object):
         return analysis, 'get analysis success'
 
     def create_analysis(self, **kwargs) -> Tuple[Optional[AnalysisEntity], str]:
-        success, new_analysis = self.analysis_repository.save(AnalysisEntity.parse_obj(kwargs))
-        if success:
-            return new_analysis, 'create analysis success'
+        analysis = self.analysis_repository.save(AnalysisEntity.parse_obj(kwargs))
+        if analysis:
+            return analysis, 'create analysis success'
         return None, 'create analysis failed'
 
     def delete_analysis(self, analysis_id: int) -> Tuple[int, str]:

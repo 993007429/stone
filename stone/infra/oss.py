@@ -228,12 +228,4 @@ oss: Oss = MinIO(
     use_https=setting.USE_HTTPS
 ) if setting.MINIO_ACCESS_KEY else None
 
-
-# slice_oss: Oss = MinIO(
-#     access_key=setting.MINIO_ACCESS_KEY,
-#     secret=setting.MINIO_ACCESS_SECRET,
-#     pub_endpoint=setting.PUBLIC_ENDPOINT,
-#     private_endpoint=setting.PRIVATE_ENDPOINT,
-#     bucket_name=setting.SLICE_BUCKET,
-#     use_https=setting.USE_HTTPS
-# ) if setting.MINIO_ACCESS_KEY else None
+# D:\minio.exe server --address=:9000 --console-address=:9001 D:\minio_data
