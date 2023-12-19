@@ -1,5 +1,4 @@
-FROM dipath/stone:base
-#FROM ubuntu:20.04
+FROM stone:base
 
 WORKDIR /data/www/stone
 
