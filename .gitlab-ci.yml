@@ -1,0 +1,35 @@
+stages:
+  - lint
+  - build
+  - deploy
+
+job lint:
+  tags:
+    - ops
+  stage: lint
+  before_script:
+    - source /home/gitlab-runner/venvs/ops/bin/activate
+    - pip3 install flake8
+    # - pip install mypy
+    - pip3 install -r requirements-types.txt
+  script:
+    - flake8 --count cyborg
+  # - mypy --config-file .mypy.ini seal
+  except:
+    - master@dev/stone
+
+job deploy_uat:
+  tags:
+    - ops
+  stage: deploy
+  before_script:
+    - source /home/gitlab-runner/venvs/ops/bin/activate
+    - pip3 install fabric
+    - pip3 install fabric3
+    - pip3 install fabric-virtualenv
+
+  script:
+    - cd /data/www/technis
+    - fab uat:stone
+  only:
+    - pre_release@dev/stone
