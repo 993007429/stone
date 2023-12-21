@@ -15,15 +15,18 @@ services:
 #    depends_on:
 #      - stone-web
 #
-#  mysql:
-#    image: mysql:5.7
-#    container_name: mysql
-#    ports:
-#      - 3306:3306
-#    volumes:
-#      - mysql:/var/lib/mysql
-#    environment:
-#      - MYSQL_ROOT_PASSWORD=dyj123
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+#      - MYSQL_ROOT_HOST='%'
+      - MYSQL_ROOT_PASSWORD=dyj123
+      - TZ=Asia/Shanghai
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql:/var/lib/mysql
+
 #
 #  redis:
 #    image: redis:6.0.20
@@ -70,14 +73,13 @@ services:
       - ./setting.py:/data/www/stone/setting.py
       - ./local_settings:/data/www/stone/local_settings
       - ./model_versions:/data/www/stone/model_versions
-#    depends_on:
+    depends_on:
 #      - minio
 #      - redis
-#      - mysql
+      - mysql
 
 volumes:
   nginx:
   mysql:
   redis:
   minio:
-    driver: local
