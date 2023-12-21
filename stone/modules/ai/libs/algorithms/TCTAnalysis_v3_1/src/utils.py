@@ -18,7 +18,7 @@ alg_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def load_cfg(cfg_path):
-    base_config_dict = load_yaml(os.path.join(setting.PROJECT_DIR, 'yams', 'tct2', 'base.yaml'))
+    base_config_dict = load_yaml(os.path.join(setting.MODEL_VERSIONS_DIR, 'tct2', 'base.yaml'))
     config_dict = load_yaml(cfg_path)
 
     # only support two levels of sub dict

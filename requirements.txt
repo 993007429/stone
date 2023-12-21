@@ -7,6 +7,9 @@
 --index-url https://pypi.tuna.tsinghua.edu.cn/simple
 --trusted-host https
 
+uWSGI==2.0.20
+    # via
+    #   manual
 addict==2.4.0
     # via
     #   mmcv

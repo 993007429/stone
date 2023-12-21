@@ -148,8 +148,7 @@ class AiDomainService(object):
         from stone.modules.ai.libs.algorithms.TCTAnalysis_v2_2.tct_alg import AlgBase
         from stone.modules.ai.libs.algorithms.TCTAnalysis_v3_1.tct_alg import TCT_ALG2
 
-        yams_path = os.path.join(setting.PROJECT_DIR, 'yams')
-        deploy_yaml = load_yaml(os.path.join(yams_path, 'deploy.yaml'))
+        deploy_yaml = load_yaml(os.path.join(setting.MODEL_VERSIONS_DIR, 'deploy.yaml'))
         try:
             yaml_file = deploy_yaml[ai_model][model_version]
         except KeyError:

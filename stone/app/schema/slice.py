@@ -28,8 +28,7 @@ for column_name, column_type in columns_with_types.items():
     elif column_type.startswith('VARCHAR'):
         str_fields.append(column_name)
 
-yams_path = os.path.join(setting.PROJECT_DIR, 'yams')
-models_and_versions = load_yaml(os.path.join(yams_path, 'deploy.yaml'))
+models_and_versions = load_yaml(os.path.join(setting.MODEL_VERSIONS_DIR, 'deploy.yaml'))
 
 
 class SlicePageQuery(PageQuery):

@@ -30,6 +30,8 @@ LOG_DIR = LOCAL_SETTINGS['default']['log_dir']
 
 APP_LOG_FILE = os.path.join(LOG_DIR, 'stone-app-log')
 
+MODEL_VERSIONS_DIR = os.path.join(PROJECT_DIR, 'model_versions')
+
 LIMIT_URL = [
     'slice/createMark',
     'slice/getMarks',
@@ -82,7 +84,6 @@ CELERY_BACKEND_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{BACKEND_DB}'
 
 GPU_SETTINGS = LOCAL_SETTINGS['gpu'] if 'gpu' in LOCAL_SETTINGS else None
 MINIO_SETTINGS = LOCAL_SETTINGS['minio'] if 'minio' in LOCAL_SETTINGS else None
-ROCHE_SETTINGS = LOCAL_SETTINGS['roche'] if 'roche' in LOCAL_SETTINGS else None
 
 MINIO_ACCESS_KEY = MINIO_SETTINGS['access_key'] if MINIO_SETTINGS else ''
 MINIO_ACCESS_SECRET = MINIO_SETTINGS['access_secret'] if MINIO_SETTINGS else ''
@@ -94,10 +95,6 @@ USE_HTTPS = MINIO_SETTINGS['use_https'].lower() == 'true' if MINIO_SETTINGS else
 
 TOTAL_GPU_MEM = GPU_SETTINGS['total_gpu_mem'] if GPU_SETTINGS else 12
 
-IMAGE_SERVER = LOCAL_SETTINGS['default']['image_server']
-
-REPORT_SERVER = LOCAL_SETTINGS['default']['report_server']
-
 ELECTRON_UPLOAD_SERVER = 'http://{}:3000/download'
 
 ai_log_list = ['tct', 'lct', 'pdl1', 'human_tl']
@@ -105,9 +102,6 @@ ai_log_list = ['tct', 'lct', 'pdl1', 'human_tl']
 PLUGINS = []
 
 SYNC_OPERATIONS = []
-
-ROCHE_API_SERVER = ROCHE_SETTINGS['api_server'] if ROCHE_SETTINGS else None
-ROCHE_IMAGE_SERVER = ROCHE_SETTINGS['image_server'] if ROCHE_SETTINGS else None
 
 VERSION = '1.0.0'
 

@@ -58,13 +58,18 @@ services:
     image: stone:web
     container_name: stone-web
     working_dir: /data/www/stone
-    command: ['python', 'app.py']
-    ports:
-      - 6666:6666
+    command: ['uwsgi']
     environment:
       - STONE_ENV=test
+      - UWSGI_INI=/data/conf/uwsgi/uwsgi.ini
+    ports:
+      - 7777:6666
     volumes:
+      - ./deployment/conf:/data/conf
+      - ./stone:/data/www/stone/stone
+      - ./setting.py:/data/www/stone/setting.py
       - ./local_settings:/data/www/stone/local_settings
+      - ./model_versions:/data/www/stone/model_versions
 #    depends_on:
 #      - minio
 #      - redis
