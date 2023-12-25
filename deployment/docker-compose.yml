@@ -85,3 +85,4 @@ volumes:
   mysql:
   redis:
   minio:
+
