@@ -74,7 +74,7 @@ services:
       - 20000:20000
     volumes:
       - ./conf:/data/conf
-      - ../stone:/data/www/stone
+      - ..:/data/www/stone
     depends_on:
       - minio
       - redis
