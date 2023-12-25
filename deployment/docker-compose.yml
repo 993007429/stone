@@ -1,0 +1,87 @@
+version: '1.0'
+
+services:
+
+  nginx:
+    image: nginx:1.22
+    container_name: nginx
+#    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - 80:80
+    volumes:
+      - ./conf/nginx:/etc/nginx/
+      - ./logs/nginx:/var/log/nginx
+      - D:\stone\data:/data/static
+    depends_on:
+      - stone-web
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+#    network_mode: host
+    environment:
+      - MYSQL_ROOT_PASSWORD=dyj123
+      - TZ=Asia/Shanghai
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql:/var/lib/mysql
+
+  redis:
+    image: redis:6.0.20
+    container_name: redis
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+
+  minio:
+    image: bitnami/minio:2023
+    container_name: minio
+    restart: always
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio:/data
+
+#  minio-mc:
+#    image: minio/mc:latest
+#    container_name: minio-mc
+#    entrypoint: sleep
+#    command: infinity
+
+  stone-web:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+    image: stone:web
+    container_name: stone-web
+#    network_mode: host
+    working_dir: /data/www/stone
+    command: ['uwsgi']
+    environment:
+      - STONE_ENV=test
+      - UWSGI_INI=/data/conf/uwsgi/uwsgi.ini
+    ports:
+      - 20000:20000
+    volumes:
+      - ./conf:/data/conf
+      - ../stone:/data/www/stone
+    depends_on:
+      - minio
+      - redis
+      - mysql
+
+volumes:
+  nginx:
+  mysql:
+  redis:
+  minio:
