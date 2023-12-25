@@ -18,8 +18,8 @@ services:
   mysql:
     image: mysql:5.7
     container_name: mysql
+#    network_mode: host
     environment:
-#      - MYSQL_ROOT_HOST='%'
       - MYSQL_ROOT_PASSWORD=dyj123
       - TZ=Asia/Shanghai
     ports:
@@ -27,7 +27,6 @@ services:
     volumes:
       - mysql:/var/lib/mysql
 
-#
 #  redis:
 #    image: redis:6.0.20
 #    container_name: redis
@@ -60,13 +59,14 @@ services:
 #      dockerfile: Dockerfile
     image: stone:web
     container_name: stone-web
+#    network_mode: host
     working_dir: /data/www/stone
     command: ['uwsgi']
     environment:
       - STONE_ENV=test
       - UWSGI_INI=/data/conf/uwsgi/uwsgi.ini
     ports:
-      - 7777:6666
+      - 20000:20000
     volumes:
       - ./deployment/conf:/data/conf
       - ./stone:/data/www/stone/stone
