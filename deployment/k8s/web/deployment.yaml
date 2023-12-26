@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stone-web-deployment
+  namespace: stone
+spec:
+  selector:
+    matchLabels:
+      app: stone-web
+  strategy:
+#    rollingUpdate:
+#      maxSurge: 1
+#      maxUnavailable: 1
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: stone-web
+    spec:
+      containers:
+        - image: stone:web
+          name: stone-web
+          imagePullPolicy: Never
+          env:
+            - name: STONE_ENV
+              value: "test"
+            - name: TZ
+              value: Asia/Shanghai
+
+          workingDir: /data/www/stone/
+          command:
+            - uwsgi
+            - --ini
+            - /data/conf/uwsgi/uwsgi.ini
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - sleep 4
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 4
+            timeoutSeconds: 5
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 4
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          volumeMounts:
+            - name: www-stone
+              mountPath: /data/www/stone
+              readOnly: true
+            - name: conf
+              mountPath: /data/conf
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: www-stone
+          hostPath:
+            path: /mnt/d/code/stone
+        - name: conf
+          hostPath:
+            path: /mnt/d/code/stone/deployment/conf

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stone-web-service
+  namespace: stone
+spec:
+  type: LoadBalancer
+  selector:
+    app: stone-web
+  ports:
+  - port: 20000
+    targetPort: 20000
