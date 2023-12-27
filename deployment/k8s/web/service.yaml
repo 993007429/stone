@@ -4,7 +4,7 @@ metadata:
   name: stone-web-service
   namespace: stone
 spec:
-  type: LoadBalancer
+#  type: LoadBalancer
   selector:
     app: stone-web
   ports:
