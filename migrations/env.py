@@ -5,6 +5,7 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from sqlalchemy import create_engine
 
 from alembic import context
 
@@ -37,8 +38,10 @@ fileConfig(config.config_file_name)
 # target_metadata = mymodel.Base.metadata
 import setting
 from stone.seedwork.infrastructure.models import Base
+
 config.set_main_option('sqlalchemy.url', setting.SQLALCHEMY_DATABASE_URI)
 target_metadata = Base.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -96,3 +99,18 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
+
+
+def create_database():
+    print(setting.SQLALCHEMY_DATABASE_URI)
+    engine = create_engine(setting.SQLALCHEMY_DATABASE_URI.replace(f"/{setting.MYSQL_DATABASE}", ""))
+    connection = engine.connect()
+    connection.execute("CREATE DATABASE `stone` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;")
+    connection.close()
+    print("stone created succeed")
+
+
+try:
+    create_database()
+except Exception as e:
+    print(e)

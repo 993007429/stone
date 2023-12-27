@@ -38,6 +38,10 @@ def get_session() -> Session:
     return _Session()
 
 
+def get_engine():
+    return _engine
+
+
 def get_session_by_db_uri(uri: str):
     engine = create_engine(
         uri, json_serializer=json_serializer, json_deserializer=json_deserializer, pool_recycle=300, echo=False)

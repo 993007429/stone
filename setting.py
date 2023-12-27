@@ -10,8 +10,6 @@ def get_local_settings(file_path: str):
 
 PROJECT_DIR = os.path.dirname((os.path.abspath(__file__)))
 
-# SERVER_NAME = os.environ.get('SERVER_NAME', 'localhost:8080')
-
 ENV = os.environ.get('STONE_ENV', 'default').upper()
 
 LOCAL_SETTINGS = get_local_settings(f'{PROJECT_DIR}/local_settings/stone-{ENV.lower()}.ini')

@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 
+os.environ['STONE_ENV'] = 'test'
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

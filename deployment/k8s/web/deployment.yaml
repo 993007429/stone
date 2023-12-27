@@ -32,36 +32,36 @@ spec:
             - uwsgi
             - --ini
             - /data/conf/uwsgi/uwsgi.ini
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - sh
-                  - -c
-                  - sleep 4
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 4
-            timeoutSeconds: 5
+#          lifecycle:
+#            preStop:
+#              exec:
+#                command:
+#                  - sh
+#                  - -c
+#                  - sleep 4
+#          livenessProbe:
+#            httpGet:
+#              path: /health
+#              port: 20000
+#              scheme: HTTP
+#            initialDelaySeconds: 10
+#            periodSeconds: 10
+#            successThreshold: 1
+#            failureThreshold: 4
+#            timeoutSeconds: 5
           ports:
-            - containerPort: 8080
+            - containerPort: 20000
               protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 4
-            timeoutSeconds: 5
+#          readinessProbe:
+#            httpGet:
+#              path: /health
+#              port: 20000
+#              scheme: HTTP
+#            initialDelaySeconds: 10
+#            periodSeconds: 10
+#            successThreshold: 1
+#            failureThreshold: 4
+#            timeoutSeconds: 5
           resources:
             limits:
               cpu: 1000m
@@ -72,15 +72,13 @@ spec:
           volumeMounts:
             - name: www-stone
               mountPath: /data/www/stone
-              readOnly: true
             - name: conf
               mountPath: /data/conf
-              readOnly: true
       restartPolicy: Always
       volumes:
         - name: www-stone
           hostPath:
-            path: /mnt/d/code/stone
+            path: /run/desktop/mnt/host/d/code/stone
         - name: conf
           hostPath:
-            path: /mnt/d/code/stone/deployment/conf
+            path: /run/desktop/mnt/host/d/code/stone/deployment/conf

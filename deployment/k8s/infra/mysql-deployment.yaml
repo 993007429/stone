@@ -3,13 +3,11 @@ kind: Service
 metadata:
   name: mysql-service
 spec:
-  type: LoadBalancer
   ports:
     - port: 3306
-      targetPort: 3306
   selector:
     app: mysql
-#  clusterIP: None
+  clusterIP: None
 ---
 apiVersion: apps/v1
 kind: Deployment
