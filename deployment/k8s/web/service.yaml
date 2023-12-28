@@ -5,6 +5,7 @@ metadata:
   namespace: stone
 spec:
 #  type: LoadBalancer
+  clusterIP: None
   selector:
     app: stone-web
   ports:
