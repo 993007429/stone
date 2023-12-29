@@ -23,11 +23,11 @@ spec:
           imagePullPolicy: Never
           env:
             - name: STONE_ENV
-              value: "test"
+              value: production
             - name: TZ
               value: Asia/Shanghai
 
-          workingDir: /data/www/stone/
+          workingDir: /data/www/stone
           command:
             - uwsgi
             - --ini

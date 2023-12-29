@@ -103,6 +103,8 @@ SYNC_OPERATIONS = []
 
 VERSION = '1.0.0'
 
+SERVE_DOCS = os.environ.get('docs.serve_docs') or LOCAL_SETTINGS['docs']['serve_docs']
+
 SECURITY_SCHEMES = {
     'ApiAuth': {
         'type': 'apiKey',
@@ -110,5 +112,12 @@ SECURITY_SCHEMES = {
         'name': 'Authorization',
     }
 }
+
+SERVERS = [
+    {
+        'name': 'Production Server',
+        'url': 'https://stone.dipath.cn'
+    }
+]
 
 RANK_AI_TASK = 'stone:ai_task:rank'
