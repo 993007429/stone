@@ -103,9 +103,12 @@ SYNC_OPERATIONS = []
 
 VERSION = '1.0.0'
 
-DOCS_PATH = os.environ.get('docs.docs_path') or LOCAL_SETTINGS['docs']['docs_path']
-SERVER = os.environ.get('docs.server') or LOCAL_SETTINGS['docs']['server']
-SERVERS = [{'url': SERVER}]
+DOCS_SETTINGS = LOCAL_SETTINGS['docs'] if 'docs' in LOCAL_SETTINGS else None
+
+DOCS_PATH = DOCS_SETTINGS['docs_path'] if DOCS_SETTINGS else None
+SERVER = DOCS_SETTINGS['server'] if DOCS_SETTINGS else None
+if SERVER:
+    SERVERS = [{'url': SERVER}]
 
 SECURITY_SCHEMES = {
     'ApiAuth': {

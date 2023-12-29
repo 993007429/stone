@@ -31,7 +31,7 @@ spec:
           command:
             - uwsgi
             - --ini
-            - /data/conf/uwsgi/uwsgi.ini
+            - /data/conf/uwsgi/uwsgi-test.ini
 #          lifecycle:
 #            preStop:
 #              exec:
