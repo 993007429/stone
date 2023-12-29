@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stone-web-test-service
+  namespace: stone
+spec:
+#  type: LoadBalancer
+  clusterIP: None
+  selector:
+    app: stone-web-test
+  ports:
+  - port: 21000
+    targetPort: 21000
