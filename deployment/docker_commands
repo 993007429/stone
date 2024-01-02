@@ -1,0 +1,4 @@
+# docker.exe build -t stone:base -f .\deployment\dockerfiles\base.Dockerfile .
+# docker.exe build -t stone:stone -f .\deployment\dockerfiles\stone.Dockerfile .
+# docker.exe build -t stone:web -f .\deployment\dockerfiles\web.Dockerfile .
+# docker.exe build -t celery -f .\deployment\dockerfiles\celery.Dockerfile .

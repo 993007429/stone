@@ -1,6 +1,6 @@
 import logging
 
-from stone.celery.app import celery_task
+from celery.app import celery_task
 
 logger = logging.getLogger(__name__)
 

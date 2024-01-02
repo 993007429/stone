@@ -9,7 +9,6 @@ from celery.result import AsyncResult
 
 import setting
 from setting import RANK_AI_TASK
-from stone.app.permission import permission_required
 from stone.app.request_context import request_context
 from stone.consts.her2 import Her2Consts
 from stone.infra.cache import cache
@@ -17,7 +16,7 @@ from stone.modules.ai.domain.enum import AIModel
 from stone.modules.ai.domain.repositories import MarkRepository
 from stone.modules.ai.libs.algorithms.DNA1.dna_alg import DNA_1020
 from stone.libs.heimdall.dispatch import open_slide
-from stone.celery.app import app as celery_app
+from celery.app import app as celery_app
 from celery.exceptions import TimeoutError as CeleryTimeoutError
 
 from stone.modules.ai.domain.entities import MarkEntity

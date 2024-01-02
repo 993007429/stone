@@ -1,12 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stone-web-service
+  namespace: stone
+spec:
+#  type: LoadBalancer
+  clusterIP: None
+  selector:
+    app: stone-web
+  ports:
+  - port: 20000
+    targetPort: 20000
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stone-web-test-deployment
+  name: stone-web-deployment
   namespace: stone
 spec:
   selector:
     matchLabels:
-      app: stone-web-test
+      app: stone-web
   strategy:
 #    rollingUpdate:
 #      maxSurge: 1
@@ -15,15 +31,15 @@ spec:
   template:
     metadata:
       labels:
-        app: stone-web-test
+        app: stone-web
     spec:
       containers:
         - image: stone:web
-          name: stone-web-test
+          name: stone-web
           imagePullPolicy: Never
           env:
             - name: STONE_ENV
-              value: test
+              value: production
             - name: TZ
               value: Asia/Shanghai
 
@@ -31,7 +47,7 @@ spec:
           command:
             - uwsgi
             - --ini
-            - /data/conf/uwsgi/uwsgi-test.ini
+            - /data/conf/uwsgi/uwsgi.ini
 #          lifecycle:
 #            preStop:
 #              exec:
@@ -50,7 +66,7 @@ spec:
 #            failureThreshold: 4
 #            timeoutSeconds: 5
           ports:
-            - containerPort: 21000
+            - containerPort: 20000
               protocol: TCP
 #          readinessProbe:
 #            httpGet:
